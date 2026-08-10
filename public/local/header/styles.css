@@ -1,0 +1,66 @@
+/**
+ * WUB Custom Header - Styles
+ * Blue Background with 60% Opacity and Glassmorphism
+ *
+ * @package    local_header
+ * @copyright  2026 WUB eLearning
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+.wub-custom-header.wub-header-transparent {
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    font-family: inherit;
+    background-color: rgba(10, 36, 106, 0.60) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 1000;
+    padding: 0.85rem 0;
+    box-sizing: border-box !important;
+}
+
+.wub-header-container.wub-navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.wub-header-brand-logo {
+    display: inline-block;
+    text-decoration: none !important;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.wub-header-brand-logo:hover {
+    transform: scale(1.02);
+    opacity: 0.95;
+}
+
+.wub-navbar-logo {
+    height: 55px;
+    width: auto;
+    max-width: 280px;
+    object-fit: contain;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .wub-navbar-logo {
+        height: 44px;
+    }
+
+    .wub-header-container.wub-navbar-inner {
+        padding: 0 1.25rem;
+    }
+}

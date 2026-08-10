@@ -1,0 +1,64 @@
+/**
+ * WUB Custom Footer - Styles
+ * Blue Background with 60% Opacity and Glassmorphism
+ *
+ * @package    local_footer
+ * @copyright  2026 WUB eLearning
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+.wub-custom-footer.wub-footer-compact {
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    font-family: inherit;
+    background-color: rgba(10, 36, 106, 0.60) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.85rem 0;
+    box-sizing: border-box !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.wub-footer-compact-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.wub-footer-text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.4;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.wub-footer-text a {
+    color: #ffffff !important;
+    text-decoration: underline !important;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.wub-footer-text a:hover {
+    color: #d97706 !important;
+}
+
+@media (max-width: 768px) {
+    .wub-footer-text {
+        font-size: 0.78rem;
+        padding: 0 0.5rem;
+    }
+}

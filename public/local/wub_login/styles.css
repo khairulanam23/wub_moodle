@@ -1,0 +1,390 @@
+/**
+ * WUB Custom Login - Scoped Styles
+ * Edge-to-Edge Responsive Layout Overriding Theme Constraints
+ *
+ * @package    local_wub_login
+ * @copyright  2026 WUB eLearning
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+:root {
+    --wub-navy: #0A246A;
+    --wub-navy-dark: #071B50;
+    --wub-navy-light: #153894;
+    --wub-green: #059669;
+    --wub-orange: #d97706;
+    --wub-text-dark: #1f2937;
+    --wub-text-muted: #6b7280;
+    --wub-border-color: #e5e7eb;
+    --wub-shadow-card: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================
+   MOODLE THEME OVERRIDES (Eliminate Outer Box & Title Bounds)
+   ============================================================ */
+
+#page-local-wub_login-index #page-wrapper,
+#page-local-wub_login-index #page,
+#page-local-wub_login-index #page-content,
+#page-local-wub_login-index #region-main-box,
+#page-local-wub_login-index #region-main,
+#page-local-wub_login-index .main-inner,
+#page-local-wub_login-index .login-wrapper,
+#page-local-wub_login-index .login-container,
+#page-local-wub_login-index .card-body,
+#page-local-wub_login-index .card {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Hide default Moodle theme header, page heading, navbar, and footer elements */
+#page-local-wub_login-index #header,
+#page-local-wub_login-index #page-header,
+#page-local-wub_login-index .page-header-headings,
+#page-local-wub_login-index .header-main,
+#page-local-wub_login-index .secondary-navigation,
+#page-local-wub_login-index .drawer-toggles,
+#page-local-wub_login-index #page-footer,
+#page-local-wub_login-index .footer-popover,
+#page-local-wub_login-index .navbar,
+#page-local-wub_login-index #backToTop {
+    display: none !important;
+}
+
+/* ============================================================
+   LOGIN PAGE CONTAINER & HERO WRAPPER
+   ============================================================ */
+
+.wub-login-page {
+    background: url('/local/wub_login/pix/wubImage.jpg') center/cover no-repeat fixed;
+    min-height: calc(100vh - 280px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3.5rem 1.5rem;
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    box-sizing: border-box !important;
+}
+
+.wub-login-container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.wub-login-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: var(--wub-shadow-card);
+    overflow: hidden;
+    width: 100%;
+}
+
+.wub-login-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 500px;
+    width: 100%;
+}
+
+.wub-login-col-img {
+    flex: 1 1 45%;
+    width: 45%;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--wub-navy);
+}
+
+.wub-login-image {
+    width: 100%;
+    height: 100%;
+}
+
+.wub-building-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.wub-login-col-form {
+    flex: 1 1 55%;
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2.5rem;
+    background: linear-gradient(135deg, #071B50 0%, #0A246A 100%);
+    box-sizing: border-box;
+}
+
+.wub-login-form-wrap {
+    width: 100%;
+}
+
+.wub-login-brand-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.wub-login-title {
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.4rem 0;
+    line-height: 1.25;
+}
+
+.wub-login-subtitle {
+    font-size: clamp(0.82rem, 1.1vw, 0.92rem);
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1.45;
+}
+
+.wub-role-indicator {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.25rem;
+    width: 100%;
+}
+
+.wub-role-badge-student {
+    background-color: rgba(37, 99, 235, 0.25);
+    color: #60a5fa;
+    border: 1px solid rgba(96, 165, 250, 0.35);
+}
+
+.wub-role-badge-teacher {
+    background-color: rgba(5, 150, 105, 0.25);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.wub-role-badge-admin {
+    background-color: rgba(217, 119, 6, 0.25);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.wub-login-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.wub-alert-danger {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.wub-form-group {
+    margin-bottom: 1.2rem;
+}
+
+.wub-form-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.4rem;
+}
+
+.wub-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.wub-input-icon {
+    position: absolute;
+    left: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+.wub-form-control {
+    width: 100%;
+    padding: 0.75rem 0.85rem 0.75rem 2.6rem;
+    font-size: 0.95rem;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.wub-form-control::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.wub-form-control:focus {
+    border-color: #f59e0b;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+}
+
+.wub-form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+}
+
+.wub-checkbox-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.wub-forgot-link {
+    color: #f59e0b;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.wub-forgot-link:hover {
+    text-decoration: underline;
+    color: #ffffff;
+}
+
+.wub-login-submit-btn {
+    width: 100%;
+    padding: 0.8rem 1.25rem;
+    background-color: #d97706;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.wub-login-submit-btn:hover {
+    background-color: #b45309;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.wub-login-back-wrap {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wub-login-back-link {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.wub-login-back-link:hover {
+    color: #f59e0b;
+    text-decoration: underline;
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS (ALL DEVICES)
+   ============================================================ */
+
+@media (min-width: 992px) {
+    .wub-login-container {
+        max-width: 900px;
+    }
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+    .wub-login-container {
+        max-width: 720px;
+    }
+
+    .wub-login-col-form {
+        padding: 2.25rem 1.75rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .wub-login-page {
+        padding: 2rem 1rem;
+        min-height: auto;
+    }
+
+    .wub-login-row {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .wub-login-col-img,
+    .wub-login-col-form {
+        width: 100%;
+        flex: none;
+    }
+
+    .wub-login-col-img {
+        height: 200px;
+    }
+
+    .wub-login-col-form {
+        padding: 2rem 1.25rem 1.75rem;
+    }
+
+    .wub-login-card {
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 479px) {
+    .wub-login-page {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .wub-login-col-img {
+        height: 160px;
+    }
+
+    .wub-login-col-form {
+        padding: 1.5rem 1rem 1.25rem;
+    }
+
+    .wub-form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}

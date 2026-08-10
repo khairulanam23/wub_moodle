@@ -1,0 +1,441 @@
+/**
+ * WUB Landing Page - Scoped Styles
+ * Edge-to-Edge Responsive Layout Overriding Theme Constraints
+ *
+ * @package    local_wub_landing
+ * @copyright  2026 WUB eLearning
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+
+:root {
+    --wub-navy: #0A246A;
+    --wub-navy-dark: #071B50;
+    --wub-navy-light: #153894;
+    --wub-green: #059669;
+    --wub-green-hover: #047857;
+    --wub-gray-btn: #374151;
+    --wub-gray-btn-hover: #1F2937;
+    --wub-orange: #d97706;
+    --wub-orange-hover: #b45309;
+    --wub-text-dark: #1f2937;
+    --wub-text-muted: #4b5563;
+    --wub-border-color: #e5e7eb;
+    --wub-shadow-card: 0 20px 40px rgba(0, 0, 0, 0.25);
+    --wub-shadow-btn: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --wub-shadow-btn-hover: 0 6px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* ============================================================
+   MOODLE THEME OVERRIDES (Eliminate Outer Box & Title Bounds)
+   ============================================================ */
+
+#page-local-wub_landing-index #page-wrapper,
+#page-local-wub_landing-index #page,
+#page-local-wub_landing-index #page-content,
+#page-local-wub_landing-index #region-main-box,
+#page-local-wub_landing-index #region-main,
+#page-local-wub_landing-index .main-inner,
+#page-local-wub_landing-index .login-wrapper,
+#page-local-wub_landing-index .login-container,
+#page-local-wub_landing-index .card-body,
+#page-local-wub_landing-index .card {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Hide default Moodle theme header, page heading, navbar, and footer elements */
+#page-local-wub_landing-index #header,
+#page-local-wub_landing-index #page-header,
+#page-local-wub_landing-index .page-header-headings,
+#page-local-wub_landing-index .header-main,
+#page-local-wub_landing-index .secondary-navigation,
+#page-local-wub_landing-index .drawer-toggles,
+#page-local-wub_landing-index #page-footer,
+#page-local-wub_landing-index .footer-popover,
+#page-local-wub_landing-index .navbar,
+#page-local-wub_landing-index #backToTop {
+    display: none !important;
+}
+
+/* ============================================================
+   LANDING PAGE CONTAINER & HERO WRAPPER
+   ============================================================ */
+
+.wub-landing-page.landing-page-bg {
+    background: url('/local/wub_landing/pix/wubImage.jpg') center/cover no-repeat fixed;
+    min-height: calc(100vh - 280px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3.5rem 1.5rem;
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    box-sizing: border-box !important;
+}
+
+.wub-container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.guest-home-welcome-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: var(--wub-shadow-card);
+    overflow: hidden;
+    width: 100%;
+}
+
+.wub-card-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 480px;
+    width: 100%;
+}
+
+/* --- Left Column: Building Image --- */
+
+.wub-card-col-img {
+    flex: 1 1 50%;
+    width: 50%;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--wub-navy);
+}
+
+.guest-home-welcome-image.landing-page-box-img {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.wub-building-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+/* --- Right Column: Welcome Form --- */
+
+.wub-card-col-form {
+    flex: 1 1 50%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.75rem 2.25rem;
+    background: linear-gradient(135deg, #071B50 0%, #0A246A 100%);
+    box-sizing: border-box;
+}
+
+.guest-home-welcome-form {
+    width: 100%;
+}
+
+#frontpage-guest-welcome-card-title {
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    font-weight: 800;
+    color: #ffffff;
+    text-align: center;
+    margin: 0 0 0.85rem 0;
+    line-height: 1.25;
+}
+
+.guest-home-welcome-card-info-text {
+    font-size: clamp(0.82rem, 1.1vw, 0.92rem);
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.45;
+}
+
+.guest-home-welcome-card-info-text b {
+    font-weight: 600;
+}
+
+.welcome-card-buttons {
+    width: 100%;
+}
+
+.login-button-group {
+    display: flex;
+    flex-direction: row;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+    width: 100%;
+}
+
+.login-button-group a,
+.admin-login-btn,
+.catalog-login-btn {
+    text-decoration: none !important;
+}
+
+.student-login-btn,
+.teacher-login-btn {
+    flex: 1;
+    display: block;
+    text-align: center;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: var(--wub-shadow-btn);
+}
+
+.student-login-btn {
+    background-color: #2563eb;
+}
+
+.student-login-btn:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: var(--wub-shadow-btn-hover);
+}
+
+.teacher-login-btn {
+    background-color: var(--wub-green);
+}
+
+.teacher-login-btn:hover {
+    background-color: var(--wub-green-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--wub-shadow-btn-hover);
+}
+
+.student-login-btn p,
+.teacher-login-btn p,
+.admin-login-btn p,
+.catalog-login-btn p {
+    margin: 0;
+    padding: 0.75rem 0.85rem;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.admin-login-btn {
+    display: block;
+    width: 100%;
+    background-color: #4b5563;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    transition: all 0.2s ease-in-out;
+    box-shadow: var(--wub-shadow-btn);
+}
+
+.admin-login-btn:hover {
+    background-color: #374151;
+    transform: translateY(-2px);
+    box-shadow: var(--wub-shadow-btn-hover);
+}
+
+.wub-card-hr {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 1.5rem 0;
+}
+
+.catalog-login-btn {
+    display: block;
+    width: 100%;
+    background-color: var(--wub-orange);
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: var(--wub-shadow-btn);
+}
+
+.catalog-login-btn:hover {
+    background-color: var(--wub-orange-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--wub-shadow-btn-hover);
+}
+
+.guest-welcome-footer-links {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.guest-welcome-footer-links a {
+    color: #f59e0b;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.guest-welcome-footer-links a:hover {
+    text-decoration: underline;
+    color: #ffffff;
+}
+
+.wub-footer-sep {
+    margin: 0 0.5rem;
+    color: #9ca3af;
+}
+
+/* ============================================================
+   AUTHENTICATED LANDING PAGE VIEW
+   ============================================================ */
+
+.wub-welcome-card-auth {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 3rem 2.5rem;
+    box-shadow: var(--wub-shadow-card);
+}
+
+.wub-auth-greeting {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+.wub-auth-loggedinas {
+    font-size: 1.2rem;
+    color: var(--wub-navy);
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+}
+
+.wub-auth-instruction {
+    font-size: 0.9rem;
+    color: var(--wub-text-muted);
+}
+
+.wub-auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.wub-role-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1.35rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+}
+
+.wub-role-btn-dashboard {
+    background-color: var(--wub-navy);
+}
+.wub-role-btn-dashboard:hover {
+    background-color: var(--wub-navy-dark);
+}
+
+.wub-role-btn-catalog-auth {
+    background-color: var(--wub-orange);
+}
+.wub-role-btn-catalog-auth:hover {
+    background-color: var(--wub-orange-hover);
+}
+
+.wub-role-btn-logout {
+    background-color: var(--wub-gray-btn);
+}
+.wub-role-btn-logout:hover {
+    background-color: var(--wub-gray-btn-hover);
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS (ALL DEVICES)
+   ============================================================ */
+
+@media (min-width: 992px) {
+    .wub-container {
+        max-width: 900px;
+    }
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+    .wub-container {
+        max-width: 720px;
+    }
+
+    .wub-card-col-form {
+        padding: 2.25rem 1.75rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .wub-landing-page.landing-page-bg {
+        padding: 2rem 1rem;
+        min-height: auto;
+    }
+
+    .wub-card-row {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .wub-card-col-img,
+    .wub-card-col-form {
+        width: 100%;
+        flex: none;
+    }
+
+    .wub-card-col-img {
+        height: 220px;
+    }
+
+    .wub-card-col-form {
+        padding: 2rem 1.25rem 1.75rem;
+    }
+
+    .guest-home-welcome-card {
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 479px) {
+    .wub-landing-page.landing-page-bg {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .login-button-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .wub-card-col-img {
+        height: 180px;
+    }
+
+    .wub-card-col-form {
+        padding: 1.5rem 1rem 1.25rem;
+    }
+
+    .student-login-btn p,
+    .teacher-login-btn p,
+    .admin-login-btn p,
+    .catalog-login-btn p {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.9rem;
+    }
+}

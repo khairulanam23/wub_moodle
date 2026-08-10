@@ -1,0 +1,223 @@
+/**
+ * WUB Terms & Policy - Scoped Styles
+ * Matched to elearning.org.bd/teacher/terms_conditions.php Layout
+ *
+ * @package    local_wub_policy
+ * @copyright  2026 WUB eLearning
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* ============================================================
+   MOODLE THEME OVERRIDES (Eliminate Outer Box & Title Bounds)
+   ============================================================ */
+
+#page-local-wub_policy-index #page-wrapper,
+#page-local-wub_policy-index #page,
+#page-local-wub_policy-index #page-content,
+#page-local-wub_policy-index #region-main-box,
+#page-local-wub_policy-index #region-main,
+#page-local-wub_policy-index .main-inner,
+#page-local-wub_policy-index .card-body,
+#page-local-wub_policy-index .card {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Hide default Moodle theme header, page heading, navbar, and footer elements */
+#page-local-wub_policy-index #header,
+#page-local-wub_policy-index #page-header,
+#page-local-wub_policy-index .page-header-headings,
+#page-local-wub_policy-index .header-main,
+#page-local-wub_policy-index .secondary-navigation,
+#page-local-wub_policy-index .drawer-toggles,
+#page-local-wub_policy-index #page-footer,
+#page-local-wub_policy-index .footer-popover,
+#page-local-wub_policy-index .navbar,
+#page-local-wub_policy-index #backToTop {
+    display: none !important;
+}
+
+/* ============================================================
+   POLICY CONTAINER & WRAPPER
+   ============================================================ */
+
+.wub-policy-page {
+    background: #f4f6f9;
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    box-sizing: border-box !important;
+}
+
+.wub-policy-container {
+    max-width: 920px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Card Container */
+.card.wub-policy-card {
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid #e5e7eb !important;
+    overflow: hidden;
+    margin-bottom: 1.5rem !important;
+}
+
+.card-header.wub-policy-card-header {
+    background-color: #0A246A !important;
+    color: #ffffff !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    padding: 1rem 1.5rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.card-body.wub-policy-card-body {
+    padding: 2rem 2.25rem !important;
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+}
+
+.wub-policy-body-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #374151;
+}
+
+.wub-policy-body-text h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0A246A;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.wub-policy-body-text p {
+    margin-bottom: 1rem;
+    color: #4b5563;
+}
+
+.wub-policy-body-text ol {
+    padding-left: 1.4rem;
+    margin-bottom: 1.25rem;
+}
+
+.wub-policy-body-text li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.wub-policy-body-text strong {
+    color: #111827;
+}
+
+.wub-policy-divider {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 1.75rem 0 1.25rem 0;
+}
+
+.wub-policy-checkbox-row {
+    margin-top: 1rem;
+}
+
+.wub-policy-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.98rem;
+    color: #1f2937;
+}
+
+.wub-policy-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #0A246A;
+    cursor: pointer;
+}
+
+.wub-policy-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.btn.wub-policy-continue-btn {
+    background-color: #0A246A !important;
+    border-color: #0A246A !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    padding: 0.65rem 2rem !important;
+    border-radius: 6px !important;
+    font-size: 1rem !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn.wub-policy-continue-btn[disabled] {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
+.btn.wub-policy-continue-btn.active-enabled {
+    background-color: #059669 !important; /* Green active button */
+    border-color: #059669 !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+
+.btn.wub-policy-continue-btn.active-enabled:hover {
+    background-color: #047857 !important;
+    transform: translateY(-1px);
+}
+
+.btn.wub-policy-cancel-btn {
+    background-color: #4b5563 !important;
+    border-color: #4b5563 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    padding: 0.65rem 1.5rem !important;
+    border-radius: 6px !important;
+    font-size: 0.95rem !important;
+    text-decoration: none !important;
+}
+
+.btn.wub-policy-cancel-btn:hover {
+    background-color: #374151 !important;
+}
+
+@media (max-width: 768px) {
+    .card-body.wub-policy-card-body {
+        padding: 1.5rem 1.25rem !important;
+    }
+
+    .wub-policy-action-bar {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    .btn.wub-policy-continue-btn,
+    .btn.wub-policy-cancel-btn {
+        width: 100% !important;
+        text-align: center !important;
+    }
+}

@@ -1,0 +1,118 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_wub_landing/landing_page
+
+    Exact WUB eLearning Landing Page Clone Template.
+
+    Context variables:
+    * heroimageurl - URL to the WUB building image (wubImage.jpg)
+    * welcometitle - Main welcome title ("Welcome to WUB")
+    * welcomesubtitle - Welcome instructions
+    * studentenabled - Whether student button is enabled
+    * studenturl - Student login entry URL
+    * teacherenabled - Whether teacher button is enabled
+    * teacherurl - Teacher login entry URL
+    * adminenabled - Whether administration button is enabled
+    * adminurl - Administration login entry URL
+    * catalogenabled - Whether course catalog section is enabled
+    * catalogurl - Course catalog URL
+    * hasfooterlinks - Whether footer links exist
+    * hascontactus - Whether contact us link exists
+    * contactusurl - Contact us URL
+    * hashowtoguides - Whether how-to guides link exists
+    * howtoguidesurl - How-to guides URL
+    * str_* - Translated string labels
+}}
+
+<div class="wub-landing-page landing-page-bg" id="wub-landing-page">
+    <div class="frontpage-guest-content centered">
+        <div class="wub-container">
+            <div class="guest-home-welcome-card">
+                <div class="wub-card-row">
+                    {{! Left Column: WUB Building Photo }}
+                    <div class="wub-card-col-img">
+                        <div class="guest-home-welcome-image landing-page-box-img">
+                            <img src="{{heroimageurl}}" alt="World University of Bangladesh" class="wub-building-img">
+                        </div>
+                    </div>
+
+                    {{! Right Column: Welcome Form & Buttons }}
+                    <div class="wub-card-col-form">
+                        <div class="guest-home-welcome-form">
+                            <p id="frontpage-guest-welcome-card-title" class="text-align-center">
+                                {{{ welcometitle }}}
+                            </p>
+
+                            <p class="text-align-center guest-home-welcome-card-info-text">
+                                <b>{{{ welcomesubtitle }}}</b>
+                            </p>
+
+                            <div class="welcome-card-buttons">
+                                <div class="login-button-group">
+                                    {{#studentenabled}}
+                                    <a href="{{studenturl}}" class="student-login-btn" id="wub-btn-student">
+                                        <p>{{ str_student }}</p>
+                                    </a>
+                                    {{/studentenabled}}
+
+                                    {{#teacherenabled}}
+                                    <a href="{{teacherurl}}" class="teacher-login-btn" id="wub-btn-teacher">
+                                        <p>{{ str_teacher }}</p>
+                                    </a>
+                                    {{/teacherenabled}}
+                                </div>
+
+                                {{#adminenabled}}
+                                <a href="{{adminurl}}" class="admin-login-btn" id="wub-btn-admin">
+                                    <p>{{ str_administration }}</p>
+                                </a>
+                                {{/adminenabled}}
+
+                                {{#catalogenabled}}
+                                <hr class="wub-card-hr">
+
+                                <p class="text-align-center guest-home-welcome-card-info-text">
+                                    <b>{{ str_catalogprompt }}</b>
+                                </p>
+
+                                <a href="{{catalogurl}}" class="catalog-login-btn" id="wub-btn-catalog">
+                                    <p>{{ str_coursecatalog }}</p>
+                                </a>
+                                {{/catalogenabled}}
+                            </div>
+
+                            {{#hasfooterlinks}}
+                            <div class="guest-welcome-footer-links">
+                                {{#hascontactus}}
+                                <a href="{{contactusurl}}" id="wub-link-contact">{{ str_contactus }}</a>
+                                {{/hascontactus}}
+                                {{#hascontactus}}{{#hashowtoguides}}
+                                <span class="wub-footer-sep">|</span>
+                                {{/hashowtoguides}}{{/hascontactus}}
+                                {{#hashowtoguides}}
+                                <a href="{{howtoguidesurl}}" id="wub-link-howto">{{ str_howtoguides }}</a>
+                                {{/hashowtoguides}}
+                            </div>
+                            {{/hasfooterlinks}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

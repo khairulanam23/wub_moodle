@@ -1,0 +1,130 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_wub_landing/course_details
+
+    Course details page template.
+
+    Context variables required for this template:
+    * fullname - Course full name
+    * shortname - Course short name
+    * categoryname - Category display name
+    * hassummary - Whether summary exists
+    * summary - Full formatted course summary
+    * hascourseimage - Whether course has an image
+    * courseimageurl - Course image URL
+    * hasinstructors - Whether instructors exist
+    * instructors - Array of instructor objects
+    * actionurl - URL for the action button
+    * actionlabel - Label for the action button
+    * actionclass - CSS class for the action button
+    * catalogurl - URL back to catalog
+    * str_* - Translated string labels
+
+    Example context (json):
+    {
+        "fullname": "Introduction to Computing",
+        "shortname": "CS101",
+        "categoryname": "Computer Science",
+        "hassummary": true,
+        "summary": "<p>An introductory course...</p>",
+        "hascourseimage": false,
+        "hasinstructors": true,
+        "instructors": [{"name": "Dr. Smith", "role": "Teacher"}],
+        "actionurl": "/login/index.php",
+        "actionlabel": "Login to Access Course",
+        "actionclass": "wub-btn-login",
+        "catalogurl": "/local/wub_landing/catalog.php",
+        "str_backtocatalog": "← Back to Course Catalog",
+        "str_courseinformation": "Course Information",
+        "str_coursesummary": "Course Summary",
+        "str_instructor": "Instructor",
+        "str_instructors": "Instructors",
+        "str_coursecategory": "Course Category"
+    }
+}}
+
+<div class="wub-course-details-page" id="wub-course-details">
+    <div class="wub-course-details-nav">
+        <a href="{{catalogurl}}" class="wub-back-link" id="wub-back-to-catalog">
+            {{ str_backtocatalog }}
+        </a>
+    </div>
+
+    <div class="wub-course-details-card">
+        {{#hascourseimage}}
+        <div class="wub-course-details-hero">
+            <img src="{{courseimageurl}}" alt="" class="wub-course-details-img">
+        </div>
+        {{/hascourseimage}}
+
+        <div class="wub-course-details-body">
+            <div class="wub-course-details-header">
+                {{#hascategory}}
+                <span class="wub-course-details-category">{{ categoryname }}</span>
+                {{/hascategory}}
+                <h1 class="wub-course-details-title" id="wub-course-title">{{ fullname }}</h1>
+                <p class="wub-course-details-shortname">{{ shortname }}</p>
+            </div>
+
+            {{#hasinstructors}}
+            <div class="wub-course-details-section">
+                <h2 class="wub-course-details-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    {{#instructors.1}}{{ str_instructors }}{{/instructors.1}}
+                    {{^instructors.1}}{{ str_instructor }}{{/instructors.1}}
+                </h2>
+                <div class="wub-course-details-instructors">
+                    {{#instructors}}
+                    <div class="wub-course-details-instructor">
+                        <span class="wub-instructor-detail-name">{{ name }}</span>
+                        <span class="wub-instructor-detail-role">{{ role }}</span>
+                    </div>
+                    {{/instructors}}
+                </div>
+            </div>
+            {{/hasinstructors}}
+
+            <div class="wub-course-details-section">
+                <h2 class="wub-course-details-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    {{ str_coursesummary }}
+                </h2>
+                <div class="wub-course-details-summary">
+                    {{{ summary }}}
+                </div>
+            </div>
+
+            {{#hascategory}}
+            <div class="wub-course-details-section">
+                <h2 class="wub-course-details-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    {{ str_coursecategory }}
+                </h2>
+                <p class="wub-course-details-category-text">{{ categoryname }}</p>
+            </div>
+            {{/hascategory}}
+
+            <div class="wub-course-details-action">
+                <a href="{{actionurl}}" class="wub-course-action-btn {{actionclass}}" id="wub-course-action">
+                    {{ actionlabel }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

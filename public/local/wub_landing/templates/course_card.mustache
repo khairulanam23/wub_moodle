@@ -1,0 +1,90 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_wub_landing/course_card
+
+    Individual course card partial used within the catalog grid.
+
+    Context variables required for this template:
+    * id - Course ID
+    * fullname - Course full name
+    * shortname - Course short name
+    * categoryname - Category display name
+    * hassummary - Whether summary exists
+    * summary - Truncated course summary
+    * hascourseimage - Whether course has an image
+    * courseimageurl - Course image URL
+    * hasinstructors - Whether instructors exist
+    * instructors - Array of instructor objects
+    * detailsurl - URL to course details page
+    * str_viewdetails - View details button label
+
+    Example context (json):
+    {
+        "id": 2,
+        "fullname": "Introduction to Computing",
+        "shortname": "CS101",
+        "categoryname": "Computer Science",
+        "hassummary": true,
+        "summary": "An introductory course...",
+        "hascourseimage": false,
+        "hasinstructors": true,
+        "instructors": [{"name": "Dr. Smith", "role": "Teacher"}],
+        "detailsurl": "/local/wub_landing/course.php?id=2",
+        "str_viewdetails": "View Details"
+    }
+}}
+
+<div class="wub-course-card" id="wub-course-card-{{id}}">
+    {{#hascourseimage}}
+    <div class="wub-course-card-image">
+        <img src="{{courseimageurl}}" alt="" class="wub-course-card-img" loading="lazy">
+    </div>
+    {{/hascourseimage}}
+    {{^hascourseimage}}
+    <div class="wub-course-card-image wub-course-card-placeholder">
+        <div class="wub-course-card-placeholder-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+    </div>
+    {{/hascourseimage}}
+
+    <div class="wub-course-card-body">
+        <div class="wub-course-card-category">{{ categoryname }}</div>
+        <h3 class="wub-course-card-title">{{ fullname }}</h3>
+
+        {{#hassummary}}
+        <p class="wub-course-card-summary">{{ summary }}</p>
+        {{/hassummary}}
+
+        {{#hasinstructors}}
+        <div class="wub-course-card-instructors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            {{#instructors}}
+            <span class="wub-instructor-name">{{ name }}</span>
+            {{/instructors}}
+        </div>
+        {{/hasinstructors}}
+    </div>
+
+    <div class="wub-course-card-footer">
+        <a href="{{detailsurl}}" class="wub-course-card-btn">
+            {{ str_viewdetails }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+    </div>
+</div>
