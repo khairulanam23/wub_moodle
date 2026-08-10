@@ -15,11 +15,9 @@
     margin-left: -50vw !important;
     margin-right: -50vw !important;
     font-family: inherit;
-    background-color: rgba(10, 36, 106, 0.60) !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background-color: #0A246A !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 1000;
     padding: 0.85rem 0;
     box-sizing: border-box !important;
@@ -39,12 +37,12 @@
 .wub-header-brand-logo {
     display: inline-block;
     text-decoration: none !important;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), filter 0.25s ease, opacity 0.25s ease;
 }
 
 .wub-header-brand-logo:hover {
-    transform: scale(1.02);
-    opacity: 0.95;
+    transform: translateY(-1px) scale(1.04);
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.75)) brightness(1.12);
 }
 
 .wub-navbar-logo {

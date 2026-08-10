@@ -15,13 +15,11 @@
     margin-left: -50vw !important;
     margin-right: -50vw !important;
     font-family: inherit;
-    background-color: rgba(10, 36, 106, 0.60) !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background-color: #071B50 !important;
     color: rgba(255, 255, 255, 0.9);
     padding: 0.85rem 0;
     box-sizing: border-box !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
 }
 
