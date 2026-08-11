@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_mass_enroll/index
+
+
+    Example context (json):
+    {
+
+    }
+}}
+
+<h1>Bulk Enrollment</h1>
+
+<p>The bulk enrollment plugin provide multiple user & course enrol at a time. Also, if the user is already enrolled in the selected course, you could not enroll the user a second time.</p>
+
+<p>This plugin can be used to show the user's external information using the REST API which will come from different software. For example, University management system software information at your university can be shown here.</p>
+
+<code>
+    <a href="#">Developed By Computing Information Service (CIS)</a>
+</code>
+
+<p style="text-align: center;margin-top: 40px;">
+    <a href="/local/mass_enroll/enrolled.php">
+        <button class="btn btn-info btn-lg" type="button">
+            Bulk Enrollment
+        </button>
+    </a>
+
+    <a href="/local/mass_enroll/records.php">
+        <button class="btn btn-success btn-lg" type="button">
+            Enrol Student Records
+        </button>
+    </a>
+
+    <a href="/local/mass_enroll/sync.php">
+        <button class="btn btn-warning btn-lg" type="button">
+            Sync UMS Data
+        </button>
+    </a>
+</p>

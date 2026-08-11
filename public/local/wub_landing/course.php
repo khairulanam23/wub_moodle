@@ -50,20 +50,12 @@ if ($isauthenticated) {
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/wub_landing/course.php', ['id' => $courseid]));
-$PAGE->set_pagelayout('standard');
+$PAGE->set_pagelayout('base');
 $PAGE->set_title($course->fullname);
 $PAGE->set_heading($course->fullname);
 
-// Breadcrumbs.
-$PAGE->navbar->add(
-    get_string('pluginname', 'local_wub_landing'),
-    new moodle_url('/local/wub_landing/index.php')
-);
-$PAGE->navbar->add(
-    get_string('coursecatalog', 'local_wub_landing'),
-    new moodle_url('/local/wub_landing/catalog.php')
-);
-$PAGE->navbar->add($course->fullname);
+require_once($CFG->dirroot . '/local/header/lib.php');
+require_once($CFG->dirroot . '/local/footer/lib.php');
 
 // Prepare renderable.
 $renderable = new \local_wub_landing\output\course_details($course, $isauthenticated, $isenrolled);
@@ -71,6 +63,17 @@ $renderable = new \local_wub_landing\output\course_details($course, $isauthentic
 // Render — header() must be called first to initialize the full renderer.
 echo $OUTPUT->header();
 
+// Render custom WUB header.
+if (function_exists('local_header_render')) {
+    echo local_header_render($OUTPUT);
+}
+
 $templatedata = $renderable->export_for_template($OUTPUT);
 echo $OUTPUT->render_from_template('local_wub_landing/course_details', $templatedata);
+
+// Render custom WUB footer.
+if (function_exists('local_footer_render')) {
+    echo local_footer_render($OUTPUT);
+}
+
 echo $OUTPUT->footer();

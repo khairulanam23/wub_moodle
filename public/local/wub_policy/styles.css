@@ -134,23 +134,35 @@
 }
 
 .wub-policy-checkbox-row {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
 }
 
 .wub-policy-checkbox-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
     cursor: pointer;
-    font-size: 0.98rem;
+    font-size: 0.95rem;
     color: #1f2937;
+    margin: 0;
+    line-height: 1.45;
 }
 
 .wub-policy-checkbox-label input[type="checkbox"] {
     width: 18px;
     height: 18px;
+    margin: 0.15rem 0 0 0 !important;
+    flex-shrink: 0;
     accent-color: #0A246A;
     cursor: pointer;
+}
+
+.wub-policy-checkbox-label b {
+    font-weight: 600;
 }
 
 .wub-policy-action-bar {

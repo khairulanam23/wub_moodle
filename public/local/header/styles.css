@@ -1,6 +1,6 @@
 /**
  * WUB Custom Header - Styles
- * Blue Background with 60% Opacity and Glassmorphism
+ * White Background with 60% Opacity and Glassmorphism
  *
  * @package    local_header
  * @copyright  2026 WUB eLearning
@@ -15,9 +15,11 @@
     margin-left: -50vw !important;
     margin-right: -50vw !important;
     font-family: inherit;
-    background-color: #0A246A !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     z-index: 1000;
     padding: 0.85rem 0;
     box-sizing: border-box !important;
@@ -26,7 +28,7 @@
 .wub-header-container.wub-navbar-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1rem;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -51,6 +53,8 @@
     max-width: 280px;
     object-fit: contain;
     display: block;
+    transform: scaleX(1.05);
+    transform-origin: left center;
 }
 
 @media (max-width: 768px) {
@@ -59,6 +63,6 @@
     }
 
     .wub-header-container.wub-navbar-inner {
-        padding: 0 1.25rem;
+        padding: 0 0.625rem;
     }
 }

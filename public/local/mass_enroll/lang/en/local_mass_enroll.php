@@ -1,0 +1,255 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Language file for local_mass_enroll, EN
+ *
+ * File         local_mass_enroll.php
+ * Encoding     UTF-8
+ *
+ * @package     local_mass_enroll
+ *
+ * @copyright   1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @copyright   2012 onwards Patrick Pollet
+ * @copyright   2015 onwards R.J. van Dongen
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+$string['allowedunenrolmentmethods'] = 'Allowed extra unenrolments';
+$string['allowedunenrolmentmethods_help'] = 'Indicate the default allowed enrolment methods that can be used for mass unenrolment.<br/>
+Please note "manual" cannot be configured as this is the default and will always be processed.<br/>
+<i>Be careful which methods you select, because it might raise questions! For example, you might <strong>not</strong> want to remove enrolments that were paid for (paypal, stripe, classicpay, etc etc).</i>';
+$string['checknonmanualenrolments'] = 'Check other enrolments than manual?';
+$string['checknonmanualenrolments_help'] = 'When enabled, role assignments from enrolment methods other than manual will be checked, meaning the target role can be applied from any enrolment plugin.
+If the user has the target role from any enrolment plugin, processing will be skipped';
+$string['coursepage'] = 'Course page';
+$string['creategroupings'] = 'Create grouping(s) if needed';
+$string['creategroups'] = 'Create group(s) if needed';
+$string['csvresulttable'] = 'CSV Results';
+$string['defaultrole'] = 'Default role to assign';
+$string['defaultrole_help'] = 'Provide the default role to assign when not present in the CSV';
+$string['email_sent'] = 'email sent to {$a}';
+$string['enableextraunenrolmentplugins'] = 'Allow extra unenrolment plugins?';
+$string['enableextraunenrolmentplugins_help'] = 'Use this if you wish to allow for unenrolment of other plugins than "manual"';
+$string['enablemassenrol'] = 'Allow mass enrolment from course participant menu?';
+$string['enablemassenrol_help'] = 'Check this option to allow extension for mass enrolment in the course administration tree.
+Please be aware the link can now be found under the tertiary menu in the "Participants" section';
+$string['enablemassunenrol'] = 'Allow mass unenrolment from course participant menu?';
+$string['enablemassunenrol_help'] = 'Check this option to allow extension for mass unenrolment in the course administration tree
+Please be aware the link can now be found under the tertiary menu in the "Participants" section';
+$string['enclosure'] = 'CSV Enclosure';
+$string['enroll'] = 'Enrol them to my course';
+$string['error'] = 'Error';
+$string['event:massenrolcreated'] = 'Mass enrolment created';
+$string['event:massunenrolcreated'] = 'Mass unenrolment created';
+$string['firstcolumn'] = 'First column contains';
+$string['identifier'] = 'Identifier';
+$string['idnumber'] = 'Id number';
+$string['im:already_in'] = '{$a} already enrolled ';
+$string['im:already_in_g'] = ' already in group {$a->group}';
+$string['im:and_added_g'] = ' and added to Moodle\'s group {$a->group}';
+$string['im:enrolled_ok'] = '{$a} enrolled ';
+$string['im:err_opening_file'] = 'error opening file {$a}';
+$string['im:error_add_g_grp'] = 'error adding group {$a->group} to grouping {$a->grouping}';
+$string['im:error_add_grp'] = 'error adding grouping {$a->grouping} to course {$a->courseid}';
+$string['im:error_addg'] = 'error adding group {$a->group} to course {$a->courseid} ';
+$string['im:error_adding_u_g'] = 'error adding to group {$a}';
+$string['im:error_g_unknown'] = 'error unkown group {$a} ';
+$string['im:error_in'] = 'error enrolling {$a}';
+$string['im:error_out'] = 'error unenrolling {$a}';
+$string['im:nonassignablerole'] = 'Role {$a} cannot be assigned in this context';
+$string['im:not_in'] = '{$a} NOT enrolled ';
+$string['im:opening_file'] = 'Opening file : {$a} ';
+$string['im:roleassigned'] = 'Role {$a} was assigned';
+$string['im:roleunassigned'] = 'Role {$a} was unassigned';
+$string['im:stats_g'] = '{$a->nb} group(s) created : {$a->what}';
+$string['im:stats_grp'] = '{$a->nb} grouping(s) created : {$a->what}';
+$string['im:stats_i'] = '{$a} enrolled';
+$string['im:stats_ui'] = '{$a} unenrolled';
+$string['im:unenrolled_ok'] = '{$a} unenrolled ';
+$string['im:user_unknown'] = '{$a} unknown - skipping line';
+$string['im:using_role'] = 'Enrolling users as : {$a} ';
+$string['info'] = 'Info';
+$string['localmassenrolldefaults'] = 'Mass enrol default settings';
+$string['localmassenrollextensions'] = 'Menu extension settings';
+$string['mail_enrolment'] = '
+Hello,
+You just enrolled the following list of users to your course \'{$a->course}\'.
+Here is a report of operations :
+{$a->report}
+Kind regards,
+Moodle
+({$a->wwwroot})
+';
+$string['mail_enrolment_subject'] = 'Bulk enrolments on {$a->course} ({$a->wwwroot})';
+$string['mail_unenrolment'] = '
+Hello,
+You just unenrolled the following list of users to your course \'{$a->course}\'.
+Here is a report of operations :
+{$a->report}
+Kind regards,
+Moodle
+({$a->wwwroot})
+';
+$string['mail_unenrolment_subject'] = 'Bulk unenrolments on {$a->course} ({$a->wwwroot})';
+$string['mailreport'] = 'Send me a mail report';
+$string['mailreportdefault'] = 'Send reports default';
+$string['mailreportdefault_help'] = 'Configure the default setting for sending reports for the bulk (un)enrolment forms';
+$string['mapping:column'] = 'Column {$a}';
+$string['mappings'] = 'Mappings';
+$string['massenrolunenrolredirect'] = 'Redirection';
+$string['massenrolunenrolredirect_help'] = 'Sets the page to redirect to on cancellation of mass (un)enroll form.';
+$string['mass_enroll'] = 'Bulk enrolments';
+$string['mass_enroll:enrol'] = 'Enrol users to a course by CSV file';
+$string['mass_enroll:unenrol'] = 'Unenrol users from a course by CSV file';
+$string['mass_enroll_help'] = '<h1>Bulk enrolments</h1>
+<p>With this option you are going to enrol a list of known users from a file with one account per line</p>
+<p><b> The firstline </b> the empty lines or unknown accounts will be skipped. </p>
+<p>The file may contains one or two columns, separated by a comma, a semi-column or a tabulation.
+You should prepare it from your usual spreadsheet program from official lists of students, for example,
+and add if needed a column with groups to which you want these users to be added. Finally export it as CSV. (*)</p>
+<p><b> The first one must contains a unique account identifier </b>: idnumber (by default) login or email of the target user. (**). </p>
+<p>The second <b>if present,</b> contains the group name in wich you want that user to be added. </p>
+<p>If the group name does not exist, it will be created in your course, together with a grouping of the same name to which the group will be added.<br/>
+This is due to the fact that in Moodle, activities can be restricted to groupings (group of groups), not groups,
+ so it will make your life easier. (this requires that groupings are enabled by your site administrator).</p>
+<p>You may have in the same file different target groups or no groups for some accounts</p>
+<p>You may unselect options to create groups and groupings if you are sure that they already exist in the course.</p>
+<p>By default the users will be enroled as students but you may select other roles that you are allowed to manage (teacher, non editing teacher or any custom roles)</p>
+<p>You may repeat this operation at will without dammages, for example if you forgot or mispelled the target group.</p>
+<h2> Sample files </h2>
+Id numbers and a group name to be created in needed in the course (*)
+<pre>
+"idnumber";"group"
+" 2513110";" 4GEN"
+" 2512334";" 4GEN"
+" 2314149";" 4GEN"
+" 2514854";" 4GEN"
+" 2734431";" 4GEN"
+" 2514934";" 4GEN"
+" 2631955";" 4GEN"
+" 2512459";" 4GEN"
+" 2510841";" 4GEN"
+</pre>
+
+only idnumbers (**)
+<pre>
+idnumber
+2513110
+2512334
+2314149
+2514854
+2734431
+2514934
+2631955
+</pre>
+
+only emails (**)
+<pre>
+email
+toto@insa-lyon.fr
+titi@]insa-lyon.fr
+tutu@insa-lyon.fr
+</pre>
+
+usernames and groups, separated by a tab :
+
+<pre>
+username	 group
+ppollet      groupe_de_test              will be in that group
+codet        groupe_de_test              also him
+astorck      autre_groupe                will be in another group
+yjayet                                   no group for this one
+                                         empty line skipped
+unknown                                  unknown account skipped
+</pre>
+
+<p><span <font color=\'red\'>(*) </font></span>: double quotes and spaces, added by some spreadsheet programs will be removed.</p>
+<p><span <font color=\'red\'>(**) </font></span>: target account must exist in Moodle ; this is normally the case if Moodle is synchronized with
+some external directory (LDAP...)</p>';
+$string['mass_enroll_info'] = '
+<p>With this option you are going to enrol a list of known users from a file with one account per line</p>
+<p>Empty lines or unknown accounts will be skipped.</p>
+<p>The file may contains several columns, separated by a comma, a semi-column or a tabulation.</p>
+<p>Every relevant column <b>must</b> be mapped; see the "Mappings" section in the form below.</p>
+<p>You may repeat this operation at will without damages, for example if you forgot the group for some users.</p>
+';
+$string['mass_unenroll'] = 'Bulk unenrolments';
+$string['mass_unenroll_help'] = '
+<h1>Bulk unenrolments</h1>
+<p>With this option you are going to unenrol a list of users from a file with one account per line</p>
+<p><b> The firstline </b> the empty lines or unknown accounts will be skipped. </p>
+<p>The file may contains several columns, separated by a comma, a semi-column or a tabulation.
+You should prepare it from your usual spreadsheet program from an official lists of students, for example,
+by exporting the course gradebook to CSV, or use the very same file as the one used to mass enrol users. (*)</p>
+<p><b> The first one must contains a unique account identifier </b>: idnumber (by default) login or email  of the target user. (**)</p>
+<p>All other columns will be ignored. </p>
+<p>By default the users will be enroled as students but you may select other roles that you are allowed to manage (teacher, non editing teacher
+or any custom roles)</p>
+<p>You may repeat this operation at will without dammages, for example if you forgot some users to unenrol.</p>
+<p><span <font color=\'red\'>(*) </font></span>: double quotes and spaces, added by some spreadsheet programs will be removed.</p>
+<p><span <font color=\'red\'>(**) </font></span>: target account must exist in Moodle and be enrolled to this course.</p>
+';
+$string['mass_unenroll_info'] = '
+<p>With this option you are going to unenrol a list on users from a file with one account per line.</p>
+<p>Empty lines or unknown accounts will be skipped.</p>
+<p>The file may contains several columns, separated by a comma, a semi-column or a tabulation.</p>
+<p>Every relevant column <b>must</b> be mapped; see the "Mappings" section in the form below.</p>
+<p>You may repeat this operation at will without damages, for example if you forgot the group for some users.</p>
+';
+$string['massenrollsettings'] = 'Mass enrol settings';
+$string['other'] = 'Other settings';
+$string['participantpage'] = 'Course participant page';
+$string['pluginname'] = 'Mass enrolments';
+$string['privacy:metadata'] = 'The Mass Enrol local plugin does not store any personal data';
+$string['process:massenrol:success'] = 'Mass enrol successful';
+$string['process:massunenrol:success'] = 'Mass unenrol successful';
+$string['role'] = 'Role ID';
+$string['roleshortname'] = 'Role short name';
+$string['roleassign'] = 'Role to assign';
+$string['unenroll'] = 'Unenrol them from my course';
+$string['updateroles'] = 'Update roles?';
+$string['updateroles_help'] = 'When set to yes, this will update all user roles.<br/>
+This can be used to change roles for existing enrolments.<br/>
+<strong>Please remember that we do <i>not</i> support multiple roles in the CSV, so this will remove all (course) roles except the role indicated in the CSV or the settings (which will be assigned if not present)</strong>.<br/>
+If the enrolment does not exist yet, the base process to enrol the user with the indicated role will be honoured.';
+$string['userfullname'] = 'User fullname';
+$string['userid'] = 'User ID';
+$string['username'] = 'Username';
+$string['pluginname'] = 'Mass enrolments';
+$string['bulk_enrollment'] = 'Bulk Enrollment';
+$string['bulk_enrollment_desc'] = 'Bulk enrolment plugin synchronises all members with course participants.';
+$string['enrolled_navbar'] = 'Enrol Students';
+$string['records_navbar'] = 'Enrol Students List';
+$string['enrolled_sync'] = 'Synchronization';
+$string['api_url'] = 'UMS API URL';
+$string['api_url_help'] = 'Enter UMS API URL';
+$string['api_username'] = 'Username';
+$string['api_username_help'] = 'Enter Username';
+$string['api_password'] = 'Password';
+$string['api_password_help'] = 'Enter Password';
+$string['api_x_api_key'] = 'X-API-KEY';
+$string['api_x_api_key_help'] = 'Enter X-API-KEY';
+$string['other_api_info'] = 'Other API Information';
+$string['other_api_info_desc'] = 'UMS Helper API Like: e.g Program , Batch etc.';
+$string['api_url_programs'] = 'UMS Program API';
+$string['api_url_programs_help'] = 'Enter UMS Program API';
+$string['api_url_batch'] = 'UMS Batch API';
+$string['api_url_batch_help'] = 'Enter UMS Batch API';
+$string['api_ums_sync'] = 'Enter UMS User Data Synchronization API';
+$string['api_ums_sync_help'] = 'Enter UMS User Data Synchronization API';
+$string['api_ums_courses'] = 'Enter UMS Students Registered Courses';
+$string['api_ums_courses_help'] = 'Enter UMS Students Registered Courses';
+

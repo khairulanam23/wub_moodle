@@ -1,0 +1,405 @@
+/* ============================================================
+   WUB MASS ENROLLMENT - MODERN DESIGN SYSTEM & STYLING
+   ============================================================ */
+
+:root {
+    --wub-navy: #0A246A;
+    --wub-navy-dark: #071B50;
+    --wub-navy-light: #153894;
+    --wub-green: #059669;
+    --wub-green-hover: #047857;
+    --wub-bg-slate: #f8fafc;
+    --wub-card-border: #e2e8f0;
+    --wub-text-heading: #0f172a;
+    --wub-text-body: #1e293b;
+    --wub-text-muted: #475569;
+    --wub-shadow: 0 10px 25px -5px rgba(10, 36, 106, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+}
+
+/* Hide duplicate Moodle page headers if present */
+#page-header, .page-header-headings {
+    display: none !important;
+}
+
+.wub-mass-enroll-container {
+    background-color: var(--wub-bg-slate);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--wub-shadow);
+    border: 1px solid var(--wub-card-border);
+    margin-bottom: 2rem;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--wub-text-body);
+}
+
+/* Header Banner */
+.wub-banner-header {
+    background: linear-gradient(135deg, var(--wub-navy-dark) 0%, var(--wub-navy) 60%, var(--wub-navy-light) 100%);
+    border-radius: 14px;
+    padding: 1.75rem 2rem;
+    color: #ffffff;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 12px 24px -6px rgba(10, 36, 106, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.wub-banner-header h2 {
+    color: #ffffff !important;
+    font-size: 1.65rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.wub-banner-header p {
+    color: #f1f5f9;
+    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 400;
+    opacity: 0.95;
+}
+
+.wub-banner-btn-outline {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 0.45rem 1rem !important;
+    font-size: 0.88rem !important;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    display: inline-block;
+}
+
+.wub-banner-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+}
+
+.wub-banner-btn-solid {
+    background: #ffffff !important;
+    color: #0A246A !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    padding: 0.45rem 1rem !important;
+    font-size: 0.88rem !important;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.wub-banner-btn-solid:hover {
+    background: #f8fafc !important;
+    color: #071B50 !important;
+    transform: translateY(-1px);
+}
+
+/* Section Cards */
+.wub-section-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid var(--wub-card-border);
+    padding: 1.5rem;
+    box-shadow: var(--wub-shadow);
+    height: 100%;
+    margin-bottom: 1rem;
+}
+
+.wub-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--wub-navy);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Form Controls & Select2 */
+.wub-form-group {
+    margin-bottom: 1.1rem;
+}
+
+.wub-form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 0.45rem;
+    display: block;
+}
+
+.wub-form-control, .form-control {
+    border-radius: 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 0.65rem 0.9rem !important;
+    font-size: 0.92rem !important;
+    color: #0f172a !important;
+    font-weight: 500 !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease;
+}
+
+.wub-form-control:focus, .form-control:focus {
+    border-color: var(--wub-navy-light) !important;
+    box-shadow: 0 0 0 3px rgba(21, 56, 148, 0.15) !important;
+}
+
+/* Select2 Custom Styling */
+.select2-container--classic .select2-selection--single {
+    height: 44px !important;
+    border-radius: 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 7px 12px !important;
+    background: #ffffff !important;
+}
+
+.select2-container--classic .select2-selection--single .select2-selection__rendered {
+    line-height: 28px !important;
+    color: #0f172a !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+}
+
+.select2-container--classic .select2-selection--single .select2-selection__arrow {
+    height: 42px !important;
+}
+
+.select2-dropdown {
+    border-radius: 12px !important;
+    border: 1px solid var(--wub-card-border) !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+}
+
+/* ============================================================
+   ULTRA-MODERN SEARCH BOX DESIGN (All 3 Pages)
+   ============================================================ */
+
+.wub-search-box-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 0.35rem 0.9rem;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.25s ease;
+    margin-bottom: 1rem;
+}
+
+.wub-search-box-wrapper:focus-within {
+    background: #ffffff;
+    border-color: var(--wub-navy);
+    box-shadow: 0 0 0 4px rgba(10, 36, 106, 0.12);
+}
+
+.wub-search-box-wrapper i.search-icon {
+    color: #64748b;
+    margin-right: 0.65rem;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.wub-search-box-wrapper:focus-within i.search-icon {
+    color: var(--wub-navy);
+}
+
+.wub-search-box-wrapper input.search {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0.45rem 0 !important;
+    font-size: 0.92rem !important;
+    color: #0f172a !important;
+    font-weight: 500 !important;
+    width: 100% !important;
+    background: transparent !important;
+}
+
+.wub-search-box-wrapper input.search::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.wub-check-all-toggle {
+    display: flex;
+    align-items: center;
+    padding-left: 0.85rem;
+    border-left: 1px solid #e2e8f0;
+    margin-left: 0.65rem;
+    white-space: nowrap;
+}
+
+.wub-check-all-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin-right: 0.45rem;
+    accent-color: var(--wub-navy);
+}
+
+.wub-check-all-toggle label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Scrollable Lists */
+#courses_list .list, #users_list .list {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    height: 380px;
+    overflow-y: auto;
+    padding: 0.75rem;
+    background: #f8fafc;
+}
+
+#courses_list .list::-webkit-scrollbar, #users_list .list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#courses_list .list::-webkit-scrollbar-thumb, #users_list .list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Item Cards in Lists */
+#users_list .user-item, #courses_list .course-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.65rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+#users_list .user-item:hover, #courses_list .course-item:hover {
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(10, 36, 106, 0.08);
+}
+
+#users_list .user-item.selected, #courses_list .course-item.selected {
+    background: #eff6ff !important;
+    border-left: 4px solid var(--wub-navy) !important;
+    border-color: #bfdbfe !important;
+}
+
+#users_list .user-item .name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--wub-navy);
+}
+
+#users_list .user-item .email {
+    font-size: 0.85rem;
+    color: var(--wub-text-muted);
+    font-weight: 500;
+}
+
+.course_div span {
+    background: #e0e7ff;
+    color: #1e40af;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    margin: 3px 3px 3px 0;
+    display: inline-block;
+}
+
+/* ============================================================
+   LADDA BUTTON OVERRIDES & HIGH-CONTRAST BUTTON STYLING
+   ============================================================ */
+
+.ladda-button.btn-wub-primary,
+.ladda-button.btn-wub-primary[data-color],
+button.btn-wub-primary,
+.btn-wub-primary {
+    background: linear-gradient(135deg, var(--wub-navy) 0%, var(--wub-navy-light) 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 0.65rem 1.6rem !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 10px rgba(10, 36, 106, 0.2) !important;
+}
+
+.ladda-button.btn-wub-primary:hover,
+button.btn-wub-primary:hover {
+    background: linear-gradient(135deg, var(--wub-navy-dark) 0%, var(--wub-navy) 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 14px rgba(10, 36, 106, 0.3) !important;
+}
+
+.ladda-button.btn-wub-success,
+.ladda-button.btn-wub-success[data-color],
+button.btn-wub-success,
+.btn-wub-success {
+    background: linear-gradient(135deg, var(--wub-green) 0%, var(--wub-green-hover) 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 0.75rem 2.2rem !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+}
+
+.ladda-button.btn-wub-success:hover,
+button.btn-wub-success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 18px rgba(5, 150, 105, 0.4) !important;
+}
+
+.ladda-button.btn-wub-secondary,
+a.btn-wub-secondary,
+button.btn-wub-secondary,
+.btn-wub-secondary {
+    background: #ffffff !important;
+    color: #334155 !important;
+    border: 1.5px solid #cbd5e1 !important;
+    padding: 0.75rem 2rem !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+}
+
+.ladda-button.btn-wub-secondary:hover,
+a.btn-wub-secondary:hover,
+button.btn-wub-secondary:hover {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+
+.wub-actions-bar {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid var(--wub-card-border);
+    box-shadow: var(--wub-shadow);
+}

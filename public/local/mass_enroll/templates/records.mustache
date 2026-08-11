@@ -1,0 +1,290 @@
+{{!
+This file is part of Moodle - http://moodle.org/
+
+Moodle is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Moodle is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_mass_enroll/records
+}}
+
+<div class="wub-mass-enroll-container">
+    <div class="wub-banner-header">
+        <div>
+            <h2><i class="fa fa-list-alt me-2"></i>Search Students Enrolment Records</h2>
+            <p>View, compare, and export student enrolment records between Moodle and UMS API system.</p>
+        </div>
+        <div>
+            <a href="/local/mass_enroll/enrolled.php" class="wub-banner-btn-outline me-2"><i class="fa fa-graduation-cap me-1"></i> Bulk Enrolment</a>
+            <a href="/local/mass_enroll/sync.php" class="wub-banner-btn-solid"><i class="fa fa-refresh me-1"></i> Data Sync</a>
+        </div>
+    </div>
+
+    <form action="" method="POST" id="search_records">
+        <div class="wub-section-card mb-4">
+            <div class="wub-card-title">
+                <span><i class="fa fa-search me-2"></i> Filter Student Records</span>
+            </div>
+
+            <div class="row align-items-end">
+                <div class="col-md-5 mb-3">
+                    <div class="wub-form-group mb-0">
+                        <label for="program_id">Select Program</label>
+                        <select class="program_id select2" id="program_id" data-placeholder="Choose Program">
+                            <option value=""></option>
+                            {{#programs}}
+                                <option value="{{id}}">{{title}}</option>
+                            {{/programs}}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-5 mb-3">
+                    <div class="wub-form-group mb-0">
+                        <label for="batch_id">Select Batch</label>
+                        <select class="batch_id select2" id="batch_id" data-placeholder="Choose Batch">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-2 mb-3">
+                    <button class="btn btn-wub-primary w-100 ladda-button" data-size="sm" type="submit" id="search_students" data-style="zoom-in"><label class="ladda-label"><i class="fa fa-search me-1"></i> Search</label></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="wub-section-card" id="message" style="display: none;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 style="color: #0A246A; font-weight: 700; margin: 0;"><i class="fa fa-table me-2"></i>Enrolment Results</h4>
+                <div id="download_btn"></div>
+            </div>
+
+            <div class="wub-search-box-wrapper">
+                <i class="fa fa-search search-icon"></i>
+                <input type="text" id="records_search_box" class="search" placeholder="Type to filter enrolment records..." onkeyup="filterRecordsTable()" />
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0" style="background: #ffffff; border-radius: 10px; overflow: hidden;">
+                    <thead style="background: #0A246A; color: #ffffff;">
+                        <tr>
+                            <th width="5%" class="text-center" style="color: #fff;">SL</th>
+                            <th width="30%" style="color: #fff;">Student Details</th>
+                            <th width="32%" style="color: #fff;">ELearning Courses</th>
+                            <th width="33%" style="color: #fff;">UMS Registered Courses</th>
+                        </tr>
+                    </thead>
+                    <tbody id="my_tr"></tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(function() {
+        $('.select2').select2({
+            theme: "classic",
+            width: '100%',
+        });
+
+        $('#program_id').on('select2:select', function (e) {
+            let obj = e.params.data;
+            $.ajax({
+                url: '/local/mass_enroll/api.php',
+                method: 'POST',
+                data: {
+                    program_id: obj.id,
+                },
+                success: function (res) {
+                    let bs = $('#batch_id');
+                    bs.empty();
+                    bs.append(new Option('', '', true, true));
+                    if (res){
+                        let batches = (typeof res === 'string') ? JSON.parse(res) : res;
+                        if (Array.isArray(batches)) {
+                            for (let batch of batches){
+                                let b_title = (typeof batch === 'object') ? (batch.batch_title || batch.id || batch) : batch;
+                                const option = new Option(b_title, b_title, false, false);
+                                bs.append(option);
+                            }
+                        }
+                    }
+                    bs.val('');
+                    bs.trigger('change');
+                },
+                error: function (err) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: "System Error!! Error Code: " + err.status,
+                    });
+                }
+            });
+        });
+
+        $("#search_records").submit((e) => {
+            e.preventDefault();
+            let l = Ladda.create(document.querySelector('#search_students'));
+            l.start();
+
+            $('#download_btn').empty();
+
+            let program_id = $('#program_id').val();
+            let batch_id = $('#batch_id').val();
+            if (program_id) {
+                $.ajax({
+                    url: '/local/mass_enroll/api.php',
+                    data: {
+                        record_program_id: program_id,
+                        record_batch_id: batch_id
+                    },
+                    method: 'POST',
+                    success: (res) => {
+                        let result = '';
+                        try {
+                            const students = (typeof res === 'string') ? JSON.parse(res) : res;
+                            if (students.user_id) {
+                                $('#download_btn').append('<a class="btn btn-sm btn-outline-success" style="font-weight:600; border-radius:8px;" href="/local/mass_enroll/files/save-'+students.user_id+'.xlsx"><i class="fa fa-file-excel-o me-1"></i> Export XLSX</a>');
+                            }
+                            let i = 1;
+                            let list = students.output || students;
+                            if (Array.isArray(list) && list.length > 0) {
+                                for (let student of list){
+                                    if (student.hasOwnProperty('ums')) {
+                                        result += set_student_tr(student, i); i++;
+                                    } else {
+                                        result += set_student_tr_ums(student, i); i++;
+                                    }
+                                }
+                            } else {
+                                result = '<tr><td colspan="4" class="text-center text-muted p-4">No student records found for the selected program & batch.</td></tr>';
+                            }
+                        } catch (err){
+                            result = '<tr><td colspan="4" class="text-center text-danger p-4">Error processing student records: '+err.message+'</td></tr>';
+                        }
+                        $('#my_tr').html(result);
+                        delay(l);
+                        $("#message").show();
+                    },
+                    error: (err) => {
+                        $('#my_tr').html('<tr><td colspan="4" class="text-center text-danger p-4">System Error Code: '+err.status+'</td></tr>');
+                        delay(l);
+                        $("#message").show();
+                    }
+                }).done(function() {
+                    if (typeof $.fn.tooltip === 'function') {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    }
+                });
+            } else {
+                message('Please Select Any Program!');
+                delay(l, 1500);
+            }
+        });
+    });
+
+    function delay(l, time=500) {
+        setTimeout(()=>{
+            if (l) l.stop();
+        }, time);
+    }
+
+    function message(msg, title='Oops...', icon='warning') {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: msg,
+        });
+    }
+
+    function set_student_tr (student, i) {
+        let name = (student.firstname || student.name || 'Student') + ' ' + (student.lastname || '');
+        let reg = student.ums ? (student.ums.regId || student.ums.username || '') : '';
+        let email = student.email || '';
+
+        let output = '<tr>';
+        output += '<td class="text-center font-weight-bold">'+i+'</td>';
+        output += '<td>';
+        output += '<p style="margin:0; font-weight:700; color:#0A246A;">'+ name +'</p>';
+        if (reg) output += '<p style="margin:0; font-size:0.82rem; color:#475569;">Reg ID: '+ reg +'</p>';
+        output += '<p style="margin:0; font-size:0.82rem; color:#64748b;">'+ email +'</p>';
+        output += '</td>';
+        output += '<td>';
+        if (student.courses) {
+            Object.entries(student.courses).forEach(([key, course]) => {
+                let c_full = course.fullname || course.title || course.shortname || '';
+                let c_short = course.shortname || course.courseCode || c_full;
+                output += '<span id="elearning_span" data-toggle="tooltip" title="' + c_full + '">' + c_short + '</span>';
+            });
+        }
+        output += '</td>';
+        output += '<td>';
+        if (student.ums && student.ums.enrollCourseDetails) {
+            Object.entries(student.ums.enrollCourseDetails).forEach(([key, course]) => {
+                let c_title = course.title || course.courseCode || '';
+                let c_code = course.courseCode || course.code || c_title;
+                output += '<span id="ums_span" data-toggle="tooltip" title="'+c_title+'">'+ c_code +'</span>';
+            });
+        }
+        output += '</td>';
+        output += '</tr>';
+
+        return output;
+    }
+
+    function set_student_tr_ums (student, i) {
+        let name = student.full_name || student.firstname || student.name || student.username || 'Student';
+        let reg = student.regId || student.id || '';
+        let email = student.email || (student.username ? student.username + '@student.wub.edu.bd' : '');
+
+        let output = '<tr style="background:#fff7ed;">';
+        output += '<td class="text-center font-weight-bold">'+i+'</td>';
+        output += '<td>';
+        output += '<p style="margin:0; font-weight:700; color:#0A246A;">'+ name +'</p>';
+        if (reg) output += '<p style="margin:0; font-size:0.82rem; color:#475569;">Reg ID: '+ reg +'</p>';
+        output += '<p style="margin:0; font-size:0.82rem; color:#64748b;">'+ email +'</p>';
+        output += '</td>';
+        output += '<td><span class="badge badge-light text-muted">Not Enrolled in Moodle</span></td>';
+        output += '<td>';
+        let course_list = student.enrollCourseDetails || student.courses || [];
+        if (course_list) {
+            Object.entries(course_list).forEach(([key, course]) => {
+                let code = (typeof course === 'object') ? (course.courseCode || course.code || course.shortname || '') : course;
+                let title = (typeof course === 'object') ? (course.title || course.fullname || code) : code;
+                output += '<span id="ums_span" data-toggle="tooltip" title="'+title+'">'+ code +'</span>';
+            });
+        }
+        output += '</td>';
+        output += '</tr>';
+
+        return output;
+    }
+
+    function filterRecordsTable() {
+        var input = document.getElementById('records_search_box');
+        var filter = input.value.toLowerCase();
+        var rows = document.querySelectorAll('#my_tr tr');
+        rows.forEach(function(row) {
+            var text = row.textContent || row.innerText;
+            if (text.toLowerCase().indexOf(filter) > -1) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>

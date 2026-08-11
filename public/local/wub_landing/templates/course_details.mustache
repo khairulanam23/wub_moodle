@@ -18,44 +18,6 @@
     @template local_wub_landing/course_details
 
     Course details page template.
-
-    Context variables required for this template:
-    * fullname - Course full name
-    * shortname - Course short name
-    * categoryname - Category display name
-    * hassummary - Whether summary exists
-    * summary - Full formatted course summary
-    * hascourseimage - Whether course has an image
-    * courseimageurl - Course image URL
-    * hasinstructors - Whether instructors exist
-    * instructors - Array of instructor objects
-    * actionurl - URL for the action button
-    * actionlabel - Label for the action button
-    * actionclass - CSS class for the action button
-    * catalogurl - URL back to catalog
-    * str_* - Translated string labels
-
-    Example context (json):
-    {
-        "fullname": "Introduction to Computing",
-        "shortname": "CS101",
-        "categoryname": "Computer Science",
-        "hassummary": true,
-        "summary": "<p>An introductory course...</p>",
-        "hascourseimage": false,
-        "hasinstructors": true,
-        "instructors": [{"name": "Dr. Smith", "role": "Teacher"}],
-        "actionurl": "/login/index.php",
-        "actionlabel": "Login to Access Course",
-        "actionclass": "wub-btn-login",
-        "catalogurl": "/local/wub_landing/catalog.php",
-        "str_backtocatalog": "← Back to Course Catalog",
-        "str_courseinformation": "Course Information",
-        "str_coursesummary": "Course Summary",
-        "str_instructor": "Instructor",
-        "str_instructors": "Instructors",
-        "str_coursecategory": "Course Category"
-    }
 }}
 
 <div class="wub-course-details-page" id="wub-course-details">
@@ -128,3 +90,5 @@
         </div>
     </div>
 </div>
+
+

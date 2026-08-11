@@ -31,6 +31,15 @@ require_once('config.php');
 require_once($CFG->dirroot .'/course/lib.php');
 require_once($CFG->libdir .'/filelib.php');
 
+// WUB Landing: Redirect root to the custom WUB landing page.
+// This ensures localhost/ always opens the WUB portal entry point.
+if (file_exists($CFG->dirroot . '/local/wub_landing/index.php')) {
+    $wubenabled = get_config('local_wub_landing', 'enabled');
+    if ($wubenabled === false || $wubenabled) {
+        redirect(new moodle_url('/local/wub_landing/index.php'));
+    }
+}
+
 redirect_if_major_upgrade_required();
 
 // Redirect logged-in users to homepage if required.

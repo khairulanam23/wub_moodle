@@ -26,7 +26,7 @@
 .wub-footer-compact-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 0.75rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -44,19 +44,19 @@
 }
 
 .wub-footer-text a {
-    color: #ffffff !important;
+    color: #d97706 !important;
     text-decoration: underline !important;
     font-weight: 600;
     transition: color 0.2s ease;
 }
 
 .wub-footer-text a:hover {
-    color: #d97706 !important;
+    color: #ffffff !important;
 }
 
 @media (max-width: 768px) {
     .wub-footer-text {
         font-size: 0.78rem;
-        padding: 0 0.5rem;
+        padding: 0 0.25rem;
     }
 }
