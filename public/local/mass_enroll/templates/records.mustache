@@ -212,8 +212,10 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     function set_student_tr (student, i) {
-        let name = (student.firstname || student.name || 'Student') + ' ' + (student.lastname || '');
-        let reg = student.ums ? (student.ums.regId || student.ums.username || '') : '';
+        let fname = student.firstname || student.name || 'Student';
+        let lname = student.lastname || '';
+        let name = (student.full_name || (fname + ' ' + lname)).trim();
+        let reg = student.stud_id || (student.ums ? (student.ums.regId || student.ums.stud_id || student.ums.username || '') : '');
         let email = student.email || '';
 
         let output = '<tr>';
@@ -224,21 +226,26 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
         output += '<p style="margin:0; font-size:0.82rem; color:#64748b;">'+ email +'</p>';
         output += '</td>';
         output += '<td>';
-        if (student.courses) {
+        if (student.courses && Object.keys(student.courses).length > 0) {
             Object.entries(student.courses).forEach(([key, course]) => {
                 let c_full = course.fullname || course.title || course.shortname || '';
                 let c_short = course.shortname || course.courseCode || c_full;
                 output += '<span id="elearning_span" data-toggle="tooltip" title="' + c_full + '">' + c_short + '</span>';
             });
+        } else {
+            output += '<span class="text-muted" style="font-size:0.82rem;">No ELearning Courses</span>';
         }
         output += '</td>';
         output += '<td>';
-        if (student.ums && student.ums.enrollCourseDetails) {
-            Object.entries(student.ums.enrollCourseDetails).forEach(([key, course]) => {
+        let ums_courses = (student.ums && student.ums.enrollCourseDetails) ? student.ums.enrollCourseDetails : (student.enrollCourseDetails || []);
+        if (ums_courses && Object.keys(ums_courses).length > 0) {
+            Object.entries(ums_courses).forEach(([key, course]) => {
                 let c_title = course.title || course.courseCode || '';
                 let c_code = course.courseCode || course.code || c_title;
                 output += '<span id="ums_span" data-toggle="tooltip" title="'+c_title+'">'+ c_code +'</span>';
             });
+        } else {
+            output += '<span class="text-muted" style="font-size:0.82rem;">No UMS Registered Courses</span>';
         }
         output += '</td>';
         output += '</tr>';
@@ -247,8 +254,8 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     function set_student_tr_ums (student, i) {
-        let name = student.full_name || student.firstname || student.name || student.username || 'Student';
-        let reg = student.regId || student.id || '';
+        let name = student.full_name || (student.firstname ? (student.firstname + ' ' + (student.lastname || '')) : (student.name || student.username || 'Student'));
+        let reg = student.stud_id || student.regId || student.id || '';
         let email = student.email || (student.username ? student.username + '@student.wub.edu.bd' : '');
 
         let output = '<tr style="background:#fff7ed;">';
@@ -261,12 +268,14 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
         output += '<td><span class="badge badge-light text-muted">Not Enrolled in Moodle</span></td>';
         output += '<td>';
         let course_list = student.enrollCourseDetails || student.courses || [];
-        if (course_list) {
+        if (course_list && Object.keys(course_list).length > 0) {
             Object.entries(course_list).forEach(([key, course]) => {
                 let code = (typeof course === 'object') ? (course.courseCode || course.code || course.shortname || '') : course;
                 let title = (typeof course === 'object') ? (course.title || course.fullname || code) : code;
                 output += '<span id="ums_span" data-toggle="tooltip" title="'+title+'">'+ code +'</span>';
             });
+        } else {
+            output += '<span class="text-muted" style="font-size:0.82rem;">No UMS Registered Courses</span>';
         }
         output += '</td>';
         output += '</tr>';

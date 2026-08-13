@@ -21,8 +21,8 @@
 <div class="wub-mass-enroll-container">
     <div class="wub-banner-header">
         <div>
-            <h2><i class="fa fa-refresh me-2"></i>WUB User Data Synchronization</h2>
-            <p>Fetch and synchronize UMS API student information directly into your Moodle database.</p>
+            <h2><i class="fa fa-refresh me-2"></i>WUB UMS Student Synchronization</h2>
+            <p>Fetch and synchronize UMS student information directly into your Moodle database without duplicate account creation.</p>
         </div>
         <div>
             <a href="/local/mass_enroll/enrolled.php" class="wub-banner-btn-outline me-2"><i class="fa fa-graduation-cap me-1"></i> Bulk Enrolment</a>
@@ -31,13 +31,15 @@
     </div>
 
     <form action="/local/mass_enroll/api.php" method="POST" id="bulk_sync">
+        <input type="hidden" name="action" value="create_selected_users" />
+        
         <div class="wub-section-card mb-4">
             <div class="wub-card-title">
-                <span><i class="fa fa-filter me-2"></i> Select Program for Synchronization</span>
+                <span><i class="fa fa-filter me-2"></i> Select Program & Batch for Synchronization</span>
             </div>
 
             <div class="row align-items-end justify-content-center">
-                <div class="col-md-7 mb-3">
+                <div class="col-md-5 mb-3">
                     <div class="wub-form-group mb-0">
                         <label for="program">Program</label>
                         <select class="select2" id="program" name="program" data-placeholder="Choose Program">
@@ -48,20 +50,31 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-md-4 mb-3">
+                    <div class="wub-form-group mb-0">
+                        <label for="batch">Batch (Optional)</label>
+                        <select class="select2" id="batch" name="batch" data-placeholder="All Batches">
+                            <option value="">All Batches</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="col-md-3 mb-3">
-                    <button class="btn btn-wub-primary w-100 ladda-button" data-size="sm" type="button" id="search_programs" data-style="zoom-in"><label class="ladda-label"><i class="fa fa-search me-1"></i> Load Students</label></button>
+                    <button class="btn btn-wub-primary w-100 ladda-button" data-size="sm" type="button" id="search_programs" data-style="zoom-in">
+                        <label class="ladda-label"><i class="fa fa-search me-1"></i> Load Students</label>
+                    </button>
                 </div>
             </div>
         </div>
 
         <div class="wub-section-card" id="output" style="display: none;">
-            <div class="wub-card-title mb-3">
+            <div class="wub-card-title mb-3 d-flex justify-content-between align-items-center">
                 <span><i class="fa fa-users me-2"></i> Student Synchronization List</span>
+                <span id="sync_summary_badge" class="badge bg-secondary p-2"></span>
             </div>
 
-            <div class="wub-search-box-wrapper">
+            <div class="wub-search-box-wrapper mb-3">
                 <i class="fa fa-search search-icon"></i>
-                <input type="text" id="sync_search_box" class="search" placeholder="Type to filter loaded students..." onkeyup="filterSyncTable()" />
+                <input type="text" id="sync_search_box" class="search" placeholder="Type to filter loaded students by name, email or status..." onkeyup="filterSyncTable()" />
             </div>
 
             <div class="table-responsive">
@@ -71,9 +84,10 @@
                             <th width="5%" class="text-center" style="color: #fff;">
                                 <input type="checkbox" id="select_all_sync" onclick="sAll(this,'#sync_table input:checkbox');" checked style="accent-color: #ffffff; width: 16px; height: 16px; cursor: pointer;" />
                             </th>
-                            <th width="40%" style="color: #fff;">Student Name</th>
-                            <th width="40%" style="color: #fff;">Email Address</th>
-                            <th width="15%" class="text-end" style="color: #fff;">Sync Status</th>
+                            <th width="30%" style="color: #fff;">Student Name & ID</th>
+                            <th width="30%" style="color: #fff;">Email Address</th>
+                            <th width="15%" class="text-center" style="color: #fff;">UMS Status</th>
+                            <th width="20%" class="text-end" style="color: #fff;">Moodle Sync Status</th>
                         </tr>
                     </thead>
                     <tbody id="sync_table"></tbody>
@@ -82,7 +96,7 @@
 
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-wub-success ladda-button" id="sync_btn" data-style="zoom-out">
-                    <span class="ladda-label"><i class="fa fa-refresh me-1"></i> Synchronize Selected Data</span>
+                    <span class="ladda-label"><i class="fa fa-plus-circle me-1"></i> Add Selected New Students to Moodle</span>
                 </button>
             </div>
         </div>
@@ -98,29 +112,71 @@
             width: '100%',
         });
 
+        $('#program').change(function() {
+            let program_id = $(this).val();
+            let batch_select = $('#batch');
+            batch_select.empty().append('<option value="">All Batches</option>');
+            if (program_id) {
+                $.ajax({
+                    url: '/local/mass_enroll/api.php',
+                    method: 'POST',
+                    data: { program_id: program_id },
+                    success: function (res) {
+                        try {
+                            let batches = (typeof res === 'string') ? JSON.parse(res) : res;
+                            if (Array.isArray(batches)) {
+                                for (let b of batches) {
+                                    let b_val = b.id || b.batch_title || b.title;
+                                    let b_lbl = b.batch_title || b.title || b.id;
+                                    batch_select.append(new Option(b_lbl, b_val, false, false));
+                                }
+                                batch_select.trigger('change');
+                            }
+                        } catch(e) {}
+                    }
+                });
+            }
+        });
+
         $('#search_programs').click(function () {
             let l = Ladda.create(this);
             l.start();
 
             let program = $('#program').val();
+            let batch = $('#batch').val() || '0';
+
             if (program){
                 $.ajax({
                     url: '/local/mass_enroll/api.php',
                     method: 'POST',
                     data: {
                         sync_program: program,
+                        batch: batch
                     },
                     success: function (res) {
                         try {
                             let obj = (typeof res === 'string') ? JSON.parse(res) : res;
                             let tr = '';
+                            let new_count = 0;
+                            let existing_count = 0;
+
                             if (Array.isArray(obj)) {
                                 for (let o of obj){
                                     tr += setTableBodyTr(o);
+                                    if (o.is_existing || o.selectable === false) {
+                                        existing_count++;
+                                    } else {
+                                        new_count++;
+                                    }
                                 }
                             } else if (typeof obj === 'object') {
                                 Object.entries(obj).forEach(([key, o]) => {
                                     tr += setTableBodyTr(o);
+                                    if (o.is_existing || o.selectable === false) {
+                                        existing_count++;
+                                    } else {
+                                        new_count++;
+                                    }
                                 });
                             }
                             ls(l);
@@ -128,8 +184,10 @@
                             table_body.empty();
                             if (tr){
                                 table_body.append(tr);
+                                $('#sync_summary_badge').html('<span class="text-success fw-bold">' + existing_count + ' Synced</span> | <span class="text-primary fw-bold">' + new_count + ' New UMS</span>');
                             } else {
-                                table_body.append('<tr><td colspan="4" class="text-center text-muted p-4">No students found for synchronization.</td></tr>');
+                                table_body.append('<tr><td colspan="5" class="text-center text-muted p-4">No student records returned from UMS for this selection.</td></tr>');
+                                $('#sync_summary_badge').text('');
                             }
                             $("#output").show();
                             $('#sync_btn').show();
@@ -141,8 +199,8 @@
                         ls(l, 1000);
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oops...',
-                            text: "System Error!! Error Code: " + err.status,
+                            title: 'Error',
+                            text: "Failed to connect to UMS synchronization service. Code: " + err.status,
                         });
                     }
                 });
@@ -150,14 +208,24 @@
                 ls(l, 1500);
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Oops...',
-                    text: "Please select any program",
+                    title: 'Select Program',
+                    text: "Please select a program to synchronize.",
                 });
             }
         });
 
         $("#bulk_sync").submit(function (e) {
             e.preventDefault();
+            let checked_boxes = $('#sync_table input:checkbox:checked:not(:disabled)');
+            if (checked_boxes.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Selection',
+                    text: 'Please select at least one new UMS student to add to Moodle.',
+                });
+                return;
+            }
+
             let l = Ladda.create(document.querySelector('#sync_btn'));
             l.start();
 
@@ -169,19 +237,55 @@
                 method: 'POST',
                 data: new FormData(this),
                 success: function (res) {
-                    try{
+                    try {
                         let obj = (typeof res === 'string') ? JSON.parse(res) : res;
-                        if (Array.isArray(obj)) {
-                            for (let o of obj){
-                                $('#id'+o.user_id).html('<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 8px; border-radius:12px;">SYNCED</span>');
+                        if (obj && obj.status === 'success') {
+                            let created_cnt = (obj.created) ? obj.created.length : 0;
+                            let skipped_cnt = (obj.skipped) ? obj.skipped.length : 0;
+
+                            if (Array.isArray(obj.created)) {
+                                for (let u of obj.created) {
+                                    let safe_un = u.username.replace(/[^a-zA-Z0-9_-]/g, '_');
+                                    let cell = $('#sync_cell_' + safe_un);
+                                    let chk = $('#chk_' + safe_un);
+                                    if (cell.length) {
+                                        cell.html('<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> SYNCED</span>');
+                                    }
+                                    if (chk.length) {
+                                        chk.prop('disabled', true);
+                                        chk.prop('checked', false);
+                                    }
+                                }
                             }
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Synchronization Complete',
+                                html: 'Successfully created <strong>' + created_cnt + '</strong> Moodle user account(s).' + (skipped_cnt > 0 ? '<br/><small class="text-muted">' + skipped_cnt + ' user(s) were already in Moodle.</small>' : ''),
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Synchronization Warning',
+                                text: obj.message || 'Operation completed with warnings.',
+                            });
                         }
-                    }catch (e) {}
+                    } catch (e) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Processed',
+                            text: 'Student records synchronized.',
+                        });
+                    }
                     ls(l);
-                    $('#sync_btn').hide();
                 },
                 error: function (err) {
                     ls(l, 2000);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to create student user accounts.',
+                    });
                 }
             });
         });
@@ -198,24 +302,82 @@
     }
 
     function setTableBodyTr(obj){
-        let status = ((obj.sync == null) ? 'NOT_SYNC' : 'SYNC');
-        let name = (obj.firstname || '') + ' ' + (obj.lastname || '');
+        let is_existing = (obj.is_existing === true || obj.selectable === false || obj.sync_state === 'synced');
+        let safe_un = (obj.username || '').replace(/[^a-zA-Z0-9_-]/g, '_');
+        let name = obj.full_name || ((obj.firstname || '') + ' ' + (obj.lastname || ''));
         if (!name.trim()) name = obj.username || 'Student';
 
-        let tr = '';
-        tr += '<tr>';
-        tr += '<td class="text-center"><input type="checkbox" name="user['+obj.id+']" '+ ((status == 'SYNC') ? 'disabled' : 'checked') +' style="accent-color:#0A246A; width:16px; height:16px;" /></td>';
-        tr += '<td><strong style="color:#0A246A;">'+ name +'</strong></td>';
-        tr += '<td><span style="color:#475569;">'+ (obj.email || '') +'</span></td>';
-        tr += '<td class="text-end" id="id'+obj.id+'">';
-        if (status == 'SYNC') {
-            tr += '<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 8px; border-radius:12px;">SYNCED</span>';
+        let status_code = obj.status_code !== undefined ? obj.status_code : 0;
+        let status_label = obj.status_label || getUmsStatusLabel(status_code);
+
+        let payload_str = JSON.stringify({
+            username: obj.username,
+            firstname: obj.firstname,
+            lastname: obj.lastname,
+            email: obj.email,
+            program_id: obj.program_id,
+            batch_id: obj.batch_id
+        }).replace(/"/g, '&quot;');
+
+        let tr = '<tr>';
+        
+        // Checkbox: disabled for existing Moodle users, enabled for new UMS students
+        tr += '<td class="text-center">';
+        if (is_existing) {
+            tr += '<input type="checkbox" disabled="disabled" style="accent-color:#0A246A; width:16px; height:16px; cursor:not-allowed; opacity:0.5;" />';
         } else {
-            tr += '<span class="badge badge-secondary" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:4px 8px; border-radius:12px;">NOT SYNCED</span>';
+            tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" checked style="accent-color:#0A246A; width:16px; height:16px; cursor:pointer;" />';
         }
         tr += '</td>';
+
+        // Student Name & Username
+        tr += '<td>';
+        tr += '<strong style="color:#0A246A; font-size: 14px;">' + escapeHtml(name) + '</strong>';
+        if (obj.username || obj.stud_id) {
+            tr += '<br/><small class="text-muted"><i class="fa fa-id-card-o me-1"></i>' + escapeHtml(obj.stud_id || obj.username) + '</small>';
+        }
+        tr += '</td>';
+
+        // Email
+        tr += '<td><span style="color:#334155; font-size:13px;"><i class="fa fa-envelope-o me-1 text-muted"></i>' + escapeHtml(obj.email || '') + '</span></td>';
+
+        // UMS Status Badge
+        tr += '<td class="text-center">' + getStatusBadgeHtml(status_code, status_label) + '</td>';
+
+        // Moodle Sync Status Badge
+        tr += '<td class="text-end" id="sync_cell_' + safe_un + '">';
+        if (is_existing) {
+            tr += '<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> SYNCED</span>';
+        } else {
+            tr += '<span class="badge badge-primary" style="background:#2563EB; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-user-plus me-1"></i> NEW UMS STUDENT</span>';
+        }
+        tr += '</td>';
+
         tr += '</tr>';
         return tr;
+    }
+
+    function getUmsStatusLabel(code) {
+        let map = { 0: 'Active', 4: 'Graduated', 5: 'Suspended', 6: 'Inactive', 7: 'Dismissed', 8: 'Dropped' };
+        return map[code] || 'Active';
+    }
+
+    function getStatusBadgeHtml(code, label) {
+        code = parseInt(code);
+        let bg = '#64748b';
+        if (code === 0) bg = '#10b981'; // Active - green
+        else if (code === 4) bg = '#3b82f6'; // Graduated - blue
+        else if (code === 5) bg = '#ef4444'; // Suspended - red
+        else if (code === 6) bg = '#f59e0b'; // Inactive - amber
+        else if (code === 7) bg = '#881337'; // Dismissed - dark red
+        else if (code === 8) bg = '#6b7280'; // Dropped - gray
+
+        return '<span class="badge" style="background:' + bg + '; color:#fff; padding:4px 8px; font-weight:500; border-radius:8px;">' + escapeHtml(label) + '</span>';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     function ls(l, m_sec=500){

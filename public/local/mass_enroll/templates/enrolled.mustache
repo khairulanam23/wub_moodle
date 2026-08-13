@@ -50,7 +50,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
             <p>Select course categories, programs, batches, and seamlessly enroll students with full verification.</p>
         </div>
         <div>
-            <a href="/local/mass_enroll/sync.php" class="wub-banner-btn-outline me-2"><i class="fa fa-refresh me-1"></i> Data Sync</a>
+            <a href="/local/mass_enroll/sync.php" class="wub-banner-btn-outline me-2"><i class="fa fa-refresh me-1"></i> UMS Sync</a>
             <a href="/local/mass_enroll/records.php" class="wub-banner-btn-solid"><i class="fa fa-list me-1"></i> View Records</a>
         </div>
     </div>
@@ -65,7 +65,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
                     </div>
 
                     <div class="wub-form-group">
-                        <label for="courses_category">Course Category</label>
+                        <label for="courses_category">Course Category (Local DB)</label>
                         <select class="courses_category select2" id="courses_category" data-placeholder="Choose Course Category">
                             <option value=""></option>
                             {{#courses_category}}
