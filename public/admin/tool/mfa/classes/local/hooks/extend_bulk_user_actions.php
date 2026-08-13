@@ -31,11 +31,13 @@ class extend_bulk_user_actions {
      * @param \core_user\hook\extend_bulk_user_actions $hook
      */
     public static function callback(\core_user\hook\extend_bulk_user_actions $hook): void {
-        if (has_capability('moodle/site:config', \context_system::instance())) {
-            $hook->add_action('tool_mfa_reset_factors', new \action_link(
-                new \moodle_url('/admin/tool/mfa/reset_factor.php'),
-                get_string('resetfactor', 'tool_mfa')
-            ));
+        if (isloggedin() && !isguestuser()) {
+            if (has_capability('moodle/site:config', \context_system::instance())) {
+                $hook->add_action('tool_mfa_reset_factors', new \action_link(
+                    new \moodle_url('/admin/tool/mfa/reset_factor.php'),
+                    get_string('resetfactor', 'tool_mfa')
+                ));
+            }
         }
     }
 }

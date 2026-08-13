@@ -459,7 +459,10 @@ function has_capability($capability, context $context, $user = null, $doanything
         return false;
     }
 
-    if (!isset($USER->id)) {
+    if (!is_object($USER)) {
+        $USER = new stdClass();
+        $USER->id = 0;
+    } else if (!isset($USER->id)) {
         // should never happen
         $USER->id = 0;
         debugging('Capability check being performed on a user with no ID.', DEBUG_DEVELOPER);
