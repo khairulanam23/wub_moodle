@@ -25,8 +25,10 @@
     require_once(dirname(__FILE__) . '/../../config.php');
     require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
-    if(!is_siteadmin()){
-        redirect('/');
+    require_login();
+    $context = \context_system::instance();
+    if (!is_siteadmin() && !has_capability('moodle/user:create', $context)) {
+        echo json_encode(['status' => 'error', 'message' => 'Access denied']);
         exit();
     }
 
@@ -47,13 +49,16 @@
         $output = $enrol_helper->get_students($_POST);
     }
 
-    if (isset($_POST['sync_program']) && !empty($_POST['sync_program']) && ($_SERVER['REQUEST_METHOD'] == 'POST')){
-        $output = $enrol_helper->get_program_wise_students($_POST);
-    }
-
-    if (isset($_POST['user']) && !empty($_POST['user']) && ($_SERVER['REQUEST_METHOD'] == 'POST')){
-        $output = $enrol_helper->get_synchronization_data($_POST);
-        print_r($output); die();
+    if (isset($_POST['action']) && $_POST['action'] === 'create_selected_users' && ($_SERVER['REQUEST_METHOD'] == 'POST')) {
+        $output = $enrol_helper->create_selected_ums_users($_POST);
+    } else if (isset($_POST['sync_program']) && !empty($_POST['sync_program']) && ($_SERVER['REQUEST_METHOD'] == 'POST')) {
+        $output = $enrol_helper->get_ums_students_comparison($_POST);
+    } else if (isset($_POST['user']) && !empty($_POST['user']) && ($_SERVER['REQUEST_METHOD'] == 'POST')) {
+        if (isset($_POST['action']) && $_POST['action'] === 'sync') {
+            $output = $enrol_helper->get_synchronization_data($_POST);
+        } else {
+            $output = $enrol_helper->create_selected_ums_users($_POST);
+        }
     }
 
     if (isset($_POST['record_program_id']) && !empty($_POST['record_program_id']) && ($_SERVER['REQUEST_METHOD'] == 'POST')){

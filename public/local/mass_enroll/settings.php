@@ -37,7 +37,7 @@ if ($hassiteconfig) {
         'local_mass_enroll/api_url',
         get_string('api_url', 'local_mass_enroll'),
         get_string('api_url_help', 'local_mass_enroll'),
-        'http://dev.computinginfoservices.com/students/details'
+        'https://api.e-dhrubo.com/students/details'
     ));
 
     $settings->add(new admin_setting_configtext(
@@ -71,28 +71,28 @@ if ($hassiteconfig) {
         'local_mass_enroll/api_url_programs',
         get_string('api_url_programs', 'local_mass_enroll'),
         get_string('api_url_programs_help', 'local_mass_enroll'),
-        'http://dev.computinginfoservices.com/students/programs'
+        'https://api.e-dhrubo.com/students/programs'
     ));
 
     $settings->add(new admin_setting_configtext(
         'local_mass_enroll/api_url_batch',
         get_string('api_url_batch', 'local_mass_enroll'),
         get_string('api_url_batch_help', 'local_mass_enroll'),
-        'http://dev.computinginfoservices.com/students/batches/'
+        'https://api.e-dhrubo.com/students/batches/'
     ));
 
     $settings->add(new admin_setting_configtext(
         'local_mass_enroll/api_ums_sync',
         get_string('api_ums_sync', 'local_mass_enroll'),
         get_string('api_ums_sync_help', 'local_mass_enroll'),
-        'http://dev.computinginfoservices.com/students/details'
+        'https://api.e-dhrubo.com/students/details'
     ));
 
     $settings->add(new admin_setting_configtext(
         'local_mass_enroll/api_ums_courses',
         get_string('api_ums_courses', 'local_mass_enroll'),
         get_string('api_ums_courses_help', 'local_mass_enroll'),
-        'http://dev.computinginfoservices.com/students/details'
+        'https://api.e-dhrubo.com/students/enroll_student_list_program_batch_wise'
     ));
 
     $ADMIN->add('localplugins', $settings);
