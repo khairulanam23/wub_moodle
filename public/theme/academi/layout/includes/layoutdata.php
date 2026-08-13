@@ -71,7 +71,7 @@ if (!$courseindex) {
 $themestyleheader = theme_academi_get_setting('themestyleheader');
 $extraclasses[] = ($themestyleheader) ? 'theme-based-header' : 'moodle-based-header';
 
-$forceblockdraweropen = $OUTPUT->firstview_fakeblocks();
+$forceblockdraweropen = method_exists($OUTPUT, 'firstview_fakeblocks') ? $OUTPUT->firstview_fakeblocks() : false;
 
 $secondarynavigation = false;
 $overflow = '';
@@ -84,6 +84,31 @@ if ($PAGE->has_secondary_navigation()) {
         $overflow = $overflowdata->export_for_template($OUTPUT);
     }
 }
+
+$page_path = $PAGE->url ? $PAGE->url->get_path() : '';
+$is_landing_page = ($PAGE->pagetype === 'site-index' || $page_path === '/' || $page_path === '/index.php');
+$is_policy_page = (strpos($page_path, '/tool/policy/') !== false || strpos($PAGE->pagetype, 'tool-policy') !== false);
+
+if (isloggedin() && !isguestuser() && !$is_landing_page && !$is_policy_page) {
+    if (is_siteadmin() || has_capability('local/mass_enroll:config', context_system::instance())) {
+        if (!$PAGE->primarynav->find('mass_enrolment', null)) {
+            $PAGE->primarynav->add(
+                get_string('pluginname', 'local_mass_enroll'),
+                new moodle_url('/local/mass_enroll/enrolled.php'),
+                \navigation_node::TYPE_CUSTOM,
+                null,
+                'mass_enrolment'
+            );
+        }
+    }
+} else {
+    $existing_mass_node = $PAGE->primarynav->find('mass_enrolment', null);
+    if ($existing_mass_node) {
+        $existing_mass_node->remove();
+    }
+}
+
+$logolink = (isloggedin() && !isguestuser()) ? new moodle_url('/my/') : new moodle_url('/');
 
 $primary = new core\navigation\output\primary($PAGE);
 $renderer = $PAGE->get_renderer('core');
@@ -113,4 +138,6 @@ $templatecontext += [
     'overflow' => $overflow,
     'headercontent' => $headercontent,
     'addblockbutton' => $addblockbutton,
+    'isloggedin' => (isloggedin() && !isguestuser()),
+    'logolink' => $logolink->out(false),
 ];

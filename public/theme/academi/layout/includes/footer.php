@@ -64,11 +64,14 @@ function footer() {
     $footerbgimg = theme_academi_get_setting('footerbgimg', 'file');
     $footerbgimgclass = (!empty($footerbgimg)) ? 'footer-image' : '';
     $footnote = theme_academi_lang(theme_academi_get_setting('footnote', 'format_html'));
-    $infolink = $OUTPUT->footer_infolinks();
+    $infolink = method_exists($OUTPUT, 'footer_infolinks') ? $OUTPUT->footer_infolinks() : '';
     $address = theme_academi_get_setting('address');
     $emailid = theme_academi_get_setting('emailid');
     $phoneno = theme_academi_get_setting('phoneno');
     $copyrightfooter = theme_academi_get_setting('copyright_footer', 'format_html');
+    if (empty($copyrightfooter)) {
+        $copyrightfooter = 'Copyright &copy; 2026 - World University of Bangladesh (WUB). All Rights Reserved.';
+    }
     $fstatus1 = theme_academi_get_setting('footerb1_status');
     $fstatus2 = theme_academi_get_setting('footerb2_status');
     $fstatus3 = theme_academi_get_setting('footerb3_status');

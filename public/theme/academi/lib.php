@@ -175,19 +175,8 @@ function theme_academi_set_fontwww() {
  * @return type|string
  */
 function theme_academi_get_logo_url($type = 'header') {
-    global $OUTPUT;
-    static $theme;
-    if (empty($theme)) {
-        $theme = theme_config::load('academi');
-    }
-    if ($type == 'header') {
-        $logo = $theme->setting_file_url('logo', 'logo');
-        $logo = empty($logo) ? $OUTPUT->get_compact_logo_url() : $logo;
-    } else if ($type == 'footer') {
-        $logo = $theme->setting_file_url('footerlogo', 'footerlogo');
-        $logo = empty($logo) ? '' : $logo;
-    }
-    return $logo;
+    global $OUTPUT, $CFG;
+    return $CFG->wwwroot . '/local/wub_landing/pix/wub-logo.png';
 }
 
 /**

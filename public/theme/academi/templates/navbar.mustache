@@ -62,7 +62,7 @@
                     <span class="navbar-toggler-icon"></span>
                     <span class="sr-only">{{#str}}sidepanel, core{{/str}}</span>
                 </button>
-                <a href="{{{ config.wwwroot }}}/?redirect=0" class="navbar-brand {{# logourl }}has-logo{{/ logourl }}
+                <a href="{{#logolink}}{{{ logolink }}}{{/logolink}}{{^logolink}}{{{ config.wwwroot }}}/{{/logolink}}" class="navbar-brand {{# logourl }}has-logo{{/ logourl }}
                     {{^ logourl }}
                         hidden-sm-down
                     {{/ logourl }}

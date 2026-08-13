@@ -35,7 +35,7 @@
     <div class="header-main">
         <div class="container-fluid">
             <nav class="navbar navbar-light bg-faded navbar-expand">
-                <a href="{{{ config.wwwroot }}}/?redirect=0" class="navbar-brand {{# logourl }}has-logo{{/ logourl }}
+                <a href="{{#logolink}}{{{ logolink }}}{{/logolink}}{{^logolink}}{{{ config.wwwroot }}}/{{/logolink}}" class="navbar-brand {{# logourl }}has-logo{{/ logourl }}
                 {{^ logourl }}
                     hidden-sm-down
                 {{/ logourl }}
