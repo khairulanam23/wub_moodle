@@ -26,17 +26,18 @@
     require_once($CFG->dirroot . '/local/mass_enroll/lib.php');
     require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
-    if(!is_siteadmin()){
-        redirect('/');
+    require_login();
+    $context = \context_system::instance();
+    $PAGE->set_url(new moodle_url('/local/mass_enroll/sync.php'));
+    $PAGE->set_context($context);
+
+    if (!is_siteadmin() && !has_capability('moodle/user:create', $context)) {
+        redirect(new moodle_url('/'));
         exit();
     }
-    require_login();
 
     global $DB;
     $enrol_helper = new enrolhelper();
-
-    $PAGE->set_url(new moodle_url('/local/mass_enroll/sync.php'));
-    $PAGE->set_context(\context_system::instance());
     $PAGE->set_title("Synchronization Data");
     $PAGE->set_pagelayout('standard');
     $PAGE->navbar->add(get_string("enrolled_sync","local_mass_enroll"),"/local/mass_enroll/sync.php");

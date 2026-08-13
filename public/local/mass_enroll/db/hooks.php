@@ -15,25 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * local_mass_enroll plugin library.
+ * Hooks for local_mass_enroll plugin.
  *
  * @package    local_mass_enroll
- * @copyright  2021 World University of Bangladesh (CIS)
+ * @copyright  2026 World University of Bangladesh
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * Extend navigation menu for local_mass_enroll.
- *
- * @param global_navigation $nav
- */
-function local_mass_enroll_extend_navigation(global_navigation $nav) {
-    if (is_siteadmin()) {
-        $node = $nav->add(get_string('pluginname', 'local_mass_enroll'), new moodle_url('/local/mass_enroll/enrolled.php'), navigation_node::TYPE_CUSTOM);
-        $node->add(get_string('enrolled_navbar', 'local_mass_enroll'), new moodle_url('/local/mass_enroll/enrolled.php'));
-        $node->add(get_string('enrolled_sync', 'local_mass_enroll'), new moodle_url('/local/mass_enroll/sync.php'));
-        $node->add(get_string('records_navbar', 'local_mass_enroll'), new moodle_url('/local/mass_enroll/records.php'));
-    }
-}
+$callbacks = [];

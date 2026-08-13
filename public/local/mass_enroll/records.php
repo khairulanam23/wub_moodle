@@ -26,17 +26,18 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/local/mass_enroll/lib.php');
 require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
-if(!is_siteadmin()){
-    redirect('/');
-    exit();
-}
-require_login();
+    require_login();
+    $context = \context_system::instance();
+    $PAGE->set_url(new moodle_url('/local/mass_enroll/records.php'));
+    $PAGE->set_context($context);
 
-global $DB;
-$enrol_helper = new enrolhelper();
+    if (!is_siteadmin() && !has_capability('moodle/user:create', $context)) {
+        redirect(new moodle_url('/'));
+        exit();
+    }
 
-$PAGE->set_url(new moodle_url('/local/mass_enroll/records.php'));
-$PAGE->set_context(\context_system::instance());
+    global $DB;
+    $enrol_helper = new enrolhelper();
 $PAGE->set_title("Bulk Enrollment");
 $PAGE->set_pagelayout('standard');
 $PAGE->requires->jquery();

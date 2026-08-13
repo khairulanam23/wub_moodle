@@ -26,17 +26,18 @@
     require_once($CFG->dirroot . '/local/mass_enroll/lib.php');
     require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
-    if(!is_siteadmin()){
-        redirect('/');
+    require_login();
+    $context = \context_system::instance();
+    $PAGE->set_url(new moodle_url('/local/mass_enroll/enrolled.php'));
+    $PAGE->set_context($context);
+
+    if (!is_siteadmin() && !has_capability('moodle/user:create', $context)) {
+        redirect(new moodle_url('/'));
         exit();
     }
-    require_login();
 
     global $DB;
     $enrol_helper = new enrolhelper();
-
-    $PAGE->set_url(new moodle_url('/local/mass_enroll/enrolled.php'));
-    $PAGE->set_context(\context_system::instance());
     $PAGE->set_title("Bulk Enrollment");
     $PAGE->set_pagelayout('standard');
     $PAGE->requires->jquery();
@@ -58,6 +59,7 @@
 
     $courses_category = $enrol_helper->convert_arr($DB->get_records('course_categories'));
     $programs = $enrol_helper->get_program();
+    $_SESSION['programs'] = $programs;
 
     $context_data= (object)[
         "courses_category" => $courses_category,
