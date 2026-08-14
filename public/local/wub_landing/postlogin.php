@@ -30,55 +30,67 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../../config.php');
+require_once(__DIR__ . '/../../config.php');
 
 // This page requires authentication.
 require_login();
 
 global $USER, $SESSION, $PAGE, $OUTPUT;
 
-// Retrieve the intended role from the session.
+// Retrieve the intended role and return URL from the session.
 $intendedrole = isset($SESSION->wub_intended_role) ? $SESSION->wub_intended_role : '';
+$returnurl = isset($SESSION->wub_return_url) ? $SESSION->wub_return_url : '';
 
-// Clean up the session variable immediately after reading.
+// Clean up the session variables immediately after reading.
 unset($SESSION->wub_intended_role);
+unset($SESSION->wub_return_url);
 
-// If no intended role was set, redirect to dashboard (normal login flow).
+// Determine the default target URL if authorized.
+$targeturl = !empty($returnurl) ? new moodle_url($returnurl) : new moodle_url('/my/');
+
+// If no intended role was set, redirect to dashboard or target URL.
 if (empty($intendedrole)) {
-    redirect(new moodle_url('/my/'));
+    redirect($targeturl);
 }
 
 // Validate the intended role value.
 $validroles = ['student', 'teacher', 'admin'];
 if (!in_array($intendedrole, $validroles)) {
-    redirect(new moodle_url('/my/'));
+    redirect($targeturl);
 }
 
 // Perform authorization check based on intended role.
 switch ($intendedrole) {
     case 'student':
         if (wub_landing_user_is_student($USER->id)) {
-            redirect(new moodle_url('/my/'));
+            require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
+            $helper = new \enrolhelper();
+            $check = $helper->check_student_due_status((int)$USER->id);
+            if (!empty($check) && isset($check['allowed']) && $check['allowed'] === false) {
+                redirect(new moodle_url('/local/mass_enroll/payment_notice.php'));
+            }
+            redirect($targeturl);
         }
         $errormessage = get_string('notauthorisedstudent', 'local_wub_landing');
         break;
 
     case 'teacher':
         if (wub_landing_user_is_teacher($USER->id)) {
-            redirect(new moodle_url('/my/'));
+            redirect($targeturl);
         }
         $errormessage = get_string('notauthorisedteacher', 'local_wub_landing');
         break;
 
     case 'admin':
         if (is_siteadmin($USER)) {
-            redirect(new moodle_url('/admin/'));
+            $admintarget = !empty($returnurl) ? new moodle_url($returnurl) : new moodle_url('/admin/');
+            redirect($admintarget);
         }
         $errormessage = get_string('notauthorisedadmin', 'local_wub_landing');
         break;
 
     default:
-        redirect(new moodle_url('/my/'));
+        redirect($targeturl);
 }
 
 // If we reach here, the user is not authorized for their selected role.
@@ -114,18 +126,21 @@ echo $OUTPUT->footer();
 // --- Helper functions ---
 
 /**
- * Check whether a user has student-level access (enrolled in at least one course).
- *
- * We check if the user is enrolled in any course. This is the simplest
- * and most reliable way to verify student status without checking
- * specific role assignments.
+ * Check whether a user has student-level access.
  *
  * @param int $userid The user ID to check.
- * @return bool True if the user is enrolled in at least one course.
+ * @return bool True if the user is authorized as a student.
  */
 function wub_landing_user_is_student(int $userid): bool {
-    $courses = enrol_get_users_courses($userid, true, ['id'], 'id ASC', 1);
-    return !empty($courses);
+    // Site admins are not students.
+    if (is_siteadmin($userid)) {
+        return false;
+    }
+    // Users with teaching capability across courses are teachers, not students.
+    if (wub_landing_user_is_teacher($userid)) {
+        return false;
+    }
+    return true;
 }
 
 /**
