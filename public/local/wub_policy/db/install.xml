@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/wub_policy/db" VERSION="20260814" COMMENT="XMLDB file for Moodle local/wub_policy"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+    <TABLES>
+        <TABLE NAME="local_wub_policy_accept" COMMENT="Stores role-specific policy acceptances with 30-day validity, versioning, and user/device binding">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Moodle user ID (0 for pre-login device acceptances)"/>
+                <FIELD NAME="deviceidentifier" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="Secure device token from 30-day cookie for pre-login persistence"/>
+                <FIELD NAME="role" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Role for which policy was accepted (student, teacher, admin)"/>
+                <FIELD NAME="policyversion" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="1.0.0" SEQUENCE="false" COMMENT="Version of the policy accepted"/>
+                <FIELD NAME="timeaccepted" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp when policy was accepted"/>
+                <FIELD NAME="userip" TYPE="char" LENGTH="45" NOTNULL="false" SEQUENCE="false" COMMENT="Client IP address for audit"/>
+                <FIELD NAME="useragent" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="User agent excerpt for audit"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="userid_role_ver" UNIQUE="false" FIELDS="userid, role, policyversion"/>
+                <INDEX NAME="device_role_ver" UNIQUE="false" FIELDS="deviceidentifier, role, policyversion"/>
+                <INDEX NAME="timeaccepted" UNIQUE="false" FIELDS="timeaccepted"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>

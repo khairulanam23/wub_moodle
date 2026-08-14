@@ -17,66 +17,140 @@
 {{!
     @template local_wub_policy/policy_page
 
-    Policy Page Template styled exactly like elearning.org.bd/teacher/terms_conditions.php
+    Custom WUB Policy Page Template with 20 Detailed Policies and 30-day Role-Independent Agreement.
 }}
 
 <div class="wub-policy-page" id="wub-policy-page">
     <div class="wub-policy-container">
-        <form action="{{formaction}}" method="post" id="wub-policy-form">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <input type="hidden" name="role" value="{{role}}">
-            <input type="hidden" name="returnurl" value="{{returnurl}}">
+        
+        {{! Main Policy Card }}
+        <div class="wub-policy-card">
 
-            <div class="card wub-policy-card">
-                <div class="card-header wub-policy-card-header">
-                    {{ roletitle }} - {{ str_policyheader }}
+            {{! Header Banner }}
+            <div class="wub-policy-header-bar">
+                <div class="wub-policy-header-left">
+                    <div class="wub-policy-badges-row">
+                        <span class="wub-role-indicator {{roleclass}}">{{ roletitle }}</span>
+                        <span class="wub-meta-pill"><span class="pill-dot"></span> {{ str_versionlabel }}: <strong>{{ policyversion }}</strong></span>
+                        <span class="wub-meta-pill"><span class="pill-dot green"></span> {{ str_validitylabel }}: <strong>{{ policyvalidity }}</strong></span>
+                    </div>
+                    <h1 class="wub-policy-title">{{ str_policyheader }}</h1>
+                    <p class="wub-policy-subtitle">{{ str_policysubtitle }}</p>
                 </div>
-                <div class="card-body wub-policy-card-body">
-                    {{#haserror}}
-                    <div class="alert alert-danger wub-policy-alert" role="alert">
-                        {{ errormessage }}
+            </div>
+
+            {{! Role Notice Box }}
+            <div class="wub-role-advisory-box">
+                <div class="advisory-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <div class="advisory-content">
+                    {{{ rolenotice }}}
+                </div>
+            </div>
+
+            {{#haserror}}
+            <div class="wub-policy-alert wub-alert-danger" role="alert">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>{{ errormessage }}</span>
+            </div>
+            {{/haserror}}
+
+            {{! Quick Navigation Index }}
+            <div class="wub-policy-toc">
+                <div class="toc-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    <span>{{ str_tableofcontents }}</span>
+                </div>
+                <div class="toc-links">
+                    {{#categories}}
+                    <a href="#{{id}}" class="toc-chip">{{title}}</a>
+                    {{/categories}}
+                </div>
+            </div>
+
+            {{! Policy Body Document }}
+            <div class="wub-policy-document" id="wub-policy-document-body">
+                {{#categories}}
+                <div class="wub-policy-category-block" id="{{id}}">
+                    <h2 class="category-heading">{{title}}</h2>
+                    <div class="category-policies-list">
+                        {{#policies}}
+                        <div class="policy-item-card" id="policy-sec-{{num}}">
+                            <div class="policy-item-header">
+                                <span class="policy-num-badge">{{num}}</span>
+                                <h3 class="policy-title-text">{{title}}</h3>
+                            </div>
+                            <div class="policy-item-body">
+                                {{{content}}}
+                            </div>
+                        </div>
+                        {{/policies}}
                     </div>
-                    {{/haserror}}
+                </div>
+                {{/categories}}
+            </div>
 
-                    <div class="wub-policy-body-text">
-                        {{{ policyhtml }}}
-                    </div>
+            {{! Sticky Action & Agreement Form }}
+            <form action="{{formaction}}" method="post" id="wub-policy-agreement-form" class="wub-policy-form">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="role" value="{{role}}">
+                {{#returnurl}}
+                <input type="hidden" name="returnurl" value="{{returnurl}}">
+                {{/returnurl}}
 
-                    <hr class="wub-policy-divider">
-
-                    <div class="wub-policy-checkbox-row">
-                        <label class="wub-policy-checkbox-label">
-                            <input type="checkbox" id="terms_condition_agree" name="agree" value="1">
-                            <b>{{ str_agreecheckbox }}</b>
+                <div class="wub-policy-action-bar">
+                    <div class="wub-policy-agree-group">
+                        <label class="wub-policy-checkbox-label" for="wub-agree-checkbox">
+                            <input type="checkbox" name="agree" value="1" id="wub-agree-checkbox" class="wub-policy-checkbox" required>
+                            <span class="checkbox-custom"></span>
+                            <span class="wub-agree-text">{{ str_agreecheckbox }}</span>
                         </label>
                     </div>
-                </div>
-            </div>
 
-            <div class="wub-policy-action-bar">
-                <a href="{{cancelurl}}" class="btn btn-secondary wub-policy-cancel-btn">
-                    {{ str_cancelbtn }}
-                </a>
-                <button type="submit" id="continue-button" class="btn btn-primary wub-policy-continue-btn" disabled="disabled">
-                    {{ str_continuebtn }}
-                </button>
-            </div>
-        </form>
+                    <div class="wub-policy-buttons-group">
+                        <a href="{{cancelurl}}" class="wub-btn-cancel" id="wub-policy-cancel">
+                            {{ str_cancelbtn }}
+                        </a>
+                        <button type="submit" class="wub-btn-continue" id="wub-policy-submit" disabled>
+                            <span>{{ str_continuebtn }}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var checkbox = document.getElementById('terms_condition_agree');
-    var btn = document.getElementById('continue-button');
-    if (checkbox && btn) {
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                btn.removeAttribute('disabled');
-                btn.classList.add('active-enabled');
+    var checkbox = document.getElementById('wub-agree-checkbox');
+    var submitBtn = document.getElementById('wub-policy-submit');
+    var form = document.getElementById('wub-policy-agreement-form');
+
+    if (checkbox && submitBtn) {
+        function updateState() {
+            if (checkbox.checked) {
+                submitBtn.removeAttribute('disabled');
+                submitBtn.classList.add('is-ready');
             } else {
-                btn.setAttribute('disabled', 'disabled');
-                btn.classList.remove('active-enabled');
+                submitBtn.setAttribute('disabled', 'disabled');
+                submitBtn.classList.remove('is-ready');
+            }
+        }
+
+        checkbox.addEventListener('change', updateState);
+        updateState();
+    }
+
+    if (form && submitBtn) {
+        form.addEventListener('submit', function() {
+            if (checkbox && checkbox.checked) {
+                submitBtn.setAttribute('disabled', 'disabled');
+                submitBtn.classList.add('is-submitting');
+                submitBtn.querySelector('span').textContent = 'Processing...';
             }
         });
     }

@@ -17,7 +17,7 @@
 {{!
     @template local_wub_login/login_page
 
-    Custom WUB Login Page Template matching WUB Landing theme.
+    Custom WUB Login Page Template matching WUB Landing theme with Remember Me support.
 }}
 
 <div class="wub-login-page" id="wub-login-page">
@@ -89,8 +89,8 @@
                             </div>
 
                             <div class="wub-form-options">
-                                <label class="wub-checkbox-wrap">
-                                    <input type="checkbox" name="rememberusername" value="1" id="wub-rememberusername">
+                                <label class="wub-checkbox-wrap" for="wub-rememberusername">
+                                    <input type="checkbox" name="rememberusername" value="1" id="wub-rememberusername" {{#rememberusername}}checked{{/rememberusername}}>
                                     <span class="wub-checkbox-label">{{ str_rememberusername }}</span>
                                 </label>
                                 <a href="{{forgotpasswordurl}}" class="wub-forgot-link">{{ str_forgotpassword }}</a>

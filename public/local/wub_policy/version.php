@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_wub_policy';
-$plugin->version   = 2026081100;
+$plugin->version   = 2026081400;
 $plugin->requires  = 2025100600; // Moodle 5.1
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.0';
+$plugin->release   = '2.0.0';

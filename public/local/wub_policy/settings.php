@@ -26,5 +26,24 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_wub_policy', get_string('pluginname', 'local_wub_policy'));
+
+    // Policy Version.
+    $settings->add(new admin_setting_configtext(
+        'local_wub_policy/policyversion',
+        get_string('setting_policyversion', 'local_wub_policy'),
+        get_string('setting_policyversion_desc', 'local_wub_policy'),
+        '1.0.0',
+        PARAM_TEXT
+    ));
+
+    // Expiry Duration in Days (Default 30 days).
+    $settings->add(new admin_setting_configtext(
+        'local_wub_policy/policyexpiry_days',
+        get_string('setting_policyexpiry_days', 'local_wub_policy'),
+        get_string('setting_policyexpiry_days_desc', 'local_wub_policy'),
+        '30',
+        PARAM_INT
+    ));
+
     $ADMIN->add('localplugins', $settings);
 }

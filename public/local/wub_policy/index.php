@@ -17,7 +17,8 @@
 /**
  * WUB Policy Page Entry Controller.
  *
- * Manages role-specific terms agreement via PHP session state.
+ * Manages role-specific terms agreement with 30-day persistence, database storage,
+ * and 20 comprehensive university policies.
  *
  * @package    local_wub_policy
  * @copyright  2026 WUB eLearning
@@ -29,24 +30,18 @@ require_once($CFG->dirroot . '/local/wub_policy/lib.php');
 require_once($CFG->dirroot . '/local/header/lib.php');
 require_once($CFG->dirroot . '/local/footer/lib.php');
 
-global $CFG, $PAGE, $OUTPUT, $SESSION;
+global $CFG, $PAGE, $OUTPUT, $SESSION, $USER;
 
 // Role parameter & whitelist validation.
 $role = optional_param('role', 'student', PARAM_ALPHA);
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
-// Normalize role aliases.
-if ($role === 'administrator') {
-    $role = 'admin';
-}
+// Normalize role.
+$role = wub_policy_normalize_role($role);
 
-$validroles = ['student', 'teacher', 'admin'];
-if (!in_array($role, $validroles)) {
-    $role = 'student';
-}
-
-// If already accepted in current session, bypass policy page and proceed directly to login.
+// If already accepted for this role within 30 days and current version, bypass policy page.
 if (wub_policy_is_accepted($role)) {
+    $SESSION->wub_intended_role = $role;
     if (!empty($returnurl)) {
         redirect(new moodle_url($returnurl));
     } else {
@@ -64,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $agree = optional_param('agree', 0, PARAM_INT);
 
     if ($agree === 1) {
-        // Record policy acceptance purely in PHP session.
+        // Record policy acceptance with 30-day persistence in database and device cookie.
         wub_policy_record_acceptance($role);
 
         // Store intended role in session.

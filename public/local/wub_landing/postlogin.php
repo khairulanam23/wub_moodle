@@ -18,7 +18,8 @@
  * Post-login role verification for WUB Landing.
  *
  * After Moodle authenticates the user, this page checks whether the
- * user's actual Moodle roles/capabilities match their declared intent.
+ * user's actual Moodle roles/capabilities match their declared intent
+ * and verifies that the policy for the intended role has been accepted.
  *
  * CRITICAL SECURITY NOTE: The role selection button is an entry point
  * only. The actual authorization decision is made here using Moodle's
@@ -31,6 +32,9 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+if (file_exists($CFG->dirroot . '/local/wub_policy/lib.php')) {
+    require_once($CFG->dirroot . '/local/wub_policy/lib.php');
+}
 
 // This page requires authentication.
 require_login();
@@ -41,33 +45,61 @@ global $USER, $SESSION, $PAGE, $OUTPUT;
 $intendedrole = isset($SESSION->wub_intended_role) ? $SESSION->wub_intended_role : '';
 $returnurl = isset($SESSION->wub_return_url) ? $SESSION->wub_return_url : '';
 
-// Clean up the session variables immediately after reading.
-unset($SESSION->wub_intended_role);
-unset($SESSION->wub_return_url);
-
 // Determine the default target URL if authorized.
 $targeturl = !empty($returnurl) ? new moodle_url($returnurl) : new moodle_url('/my/');
 
 // If no intended role was set, redirect to dashboard or target URL.
 if (empty($intendedrole)) {
+    unset($SESSION->wub_intended_role);
+    unset($SESSION->wub_return_url);
     redirect($targeturl);
 }
 
 // Validate the intended role value.
 $validroles = ['student', 'teacher', 'admin'];
 if (!in_array($intendedrole, $validroles)) {
+    unset($SESSION->wub_intended_role);
+    unset($SESSION->wub_return_url);
     redirect($targeturl);
 }
+
+// Bind device acceptance to this authenticated user.
+if (function_exists('wub_policy_bind_user_acceptance')) {
+    wub_policy_bind_user_acceptance((int)$USER->id, $intendedrole);
+}
+
+// Post-Login Policy Gate: Verify that this authenticated user has accepted the policy
+// for this specific role within the previous 30 days and for the active policy version.
+if (function_exists('wub_policy_is_accepted')) {
+    if (!wub_policy_is_accepted($intendedrole, (int)$USER->id)) {
+        // Keep session intent active for after agreement.
+        $SESSION->wub_intended_role = $intendedrole;
+        if (!empty($returnurl)) {
+            $SESSION->wub_return_url = $returnurl;
+        }
+        $policyparams = [
+            'role' => $intendedrole,
+            'returnurl' => (new moodle_url('/local/wub_landing/postlogin.php'))->out(false),
+        ];
+        redirect(new moodle_url('/local/wub_policy/index.php', $policyparams));
+    }
+}
+
+// Clean up the session variables immediately after policy check.
+unset($SESSION->wub_intended_role);
+unset($SESSION->wub_return_url);
 
 // Perform authorization check based on intended role.
 switch ($intendedrole) {
     case 'student':
         if (wub_landing_user_is_student($USER->id)) {
-            require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
-            $helper = new \enrolhelper();
-            $check = $helper->check_student_due_status((int)$USER->id);
-            if (!empty($check) && isset($check['allowed']) && $check['allowed'] === false) {
-                redirect(new moodle_url('/local/mass_enroll/payment_notice.php'));
+            if (file_exists($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php')) {
+                require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
+                $helper = new \enrolhelper();
+                $check = $helper->check_student_due_status((int)$USER->id);
+                if (!empty($check) && isset($check['allowed']) && $check['allowed'] === false) {
+                    redirect(new moodle_url('/local/mass_enroll/payment_notice.php'));
+                }
             }
             redirect($targeturl);
         }
@@ -145,12 +177,6 @@ function wub_landing_user_is_student(int $userid): bool {
 
 /**
  * Check whether a user has teacher-level access in any course.
- *
- * We look for the capability 'moodle/course:manageactivities' which
- * is the standard capability held by editing teachers. We also check
- * 'moodle/course:viewhiddenactivities' for non-editing teachers.
- * Site admins inherently have these capabilities, but we do NOT count
- * site admin as "teacher" here — that check happens separately.
  *
  * @param int $userid The user ID to check.
  * @return bool True if the user has teaching capabilities in any course.

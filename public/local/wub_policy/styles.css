@@ -1,6 +1,6 @@
 /**
- * WUB Terms & Policy - Scoped Styles
- * Matched to elearning.org.bd/teacher/terms_conditions.php Layout
+ * WUB Terms & Policy - Scoped Modern Styles
+ * Supporting 20 Detailed University Policies and 30-Day Role Agreement
  *
  * @package    local_wub_policy
  * @copyright  2026 WUB eLearning
@@ -8,7 +8,7 @@
  */
 
 /* ============================================================
-   MOODLE THEME OVERRIDES (Eliminate Outer Box & Title Bounds)
+   MOODLE THEME OVERRIDES (Clean Layout Integration)
    ============================================================ */
 
 #page-local-wub_policy-index #page-wrapper,
@@ -28,7 +28,6 @@
     box-shadow: none !important;
 }
 
-/* Hide default Moodle theme header, page heading, navbar, and footer elements */
 #page-local-wub_policy-index #header,
 #page-local-wub_policy-index #page-header,
 #page-local-wub_policy-index .page-header-headings,
@@ -43,16 +42,15 @@
 }
 
 /* ============================================================
-   POLICY CONTAINER & WRAPPER
+   PAGE LAYOUT & CONTAINER
    ============================================================ */
 
 .wub-policy-page {
-    background: #f4f6f9;
-    min-height: calc(100vh - 200px);
+    background: linear-gradient(180deg, #f0f4f9 0%, #e9eef5 100%);
+    min-height: calc(100vh - 160px);
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.25rem 6rem 1.25rem;
     width: 100vw !important;
     position: relative !important;
     left: 50% !important;
@@ -60,176 +58,448 @@
     margin-left: -50vw !important;
     margin-right: -50vw !important;
     box-sizing: border-box !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1e293b;
 }
 
 .wub-policy-container {
-    max-width: 920px;
+    max-width: 1020px;
     width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
 }
 
-/* Card Container */
-.card.wub-policy-card {
-    background: #ffffff !important;
-    border-radius: 8px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
-    border: 1px solid #e5e7eb !important;
+/* Main Card */
+.wub-policy-card {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(10, 36, 106, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid #dbeafe;
     overflow: hidden;
-    margin-bottom: 1.5rem !important;
+    position: relative;
 }
 
-.card-header.wub-policy-card-header {
-    background-color: #0A246A !important;
-    color: #ffffff !important;
-    font-size: 1.25rem !important;
-    font-weight: 700 !important;
-    padding: 1rem 1.5rem !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+/* Header Bar */
+.wub-policy-header-bar {
+    background: linear-gradient(135deg, #0A246A 0%, #1e3a8a 60%, #172554 100%);
+    color: #ffffff;
+    padding: 2.25rem 2.5rem;
+    position: relative;
+    border-bottom: 2px solid #3b82f6;
 }
 
-.card-body.wub-policy-card-body {
-    padding: 2rem 2.25rem !important;
-    color: #1f2937 !important;
-    background-color: #ffffff !important;
+.wub-policy-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
 }
 
-.wub-policy-body-text {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: #374151;
+/* Role Badges */
+.wub-role-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.wub-policy-body-text h3 {
-    font-size: 1.15rem;
+.wub-role-badge-student {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+    border: 1px solid #60a5fa;
+}
+
+.wub-role-badge-teacher {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
+    border: 1px solid #34d399;
+}
+
+.wub-role-badge-admin {
+    background: rgba(245, 158, 11, 0.25);
+    color: #fcd34d;
+    border: 1px solid #fbbf24;
+}
+
+.wub-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.pill-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #60a5fa;
+    display: inline-block;
+}
+
+.pill-dot.green {
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+}
+
+.wub-policy-title {
+    font-size: 1.65rem;
     font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.25;
+}
+
+.wub-policy-subtitle {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.55;
+    max-width: 850px;
+}
+
+/* Advisory Box */
+.wub-role-advisory-box {
+    margin: 1.5rem 2.5rem 0 2.5rem;
+    padding: 1rem 1.35rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-left: 4px solid #0A246A;
+    border-radius: 8px;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.advisory-icon {
     color: #0A246A;
-    margin-top: 0;
-    margin-bottom: 1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
 }
 
-.wub-policy-body-text p {
-    margin-bottom: 1rem;
-    color: #4b5563;
+.advisory-content {
+    font-size: 0.92rem;
+    color: #1e3a8a;
+    line-height: 1.55;
 }
 
-.wub-policy-body-text ol {
-    padding-left: 1.4rem;
-    margin-bottom: 1.25rem;
+.advisory-content strong {
+    color: #0A246A;
 }
 
-.wub-policy-body-text li {
-    margin-bottom: 0.75rem;
-    line-height: 1.6;
+/* Error Alert */
+.wub-policy-alert {
+    margin: 1.25rem 2.5rem 0 2.5rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.92rem;
+    font-weight: 600;
 }
 
-.wub-policy-body-text strong {
-    color: #111827;
+.wub-alert-danger {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
 }
 
-.wub-policy-divider {
-    border: 0;
-    border-top: 1px solid #e5e7eb;
-    margin: 1.75rem 0 1.25rem 0;
-}
-
-.wub-policy-checkbox-row {
-    margin-top: 1.25rem;
-    padding: 0.85rem 1rem;
+/* Quick Navigation Index */
+.wub-policy-toc {
+    margin: 1.5rem 2.5rem;
+    padding: 1rem 1.25rem;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.toc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.65rem;
+}
+
+.toc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.toc-chip {
+    display: inline-block;
+    padding: 0.35rem 0.8rem;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
+    font-size: 0.82rem;
+    color: #0A246A;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.toc-chip:hover {
+    background: #0A246A;
+    color: #ffffff;
+    border-color: #0A246A;
+    text-decoration: none;
+}
+
+/* Policy Document Body */
+.wub-policy-document {
+    padding: 0.5rem 2.5rem 2rem 2.5rem;
+}
+
+.wub-policy-category-block {
+    margin-bottom: 2.25rem;
+}
+
+.category-heading {
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: #0A246A;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.category-policies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Policy Card Item */
+.policy-item-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.25rem 1.4rem;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.policy-item-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 4px 14px rgba(10, 36, 106, 0.05);
+}
+
+.policy-item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+}
+
+.policy-num-badge {
+    background: #0A246A;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.policy-title-text {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.35;
+}
+
+.policy-item-body {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: #334155;
+    padding-left: 2.25rem;
+}
+
+.policy-item-body p {
+    margin: 0 0 0.55rem 0;
+}
+
+.policy-item-body p:last-child {
+    margin-bottom: 0;
+}
+
+.policy-item-body strong {
+    color: #0f172a;
+}
+
+/* Sticky Action & Agreement Form */
+.wub-policy-form {
+    border-top: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.wub-policy-action-bar {
+    padding: 1.5rem 2.5rem;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    border-radius: 0 0 14px 14px;
+}
+
+.wub-policy-agree-group {
+    flex: 1;
 }
 
 .wub-policy-checkbox-label {
     display: flex;
     align-items: flex-start;
-    gap: 0.65rem;
+    gap: 0.75rem;
     cursor: pointer;
-    font-size: 0.95rem;
-    color: #1f2937;
     margin: 0;
+}
+
+.wub-policy-checkbox {
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0 0 !important;
+    accent-color: #0A246A;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.wub-agree-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0f172a;
     line-height: 1.45;
 }
 
-.wub-policy-checkbox-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    margin: 0.15rem 0 0 0 !important;
-    flex-shrink: 0;
-    accent-color: #0A246A;
-    cursor: pointer;
-}
-
-.wub-policy-checkbox-label b {
-    font-weight: 600;
-}
-
-.wub-policy-action-bar {
+.wub-policy-buttons-group {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-top: 1rem;
+    gap: 0.85rem;
+    flex-shrink: 0;
 }
 
-.btn.wub-policy-continue-btn {
-    background-color: #0A246A !important;
-    border-color: #0A246A !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    padding: 0.65rem 2rem !important;
-    border-radius: 6px !important;
-    font-size: 1rem !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+.wub-btn-cancel {
+    padding: 0.7rem 1.35rem;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
 }
 
-.btn.wub-policy-continue-btn[disabled] {
-    opacity: 0.55 !important;
-    cursor: not-allowed !important;
-    box-shadow: none !important;
+.wub-btn-cancel:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+    text-decoration: none;
 }
 
-.btn.wub-policy-continue-btn.active-enabled {
-    background-color: #059669 !important; /* Green active button */
-    border-color: #059669 !important;
-    opacity: 1 !important;
-    cursor: pointer !important;
+.wub-btn-continue {
+    padding: 0.75rem 1.85rem;
+    background: #94a3b8;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: not-allowed;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: none;
 }
 
-.btn.wub-policy-continue-btn.active-enabled:hover {
-    background-color: #047857 !important;
+.wub-btn-continue.is-ready {
+    background: #059669;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.wub-btn-continue.is-ready:hover {
+    background: #047857;
     transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
 }
 
-.btn.wub-policy-cancel-btn {
-    background-color: #4b5563 !important;
-    border-color: #4b5563 !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    padding: 0.65rem 1.5rem !important;
-    border-radius: 6px !important;
-    font-size: 0.95rem !important;
-    text-decoration: none !important;
+.wub-btn-continue.is-submitting {
+    background: #0284c7 !important;
+    cursor: wait !important;
+    opacity: 0.85;
 }
 
-.btn.wub-policy-cancel-btn:hover {
-    background-color: #374151 !important;
-}
+/* Responsive Rules */
+@media (max-width: 860px) {
+    .wub-policy-header-bar {
+        padding: 1.5rem 1.25rem;
+    }
+    
+    .wub-policy-title {
+        font-size: 1.35rem;
+    }
 
-@media (max-width: 768px) {
-    .card-body.wub-policy-card-body {
-        padding: 1.5rem 1.25rem !important;
+    .wub-role-advisory-box {
+        margin: 1.25rem 1.25rem 0 1.25rem;
+    }
+
+    .wub-policy-alert {
+        margin: 1rem 1.25rem 0 1.25rem;
+    }
+
+    .wub-policy-toc {
+        margin: 1.25rem 1.25rem;
+    }
+
+    .wub-policy-document {
+        padding: 0.5rem 1.25rem 1.5rem 1.25rem;
+    }
+
+    .policy-item-body {
+        padding-left: 0;
     }
 
     .wub-policy-action-bar {
-        flex-direction: column-reverse;
-        gap: 0.75rem;
+        padding: 1.25rem;
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .btn.wub-policy-continue-btn,
-    .btn.wub-policy-cancel-btn {
-        width: 100% !important;
-        text-align: center !important;
+    .wub-policy-buttons-group {
+        flex-direction: column-reverse;
+    }
+
+    .wub-btn-cancel,
+    .wub-btn-continue {
+        width: 100%;
+        justify-content: center;
     }
 }

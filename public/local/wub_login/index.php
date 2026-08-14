@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Custom WUB Login Page.
+ * Custom WUB Login Page with Remember Me and Policy Verification.
  *
  * Provides a custom login experience styled identically to the WUB Landing Page.
- * Uses Moodle's core authentication APIs under the hood.
+ * Uses Moodle's core authentication APIs and encrypted cookie management.
  *
  * @package    local_wub_login
  * @copyright  2026 WUB eLearning
@@ -27,6 +27,9 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/authlib.php');
+if (file_exists($CFG->dirroot . '/local/wub_policy/lib.php')) {
+    require_once($CFG->dirroot . '/local/wub_policy/lib.php');
+}
 
 global $CFG, $USER, $SESSION, $PAGE, $OUTPUT;
 
@@ -41,6 +44,15 @@ if (empty($role) && !empty($SESSION->wub_intended_role)) {
     $role = $SESSION->wub_intended_role;
 }
 
+// Normalize role if provided.
+if (!empty($role)) {
+    if (function_exists('wub_policy_normalize_role')) {
+        $role = wub_policy_normalize_role($role);
+    } else if ($role === 'administrator') {
+        $role = 'admin';
+    }
+}
+
 // If user is already logged in (and not guest), redirect appropriately.
 if (isloggedin() && !isguestuser()) {
     if (!empty($SESSION->wub_intended_role)) {
@@ -50,13 +62,39 @@ if (isloggedin() && !isguestuser()) {
     }
 }
 
+// Anti-Bypass Guard: If a specific role is selected or intended, verify 30-day policy acceptance.
+if (!empty($role) && function_exists('wub_policy_is_accepted')) {
+    if (!wub_policy_is_accepted($role)) {
+        $policyparams = ['role' => $role];
+        if (!empty($returnurl)) {
+            $policyparams['returnurl'] = $returnurl;
+        }
+        redirect(new moodle_url('/local/wub_policy/index.php', $policyparams));
+    }
+}
+
 $error = null;
 $username = optional_param('username', '', PARAM_RAW);
+$rememberusername = optional_param('rememberusername', -1, PARAM_INT);
+
+// Pre-fill remembered username on GET requests if not explicitly supplied.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    if (empty($username)) {
+        $username = get_moodle_cookie();
+        if (!empty($username) && $rememberusername === -1) {
+            $rememberusername = 1;
+        }
+    }
+}
+if ($rememberusername === -1) {
+    $rememberusername = !empty($username) ? 1 : 0;
+}
 
 // Handle form submission.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = optional_param('password', '', PARAM_RAW);
     $logintoken = optional_param('logintoken', '', PARAM_RAW);
+    $rememberusername = optional_param('rememberusername', 0, PARAM_INT);
 
     if (!empty($username) && !empty($password)) {
         $errorcode = 0;
@@ -78,6 +116,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user) {
             // Log in the user.
             complete_user_login($user);
+
+            // Handle Remember Username cookie persistence.
+            if (!empty($CFG->nolastloggedin)) {
+                // Do not store last logged in user in cookie if administratively disabled.
+            } else if (!empty($rememberusername)) {
+                set_moodle_cookie($user->username);
+            } else {
+                set_moodle_cookie('');
+            }
+
+            // Bind policy acceptance to authenticated user.
+            if (function_exists('wub_policy_bind_user_acceptance')) {
+                wub_policy_bind_user_acceptance((int)$user->id, $role);
+            }
 
             // Handle post-login redirection.
             if (!empty($SESSION->wub_intended_role)) {
@@ -111,7 +163,7 @@ require_once($CFG->dirroot . '/local/footer/lib.php');
 // Prepare renderable.
 $validroles = ['student', 'teacher', 'admin'];
 $displayrole = in_array($role, $validroles) ? $role : null;
-$renderable = new \local_wub_login\output\login_page($displayrole, $error, $username);
+$renderable = new \local_wub_login\output\login_page($displayrole, $error, $username, (bool)$rememberusername);
 
 // Render page.
 echo $OUTPUT->header();
