@@ -25,13 +25,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../../config.php');
+require_once(__DIR__ . '/../../config.php');
 if (file_exists($CFG->dirroot . '/local/wub_policy/lib.php')) {
     require_once($CFG->dirroot . '/local/wub_policy/lib.php');
 }
 
-// Get the intended role from the URL parameter.
+// Get the intended role and optional return URL from the URL parameter.
 $role = required_param('role', PARAM_ALPHA);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 // Validate the role parameter.
 $validroles = ['student', 'teacher', 'admin'];
@@ -39,22 +40,36 @@ if (!in_array($role, $validroles)) {
     throw new \moodle_exception('invalidrole', 'local_wub_landing');
 }
 
-// If the user is already authenticated, go directly to post-login verification.
+// If the user is already authenticated, go directly to post-login verification or return URL.
 if (isloggedin() && !isguestuser()) {
     $SESSION->wub_intended_role = $role;
+    if (!empty($returnurl)) {
+        $SESSION->wub_return_url = $returnurl;
+    }
     redirect(new moodle_url('/local/wub_landing/postlogin.php'));
 }
 
-// Store the intended role in the session.
+// Store the intended role and return URL in the session.
 $SESSION->wub_intended_role = $role;
-
-// Set the wantsurl so Moodle redirects to our post-login handler after authentication.
-$SESSION->wantsurl = (new moodle_url('/local/wub_landing/postlogin.php'))->out(false);
+if (!empty($returnurl)) {
+    $SESSION->wub_return_url = $returnurl;
+    $SESSION->wantsurl = (new moodle_url('/local/wub_landing/postlogin.php'))->out(false);
+} else {
+    $SESSION->wantsurl = (new moodle_url('/local/wub_landing/postlogin.php'))->out(false);
+}
 
 // Check if policy for this role has been accepted in the current session.
 if (function_exists('wub_policy_is_accepted') && !wub_policy_is_accepted($role)) {
-    redirect(new moodle_url('/local/wub_policy/index.php', ['role' => $role]));
+    $policyparams = ['role' => $role];
+    if (!empty($returnurl)) {
+        $policyparams['returnurl'] = $returnurl;
+    }
+    redirect(new moodle_url('/local/wub_policy/index.php', $policyparams));
 }
 
 // Redirect to custom WUB login page.
-redirect(new moodle_url('/local/wub_login/index.php', ['role' => $role]));
+$loginparams = ['role' => $role];
+if (!empty($returnurl)) {
+    $loginparams['returnurl'] = $returnurl;
+}
+redirect(new moodle_url('/local/wub_login/index.php', $loginparams));

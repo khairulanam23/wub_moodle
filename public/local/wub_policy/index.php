@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../../config.php');
+require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/wub_policy/lib.php');
 require_once($CFG->dirroot . '/local/header/lib.php');
 require_once($CFG->dirroot . '/local/footer/lib.php');

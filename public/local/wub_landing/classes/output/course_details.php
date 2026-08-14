@@ -135,8 +135,12 @@ class course_details implements renderable, templatable {
             $data->actionlabel = get_string('enrolme', 'local_wub_landing');
             $data->actionclass = 'wub-btn-enrol';
         } else {
-            // Guest — show "Login to Access Course".
-            $data->actionurl = (new moodle_url('/login/index.php'))->out(false);
+            // Guest — route through student policy & login flow, preserving the intended course enrollment URL.
+            $enrolurl = (new moodle_url('/enrol/index.php', ['id' => $this->course->id]))->out(false);
+            $data->actionurl = (new moodle_url('/local/wub_landing/auth.php', [
+                'role' => 'student',
+                'returnurl' => $enrolurl,
+            ]))->out(false);
             $data->actionlabel = get_string('logintoacccess', 'local_wub_landing');
             $data->actionclass = 'wub-btn-login';
         }

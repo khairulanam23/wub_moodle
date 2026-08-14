@@ -25,13 +25,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../../config.php');
+require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/authlib.php');
 
 global $CFG, $USER, $SESSION, $PAGE, $OUTPUT;
 
-// Get role parameter if passed.
+// Get role and returnurl parameter if passed.
 $role = optional_param('role', '', PARAM_ALPHA);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
+
+if (!empty($returnurl)) {
+    $SESSION->wub_return_url = $returnurl;
+}
 if (empty($role) && !empty($SESSION->wub_intended_role)) {
     $role = $SESSION->wub_intended_role;
 }
@@ -56,6 +61,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($username) && !empty($password)) {
         $errorcode = 0;
         $user = authenticate_user_login($username, $password, false, $errorcode, $logintoken);
+
+        // Fallback: If user entered short username (e.g. 0326735386), try with @student.wub.ac.bd
+        if (!$user && strpos($username, '@') === false) {
+            $alt_username = trim($username) . '@student.wub.ac.bd';
+            $user = authenticate_user_login($alt_username, $password, false, $errorcode, $logintoken);
+        }
+
+        // Fallback: If user entered an alternate domain email, try resolving to @student.wub.ac.bd
+        if (!$user && strpos($username, '@') !== false && strpos($username, '@student.wub.ac.bd') === false) {
+            $short_un = explode('@', $username)[0];
+            $alt_username = trim($short_un) . '@student.wub.ac.bd';
+            $user = authenticate_user_login($alt_username, $password, false, $errorcode, $logintoken);
+        }
 
         if ($user) {
             // Log in the user.
