@@ -47,14 +47,14 @@ if ($hassiteconfig) {
         'admin'
     ));
 
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new admin_setting_configpasswordunmask(
         'local_mass_enroll/api_password',
         get_string('api_password', 'local_mass_enroll'),
         get_string('api_password_help', 'local_mass_enroll'),
         '1234'
     ));
 
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new admin_setting_configpasswordunmask(
         'local_mass_enroll/api_x_api_key',
         get_string('api_x_api_key', 'local_mass_enroll'),
         get_string('api_x_api_key_help', 'local_mass_enroll'),
@@ -93,6 +93,13 @@ if ($hassiteconfig) {
         get_string('api_ums_courses', 'local_mass_enroll'),
         get_string('api_ums_courses_help', 'local_mass_enroll'),
         'https://api.e-dhrubo.com/students/enroll_student_list_program_batch_wise'
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_mass_enroll/api_student_payment_info',
+        get_string('api_student_payment_info', 'local_mass_enroll'),
+        get_string('api_student_payment_info_help', 'local_mass_enroll'),
+        'https://api.e-dhrubo.com/students/student_payment_info/'
     ));
 
     $ADMIN->add('localplugins', $settings);
