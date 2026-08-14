@@ -25,22 +25,24 @@
     require_once(dirname(__FILE__) . '/../../config.php');
     require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
-    if(!is_siteadmin()){
-        redirect('/');
-        exit();
-    }
+    require_login();
+    $context = context_system::instance();
+    require_capability('local/mass_enroll:enrol', $context);
 
     $PAGE->set_url(new moodle_url('/local/mass_enroll/submit_enrolled.php'));
 
     $enrol_helper = new enrolhelper();
     $output = [];
-    if (isset($_POST)){
-        $output = $enrol_helper->save_enrolled($_POST);
+    if (!empty($_POST)) {
+        $res = $enrol_helper->save_enrolled($_POST);
+        if (is_array($res)) {
+            $output = $res;
+        }
     }
 ?>
 
 
-<?php if (count($output) > 0): ?>
+<?php if (!empty($output) && is_array($output) && count($output) > 0): ?>
     <?php foreach ($output as $course_id => $data):?>
         <table class="table table-sm table-striped">
             <thead>

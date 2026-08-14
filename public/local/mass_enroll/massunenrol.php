@@ -83,17 +83,17 @@ if ($result) {
             (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false) .
             '">' . get_string('continue') . '</a></p>';
     echo $renderer->footer();
+} else {
+    echo $renderer->header();
+    echo $renderer->get_tabs($context, 'massunenrol', ['id' => $course->id]);
+    echo $renderer->heading_with_help(
+        $strinscriptions,
+        'mass_unenroll',
+        'local_mass_enroll',
+        'icon',
+        get_string('mass_unenroll', 'local_mass_enroll')
+    );
+    echo $renderer->box(get_string('mass_unenroll_info', 'local_mass_enroll'), 'center');
+    echo $form->render();
+    echo $renderer->footer();
 }
-
-echo $renderer->header();
-echo $renderer->get_tabs($context, 'massunenrol', ['id' => $course->id]);
-echo $renderer->heading_with_help(
-    $strinscriptions,
-    'mass_unenroll',
-    'local_mass_enroll',
-    'icon',
-    get_string('mass_unenroll', 'local_mass_enroll')
-);
-echo $renderer->box(get_string('mass_unenroll_info', 'local_mass_enroll'), 'center');
-echo $form->render();
-echo $renderer->footer();
