@@ -18,15 +18,14 @@
     @template local_mass_enroll/sync
 }}
 
-<div class="wub-mass-enroll-container">
+    <div class="wub-mass-enroll-container">
     <div class="wub-banner-header">
         <div>
             <h2><i class="fa fa-refresh me-2"></i>WUB UMS Student Synchronization</h2>
-            <p>Fetch and synchronize UMS student information directly into your Moodle database without duplicate account creation.</p>
+            <p>Fetch and synchronize UMS student program and batch information with your local Moodle database.</p>
         </div>
         <div>
-            <a href="/local/mass_enroll/enrolled.php" class="wub-banner-btn-outline me-2"><i class="fa fa-graduation-cap me-1"></i> Bulk Enrolment</a>
-            <a href="/local/mass_enroll/records.php" class="wub-banner-btn-solid"><i class="fa fa-list me-1"></i> View Records</a>
+            <a href="/local/mass_enroll/enrolled.php" class="wub-banner-btn-solid"><i class="fa fa-graduation-cap me-1"></i> Bulk Enrolment</a>
         </div>
     </div>
 
@@ -87,7 +86,7 @@
                             <th width="30%" style="color: #fff;">Student Name & ID</th>
                             <th width="30%" style="color: #fff;">Email Address</th>
                             <th width="15%" class="text-center" style="color: #fff;">UMS Status</th>
-                            <th width="20%" class="text-end" style="color: #fff;">Moodle Sync Status</th>
+                            <th width="20%" class="text-end" style="color: #fff;">Status</th>
                         </tr>
                     </thead>
                     <tbody id="sync_table"></tbody>
@@ -96,7 +95,7 @@
 
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-wub-success ladda-button" id="sync_btn" data-style="zoom-out">
-                    <span class="ladda-label"><i class="fa fa-plus-circle me-1"></i> Add Selected New Students to Moodle</span>
+                    <span class="ladda-label"><i class="fa fa-refresh me-1"></i> Sync Selected Students to Local Database</span>
                 </button>
             </div>
         </div>
@@ -126,7 +125,7 @@
                             let batches = (typeof res === 'string') ? JSON.parse(res) : res;
                             if (Array.isArray(batches)) {
                                 for (let b of batches) {
-                                    let b_val = b.id || b.batch_title || b.title;
+                                    let b_val = b.batch_title || b.title || b.id;
                                     let b_lbl = b.batch_title || b.title || b.id;
                                     batch_select.append(new Option(b_lbl, b_val, false, false));
                                 }
@@ -184,7 +183,7 @@
                             table_body.empty();
                             if (tr){
                                 table_body.append(tr);
-                                $('#sync_summary_badge').html('<span class="text-success fw-bold">' + existing_count + ' Synced</span> | <span class="text-primary fw-bold">' + new_count + ' New UMS</span>');
+                                $('#sync_summary_badge').html('<span class="text-success fw-bold">' + existing_count + ' Sync (In Local DB)</span> | <span class="text-muted fw-bold">' + new_count + ' Not Sync (Only in UMS)</span>');
                             } else {
                                 table_body.append('<tr><td colspan="5" class="text-center text-muted p-4">No student records returned from UMS for this selection.</td></tr>');
                                 $('#sync_summary_badge').text('');
@@ -221,7 +220,7 @@
                 Swal.fire({
                     icon: 'info',
                     title: 'No Selection',
-                    text: 'Please select at least one new UMS student to add to Moodle.',
+                    text: 'Please select at least one student from the local database to synchronize.',
                 });
                 return;
             }
@@ -245,15 +244,10 @@
 
                             if (Array.isArray(obj.created)) {
                                 for (let u of obj.created) {
-                                    let safe_un = u.username.replace(/[^a-zA-Z0-9_-]/g, '_');
+                                    let safe_un = (u.username || '').replace(/[^a-zA-Z0-9_-]/g, '_');
                                     let cell = $('#sync_cell_' + safe_un);
-                                    let chk = $('#chk_' + safe_un);
                                     if (cell.length) {
-                                        cell.html('<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> SYNCED</span>');
-                                    }
-                                    if (chk.length) {
-                                        chk.prop('disabled', true);
-                                        chk.prop('checked', false);
+                                        cell.html('<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> Sync</span>');
                                     }
                                 }
                             }
@@ -261,7 +255,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Synchronization Complete',
-                                html: 'Successfully created <strong>' + created_cnt + '</strong> Moodle user account(s).' + (skipped_cnt > 0 ? '<br/><small class="text-muted">' + skipped_cnt + ' user(s) were already in Moodle.</small>' : ''),
+                                html: 'Successfully synchronized <strong>' + created_cnt + '</strong> student record(s) in local database.' + (skipped_cnt > 0 ? '<br/><small class="text-muted">' + skipped_cnt + ' student(s) not in local DB were skipped.</small>' : ''),
                             });
                         } else {
                             Swal.fire({
@@ -284,7 +278,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Failed to create student user accounts.',
+                        text: 'Failed to synchronize student records.',
                     });
                 }
             });
@@ -302,7 +296,7 @@
     }
 
     function setTableBodyTr(obj){
-        let is_existing = (obj.is_existing === true || obj.selectable === false || obj.sync_state === 'synced');
+        let is_existing = (obj.is_existing === true || obj.sync_state === 'synced');
         let safe_un = (obj.username || '').replace(/[^a-zA-Z0-9_-]/g, '_');
         let name = obj.full_name || ((obj.firstname || '') + ' ' + (obj.lastname || ''));
         if (!name.trim()) name = obj.username || 'Student';
@@ -321,13 +315,9 @@
 
         let tr = '<tr>';
         
-        // Checkbox: disabled for existing Moodle users, enabled for new UMS students
+        // Checkbox: enabled for all valid students to create or synchronize
         tr += '<td class="text-center">';
-        if (is_existing) {
-            tr += '<input type="checkbox" disabled="disabled" style="accent-color:#0A246A; width:16px; height:16px; cursor:not-allowed; opacity:0.5;" />';
-        } else {
-            tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" checked style="accent-color:#0A246A; width:16px; height:16px; cursor:pointer;" />';
-        }
+        tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" checked style="accent-color:#0A246A; width:16px; height:16px; cursor:pointer;" />';
         tr += '</td>';
 
         // Student Name & Username
@@ -344,12 +334,12 @@
         // UMS Status Badge
         tr += '<td class="text-center">' + getStatusBadgeHtml(status_code, status_label) + '</td>';
 
-        // Moodle Sync Status Badge
+        // Local DB Sync Status Badge
         tr += '<td class="text-end" id="sync_cell_' + safe_un + '">';
         if (is_existing) {
-            tr += '<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> SYNCED</span>';
+            tr += '<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> Sync</span>';
         } else {
-            tr += '<span class="badge badge-primary" style="background:#2563EB; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-user-plus me-1"></i> NEW UMS STUDENT</span>';
+            tr += '<span class="badge badge-secondary" style="background:#64748b; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-times-circle me-1"></i> Not Sync</span>';
         }
         tr += '</td>';
 

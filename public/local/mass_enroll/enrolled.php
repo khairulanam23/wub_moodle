@@ -31,7 +31,7 @@
     $PAGE->set_url(new moodle_url('/local/mass_enroll/enrolled.php'));
     $PAGE->set_context($context);
 
-    if (!is_siteadmin() && !has_capability('moodle/user:create', $context)) {
+    if (!is_siteadmin() && !has_capability('local/mass_enroll:config', $context) && !has_capability('moodle/user:create', $context)) {
         redirect(new moodle_url('/'));
         exit();
     }
