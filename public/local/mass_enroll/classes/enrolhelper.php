@@ -121,19 +121,20 @@ class enrolhelper {
             }
             $instances = enrol_get_instances($course->id, true);
             $manualinstance = null;
-            foreach ($instances as $instance) {
-                if ($instance->name == $enrolmethod) {
-                    $manualinstance = $instance;
+            foreach ($instances as $inst) {
+                if ($inst->enrol == $enrolmethod) {
+                    $manualinstance = $inst;
                     break;
                 }
             }
-            if ($manualinstance !== null) {
+            if ($manualinstance === null) {
                 $instanceid = $enrol->add_default_instance($course);
                 if ($instanceid === null) {
                     $instanceid = $enrol->add_instance($course);
                 }
-                $instance = $DB->get_record('enrol', array('id' => $instanceid));
+                $manualinstance = $DB->get_record('enrol', array('id' => $instanceid));
             }
+            $instance = $manualinstance;
             $status_value = "enrollable";
             if ($check_enrollment){
                 $enrol->enrol_user($instance, $user->id, $roleid, $this->en_start, $this->en_end);
@@ -161,11 +162,13 @@ class enrolhelper {
      * @throws dml_exception
      */
     public function save_enrolled($data){
-        if(isset($_POST) && isset($_POST['student'])){
+        $students = $data['student'] ?? $_POST['student'] ?? [];
+        if (!empty($students) && is_array($students)){
             global $DB;
-            $students = $_POST['student'];
-            $this->en_start = !empty($_POST['en_start']) ? strtotime($_POST['en_start']) : 0;
-            $this->en_end = !empty($_POST['en_end']) ? strtotime($_POST['en_end']) : 0;
+            $en_start_str = $data['en_start'] ?? $_POST['en_start'] ?? '';
+            $en_end_str = $data['en_end'] ?? $_POST['en_end'] ?? '';
+            $this->en_start = !empty($en_start_str) ? strtotime($en_start_str) : 0;
+            $this->en_end = !empty($en_end_str) ? strtotime($en_end_str) : 0;
 
             $cu = $this->get_student_output($students);
             $course_ids = array_map('intval', $cu['courses']);
@@ -191,16 +194,19 @@ class enrolhelper {
                 }
                 $roleid = $plugin_instance->roleid ?? 5;
 
-                foreach ($student as $id => $status){
-                    $id = intval($id);
-                    if (isset($users[$id])) {
-                        $user = $users[$id];
-                        $res[$course_id][] = $this->check_enrol($course, $user, $roleid, true);
+                if (is_array($student)) {
+                    foreach ($student as $id => $status){
+                        $id = intval($id);
+                        if (isset($users[$id])) {
+                            $user = $users[$id];
+                            $res[$course_id][] = $this->check_enrol($course, $user, $roleid, true);
+                        }
                     }
                 }
             }
             return $res;
         }
+        return [];
     }
 
     /**
@@ -229,10 +235,10 @@ class enrolhelper {
      * @throws dml_exception
      */
     public function verify_enrollment($data){
-        if(isset($_POST) && isset($_POST['courses']) && isset($_POST['users'])){
+        $courses_str = $data['courses'] ?? $_POST['courses'] ?? '';
+        $users_str = $data['users'] ?? $_POST['users'] ?? '';
+        if (!empty($courses_str) && !empty($users_str)){
             global $DB;
-            $courses_str = $_POST['courses'];
-            $users_str = $_POST['users'];
 
             $course_ids = array_filter(array_map('intval', explode(',', $courses_str)));
             $courses = !empty($course_ids) ? $this->setID($DB->get_records_list('course', 'id', $course_ids)) : [];
@@ -241,10 +247,9 @@ class enrolhelper {
             $user_records = [];
             foreach ($user_items as $item) {
                 if (empty($item)) continue;
-                if (is_numeric($item) && intval($item) > 0) {
+                $u = $DB->get_record('user', ['username' => $item, 'deleted' => 0]);
+                if (!$u && is_numeric($item) && intval($item) > 0) {
                     $u = $DB->get_record('user', ['id' => intval($item), 'deleted' => 0]);
-                } else {
-                    $u = $DB->get_record('user', ['username' => $item, 'deleted' => 0]);
                 }
                 if ($u) {
                     $user_records[$u->id] = $u;
@@ -430,12 +435,15 @@ class enrolhelper {
             $courses = $this->get_ums_course_code(["program_id" => $program, "batch_id" => $batch_param]);
 
             if (!empty($courses) && is_array($courses)) {
-                $this->sync_api_students_to_moodle_db($courses);
+                $this->sync_api_students_to_moodle_db($courses, $program, $batch_param);
                 foreach ($courses as $student) {
                     $st_obj = (object)$student;
                     $stud_id = $st_obj->stud_id ?? '';
-                    $un = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace('/', '', $stud_id) : '')));
-                    $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($stud_id ? str_replace('/', '.', $stud_id) . '@student.wub.edu.bd' : ($un ? $un . '@student.wub.edu.bd' : ''))));
+                    $raw_un = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
+                    if (empty($raw_un)) continue;
+                    $orig_un = explode('@', $raw_un)[0];
+                    $moodle_un = $orig_un . '@student.wub.ac.bd';
+                    $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($orig_un ? $orig_un . '@student.wub.ac.bd' : '')));
 
                     $full_name = trim($st_obj->full_name ?? '');
                     if (!empty($full_name)) {
@@ -447,17 +455,19 @@ class enrolhelper {
                         $ln = $st_obj->lastname ?? 'WUB';
                     }
 
-                    $db_user = null;
-                    if (!empty($un) || !empty($email)) {
-                        $db_user = $DB->get_record_select('user', 'username = :u OR email = :e', ['u' => $un, 'e' => $email]);
-                    }
+                    $db_user = $DB->get_record_select('user', 'deleted = 0 AND (username = :u1 OR username = :u2 OR email = :e1 OR email = :e2)', [
+                        'u1' => $moodle_un,
+                        'u2' => $orig_un,
+                        'e1' => $moodle_un,
+                        'e2' => $email
+                    ]);
 
                     if ($db_user) {
                         $st = clone $db_user;
                     } else {
                         $st = new stdClass();
-                        $st->id = 'ums_' . ($un ?: rand(1000, 9999));
-                        $st->username = $un;
+                        $st->id = 'ums_' . ($orig_un ?: rand(1000, 9999));
+                        $st->username = $moodle_un;
                         $st->firstname = $fn;
                         $st->lastname = $ln;
                         $st->email = $email;
@@ -598,7 +608,20 @@ class enrolhelper {
      * @return array
      */
     public function fetch_ums_students_raw(string $program_id, string $batch_id): array {
-        $cache_key = 'raw_ums_students_' . md5($program_id . '_' . $batch_id);
+        // Resolve batch title if numeric batch ID was passed
+        $batch_param = trim($batch_id);
+        if (is_numeric($batch_param)) {
+            $batches = $this->get_batches($program_id);
+            foreach ($batches as $b) {
+                $b_obj = (object)$b;
+                if (($b_obj->id ?? '') == $batch_param && !empty($b_obj->batch_title)) {
+                    $batch_param = $b_obj->batch_title;
+                    break;
+                }
+            }
+        }
+
+        $cache_key = 'raw_ums_students_' . md5($program_id . '_' . $batch_param);
         $cached = $this->get_from_cache($cache_key);
         if ($cached !== null) {
             return $cached;
@@ -610,32 +633,39 @@ class enrolhelper {
             $api = 'https://api.e-dhrubo.com/students/enroll_student_list_program_batch_wise';
         }
 
-        $url = rtrim($api, '/') . "/" . urlencode($program_id) . "/" . urlencode($batch_id);
+        $url = rtrim($api, '/') . "/" . urlencode($program_id) . "/" . urlencode($batch_param);
         $output_raw = $this->ums($url);
+
+        // If batch_param didn't return students and batch_id was different, try original batch_id
+        if (empty($output_raw) && $batch_param !== $batch_id) {
+            $url2 = rtrim($api, '/') . "/" . urlencode($program_id) . "/" . urlencode($batch_id);
+            $output_raw = $this->ums($url2);
+        }
 
         if (!empty($output_raw) && (is_array($output_raw) || is_object($output_raw))) {
             foreach ($output_raw as $st) {
                 $st_obj = (object)$st;
                 $stud_id = $st_obj->stud_id ?? $st_obj->student_id ?? $st_obj->regId ?? $st_obj->registration_no ?? '';
-                $username = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
-                if (empty($username)) continue;
+                $raw_un = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
+                if (empty($raw_un)) continue;
+                $orig_un = explode('@', $raw_un)[0];
+                $moodle_username = $orig_un . '@student.wub.ac.bd';
 
-                $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($username ? $username . '@student.wub.edu.bd' : '')));
+                $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($orig_un ? $orig_un . '@student.wub.ac.bd' : '')));
                 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $email = $username . '@student.wub.edu.bd';
+                    $email = $moodle_username;
                 }
 
-                $st_obj->username = $username;
+                $full_name = trim($st_obj->full_name ?? (($st_obj->firstname ?? '') . ' ' . ($st_obj->lastname ?? '')));
+
+                $st_obj->username = $moodle_username;
                 $st_obj->email = $email;
                 $st_obj->university_email = $email;
+                $st_obj->full_name = $full_name;
                 $st_obj->program_id = $program_id;
-                $st_obj->batch_id = $batch_id;
+                $st_obj->batch_id = $batch_param;
                 $output[] = $st_obj;
             }
-        }
-
-        if (empty($output)) {
-            $output = $this->generate_program_batch_students($program_id, $batch_id);
         }
 
         $this->set_to_cache($cache_key, $output);
@@ -643,9 +673,148 @@ class enrolhelper {
     }
 
     /**
+     * Create or safely update a Moodle student user account from UMS API data.
+     * Moodle username is set to <student_username>@student.wub.ac.bd.
+     * Initial password is set to student's original UMS username.
+     * Preserves existing user IDs, enrolments, roles, and grades.
+     *
+     * @param mixed $std_data
+     * @param string $program_id
+     * @param string $batch_id
+     * @return stdClass|null
+     */
+    public function sync_or_create_student_user($std_data, $program_id = '', $batch_id = '') {
+        global $DB, $CFG;
+
+        $std_obj = is_array($std_data) ? (object)$std_data : (is_object($std_data) ? clone $std_data : null);
+        if (!$std_obj) {
+            return null;
+        }
+
+        $stud_id = trim($std_obj->stud_id ?? $std_obj->student_id ?? $std_obj->regId ?? $std_obj->registration_no ?? '');
+        $raw_un = strtolower(trim($std_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
+        if (empty($raw_un)) {
+            return null;
+        }
+
+        $orig_un = explode('@', $raw_un)[0];
+        if (empty($orig_un)) {
+            return null;
+        }
+
+        $moodle_username = $orig_un . '@student.wub.ac.bd';
+        $initial_password = $orig_un;
+
+        $full_name = trim($std_obj->full_name ?? '');
+        if (!empty($full_name)) {
+            $name_parts = array_values(array_filter(explode(' ', $full_name)));
+            $fn = $std_obj->firstname ?? $name_parts[0] ?? 'Student';
+            $ln = $std_obj->lastname ?? (count($name_parts) > 1 ? implode(' ', array_slice($name_parts, 1)) : 'WUB');
+        } else {
+            $fn = $std_obj->firstname ?? 'Student';
+            $ln = $std_obj->lastname ?? 'WUB';
+            $full_name = trim($fn . ' ' . $ln);
+        }
+
+        $user_program = trim($std_obj->program_name ?? $std_obj->program_id ?? $program_id ?? '');
+        $user_batch = trim($std_obj->mother_batch ?? $std_obj->batch_id ?? $batch_id ?? '');
+
+        // Search for existing user to avoid duplicate accounts
+        $existing = $DB->get_record_select('user', 'deleted = 0 AND (username = :u1 OR username = :u2 OR email = :e1 OR email = :e2 OR email = :e3 OR email = :e4)', [
+            'u1' => $moodle_username,
+            'u2' => $orig_un,
+            'e1' => $moodle_username,
+            'e2' => $orig_un . '@student.wub.ac.db',
+            'e3' => $orig_un . '@student.wub.edu.bd',
+            'e4' => $std_obj->email ?? ($orig_un . '@student.wub.ac.bd')
+        ]);
+
+        if ($existing) {
+            // Safely update existing account without altering user ID, roles, or enrolments
+            $existing->username = $moodle_username;
+            $existing->email = $moodle_username;
+            if (!empty($fn)) {
+                $existing->firstname = $fn;
+            }
+            if (!empty($ln)) {
+                $existing->lastname = $ln;
+            }
+            if (!empty($user_program)) {
+                $existing->department = $user_program;
+            }
+            if (!empty($user_batch)) {
+                $existing->institution = $user_batch;
+            }
+            if (!empty($stud_id)) {
+                $existing->idnumber = $stud_id;
+            }
+            $DB->update_record('user', $existing);
+            $user_id = $existing->id;
+            $target_user = $existing;
+            if (empty($existing->password) || $existing->password === 'not cached' || strpos($existing->password, '$') === false || !validate_internal_user_password($existing, $initial_password)) {
+                update_internal_user_password($existing, $initial_password);
+            }
+        } else {
+            // Create new Moodle student user using Moodle's core API
+            require_once($CFG->dirroot . '/user/lib.php');
+            $new_user = new stdClass();
+            $new_user->username = $moodle_username;
+            $new_user->email = $moodle_username;
+            $new_user->firstname = $fn;
+            $new_user->lastname = $ln;
+            $new_user->auth = 'manual';
+            $new_user->confirmed = 1;
+            $new_user->mnethostid = $CFG->mnet_localhost_id;
+            $new_user->department = $user_program;
+            $new_user->institution = $user_batch;
+            $new_user->idnumber = $stud_id ?: $orig_un;
+            $new_user->lang = 'en';
+            $new_user->timecreated = time();
+            $new_user->timemodified = time();
+
+            try {
+                $user_id = user_create_user($new_user, false, false);
+                $new_user->id = $user_id;
+                $target_user = $new_user;
+                update_internal_user_password($target_user, $initial_password);
+            } catch (\Exception $e) {
+                // If username already exists due to race condition, retrieve record
+                $target_user = $DB->get_record('user', ['username' => $moodle_username, 'deleted' => 0]);
+                if (!$target_user) {
+                    return null;
+                }
+                $user_id = $target_user->id;
+                update_internal_user_password($target_user, $initial_password);
+            }
+        }
+
+        // Synchronize local mdl_enrol_ums_user table
+        $ums_record = $DB->get_record('enrol_ums_user', ['user_id' => $user_id]);
+        if (!$ums_record) {
+            $rec = new stdClass();
+            $rec->user_id = $user_id;
+            $rec->batch_id = (string)$user_batch;
+            $rec->program_id = (string)$user_program;
+            $rec->department_id = '0';
+            $rec->timecreated = time();
+            $DB->insert_record('enrol_ums_user', $rec);
+        } else {
+            if (!empty($user_batch)) {
+                $ums_record->batch_id = (string)$user_batch;
+            }
+            if (!empty($user_program)) {
+                $ums_record->program_id = (string)$user_program;
+            }
+            $DB->update_record('enrol_ums_user', $ums_record);
+        }
+
+        return $target_user;
+    }
+
+    /**
      * Compare UMS students against Moodle users.
-     * Marks existing Moodle users as non-selectable (disabled checkbox)
-     * and new UMS students as selectable.
+     * Marks students existing in local DB as "Sync" and selectable for sync/update.
+     * Marks students only existing in UMS API as "Not Sync" and selectable to create/sync.
      *
      * @param array $data
      * @return array
@@ -686,10 +855,12 @@ class enrolhelper {
             foreach ($raw_students as $st) {
                 $st_obj = (object)$st;
                 $stud_id = $st_obj->stud_id ?? $st_obj->student_id ?? $st_obj->regId ?? '';
-                $username = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
-                if (empty($username)) continue;
+                $raw_un = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
+                if (empty($raw_un)) continue;
+                $orig_un = explode('@', $raw_un)[0];
+                $moodle_un = $orig_un . '@student.wub.ac.bd';
 
-                $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($username ? $username . '@student.wub.edu.bd' : '')));
+                $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($orig_un ? $orig_un . '@student.wub.ac.bd' : '')));
 
                 $full_name = trim($st_obj->full_name ?? '');
                 if (!empty($full_name)) {
@@ -702,14 +873,20 @@ class enrolhelper {
                     $full_name = trim($firstname . ' ' . $lastname);
                 }
 
-                $status_code = isset($st_obj->status) ? (int)$st_obj->status : 0;
+                $status_code = isset($st_obj->student_status) ? (int)$st_obj->student_status : (isset($st_obj->status) ? (int)$st_obj->status : 0);
                 $status_label = self::get_ums_status_label($status_code);
 
                 // Compare against existing Moodle user database
-                $db_user = $DB->get_record_select('user', 'deleted = 0 AND (username = :u OR email = :e)', ['u' => $username, 'e' => $email]);
+                $db_user = $DB->get_record_select('user', 'deleted = 0 AND (username = :u1 OR username = :u2 OR email = :e1 OR email = :e2 OR email = :e3)', [
+                    'u1' => $moodle_un,
+                    'u2' => $orig_un,
+                    'e1' => $moodle_un,
+                    'e2' => $email,
+                    'e3' => $orig_un . '@student.wub.ac.db'
+                ]);
 
                 $item = new stdClass();
-                $item->username = $username;
+                $item->username = $moodle_un;
                 $item->firstname = $firstname;
                 $item->lastname = $lastname;
                 $item->full_name = $full_name;
@@ -719,20 +896,21 @@ class enrolhelper {
                 $item->status_label = $status_label;
                 $item->program_id = $st_obj->program_id ?? $st_obj->program_name ?? $program_id;
                 $item->batch_id = $st_obj->batch_id ?? $st_obj->mother_batch ?? $batch_id;
+                $item->selectable = true;
 
                 if ($db_user) {
+                    // Student exists in local db -> Synced
                     $item->id = (int)$db_user->id;
                     $item->is_existing = true;
                     $item->sync_state = 'synced';
-                    $item->sync_label = 'Synced / Existing';
-                    $item->selectable = false;
-                    $item->sync = $db_user->id;
+                    $item->sync_label = 'Sync';
+                    $item->sync = (int)$db_user->id;
                 } else {
-                    $item->id = 'new_' . md5($username);
+                    // Student exists in UMS API but not yet in local db -> Not Sync
+                    $item->id = 'not_sync_' . md5($orig_un);
                     $item->is_existing = false;
-                    $item->sync_state = 'new';
-                    $item->sync_label = 'New UMS Student';
-                    $item->selectable = true;
+                    $item->sync_state = 'not_sync';
+                    $item->sync_label = 'Not Sync';
                     $item->sync = null;
                 }
 
@@ -750,27 +928,24 @@ class enrolhelper {
     }
 
     /**
-     * Create selected new UMS students using standard Moodle User APIs.
+     * Synchronize selected student records with UMS API data in local Moodle database.
+     * Creates new student accounts (<student_username>@student.wub.ac.bd) or updates existing accounts safely.
      *
      * @param array $data
      * @return array
      */
     public function create_selected_ums_users(array $data): array {
-        global $DB, $CFG;
-        require_once($CFG->dirroot . '/user/lib.php');
-
         $selected = $data['selected_users'] ?? $data['user'] ?? [];
         if (empty($selected)) {
-            return ['status' => 'error', 'message' => 'No students selected for creation.', 'created' => [], 'skipped' => []];
+            return ['status' => 'error', 'message' => 'No students selected for synchronization.', 'created' => [], 'skipped' => []];
         }
 
         if (!is_array($selected)) {
             $selected = [$selected];
         }
 
-        $created_users = [];
+        $synced_users = [];
         $skipped_users = [];
-        $errors = [];
 
         foreach ($selected as $st_item) {
             if (is_string($st_item)) {
@@ -781,78 +956,32 @@ class enrolhelper {
                 $st = $st_item;
             }
 
-            if (empty($st) || empty($st->username)) {
+            if (empty($st)) {
                 continue;
             }
 
-            $username = strtolower(trim($st->username));
-            $email = strtolower(trim($st->email ?? ($username . '@student.wub.edu.bd')));
-            $firstname = trim($st->firstname ?? 'Student');
-            $lastname = trim($st->lastname ?? 'WUB');
-            $program = trim($st->program_id ?? '');
-            $batch = trim($st->batch_id ?? '');
-
-            // Safety check: verify user does not exist in Moodle
-            $existing = $DB->get_record_select('user', 'deleted = 0 AND (username = :u OR email = :e)', ['u' => $username, 'e' => $email]);
-            if ($existing) {
-                $skipped_users[] = (object)[
-                    'username' => $username,
-                    'email' => $email,
-                    'reason' => 'User already exists in Moodle'
+            $user_rec = $this->sync_or_create_student_user($st);
+            if ($user_rec) {
+                $synced_users[] = (object)[
+                    'user_id' => $user_rec->id,
+                    'username' => $user_rec->username,
+                    'email' => $user_rec->email,
+                    'full_name' => $user_rec->firstname . ' ' . $user_rec->lastname,
+                    'status' => 'success'
                 ];
-                continue;
-            }
-
-            try {
-                $user_rec = new stdClass();
-                $user_rec->auth = 'manual';
-                $user_rec->confirmed = 1;
-                $user_rec->mnethostid = $CFG->mnet_localhost_id ?? 1;
-                $user_rec->username = $username;
-                $user_rec->password = hash_internal_user_password('Student123!');
-                $user_rec->firstname = $firstname;
-                $user_rec->lastname = $lastname;
-                $user_rec->email = $email;
-                $user_rec->department = $program;
-                $user_rec->institution = $batch;
-                $user_rec->timecreated = time();
-                $user_rec->timemodified = time();
-                $user_rec->deleted = 0;
-
-                // Create Moodle user via standard Moodle API
-                $new_user_id = user_create_user($user_rec);
-
-                if ($new_user_id) {
-                    $rec = new stdClass();
-                    $rec->user_id = $new_user_id;
-                    $rec->batch_id = (string)$batch;
-                    $rec->program_id = (string)$program;
-                    $rec->department_id = '0';
-                    $rec->timecreated = time();
-                    $DB->insert_record('enrol_ums_user', $rec);
-
-                    $created_users[] = (object)[
-                        'user_id' => $new_user_id,
-                        'username' => $username,
-                        'email' => $email,
-                        'full_name' => $firstname . ' ' . $lastname,
-                        'status' => 'success'
-                    ];
-                }
-            } catch (Throwable $e) {
-                $errors[] = (object)[
-                    'username' => $username,
-                    'email' => $email,
-                    'error' => $e->getMessage()
+            } else {
+                $skipped_users[] = (object)[
+                    'username' => $st->username ?? 'unknown',
+                    'reason' => 'Invalid student data or missing username'
                 ];
             }
         }
 
         return [
             'status' => 'success',
-            'created' => $created_users,
+            'created' => $synced_users,
             'skipped' => $skipped_users,
-            'errors' => $errors
+            'message' => count($synced_users) . ' student record(s) synchronized with local database.'
         ];
     }
 
@@ -960,168 +1089,176 @@ class enrolhelper {
         if (isset(self::$memory_cache[$key])) {
             return self::$memory_cache[$key];
         }
-        if (isset($_SESSION['lme_cache_' . $key])) {
-            return $_SESSION['lme_cache_' . $key];
+        if (isset($_SESSION['lme_live_ums_' . $key])) {
+            return $_SESSION['lme_live_ums_' . $key];
         }
         return null;
     }
 
     private function set_to_cache($key, $data) {
         self::$memory_cache[$key] = $data;
-        $_SESSION['lme_cache_' . $key] = $data;
+        $_SESSION['lme_live_ums_' . $key] = $data;
+    }
+    /**
+     * Check whether a student is restricted due to outstanding dues (> 100 BDT) or status in UMS.
+     * Administrators and Teachers are completely exempt from UMS calls.
+     *
+     * @param int $userid
+     * @return array ['allowed' => bool, 'reason' => string, 'status' => string, 'due' => float]
+     */
+    public function check_student_due_status(int $userid): array {
+        global $DB, $SESSION;
+
+        // Exempt administrators.
+        if (is_siteadmin($userid)) {
+            return ['allowed' => true, 'reason' => 'Administrator exempt', 'status' => 'Active', 'due' => 0.0];
+        }
+
+        // Exempt teachers.
+        $courses = enrol_get_users_courses($userid, true, ['id']);
+        if (!empty($courses)) {
+            foreach ($courses as $c) {
+                $ccontext = context_course::instance($c->id);
+                if (has_capability('moodle/course:manageactivities', $ccontext, $userid, false) ||
+                    has_capability('moodle/course:viewhiddenactivities', $ccontext, $userid, false)) {
+                    return ['allowed' => true, 'reason' => 'Teacher exempt', 'status' => 'Active', 'due' => 0.0];
+                }
+            }
+        }
+
+        $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0]);
+        if (!$user) {
+            return ['allowed' => false, 'reason' => 'User record not found', 'status' => 'Not_Found', 'due' => 0.0];
+        }
+
+        // Check session cache (10 minutes) to avoid repeated API calls.
+        $cache_key = 'wub_due_status_' . $userid;
+        if (isset($SESSION->$cache_key) && is_array($SESSION->$cache_key)) {
+            $cached = $SESSION->$cache_key;
+            if (isset($cached['time']) && (time() - $cached['time']) < 600) {
+                return $cached['data'];
+            }
+        }
+
+        // Extract base student username (e.g. 0326735386 from 0326735386@student.wub.ac.bd).
+        $student_username = explode('@', $user->username)[0];
+        if (empty($student_username)) {
+            $student_username = explode('@', $user->email)[0];
+        }
+
+        $payment_api = get_config('local_mass_enroll', 'api_student_payment_info');
+        if (empty($payment_api)) {
+            $payment_api = 'https://api.e-dhrubo.com/students/student_payment_info/';
+        }
+        if (substr($payment_api, -1) !== '/') {
+            $payment_api .= '/';
+        }
+        $payment_url = $payment_api . urlencode($student_username);
+
+        $payment_info = $this->ums($payment_url);
+
+        $allowed = true;
+        $status = 'Active';
+        $reason = '';
+        $remaining_dues = null;
+
+        if (!empty($payment_info) && (is_object($payment_info) || is_array($payment_info))) {
+            $p_obj = (object)$payment_info;
+            if (isset($p_obj->remaining_deus)) {
+                $remaining_dues = (float)$p_obj->remaining_deus;
+            } else if (isset($p_obj->remaining_dues)) {
+                $remaining_dues = (float)$p_obj->remaining_dues;
+            } else if (isset($p_obj->due)) {
+                $remaining_dues = (float)$p_obj->due;
+            } else if (isset($p_obj->dues)) {
+                $remaining_dues = (float)$p_obj->dues;
+            }
+        }
+
+        if ($remaining_dues !== null) {
+            if ($remaining_dues > 100.0) {
+                $allowed = false;
+                $status = 'Payment_Due';
+                $reason = 'Access to the Moodle dashboard is restricted due to outstanding dues of ' . number_format($remaining_dues, 2) . ' BDT (exceeding the allowable limit of 100 BDT). Please clear your pending dues in UMS to restore access.';
+            } else {
+                $allowed = true;
+                $status = 'Active';
+            }
+        } else {
+            // Fallback: If payment API returned no dues data, check student status via ums_std
+            $email = $user->email;
+            $ums_data = $this->ums_std([$email]);
+            if (!empty($ums_data) && is_array($ums_data) && isset($ums_data[$email])) {
+                $st = (array)$ums_data[$email];
+                $st_status = $st['student_status'] ?? null;
+                if ($st_status !== null) {
+                    switch ((int)$st_status) {
+                        case 0:
+                            $status = 'Active';
+                            $allowed = true;
+                            break;
+                        case 4:
+                            $status = 'Graduated';
+                            $allowed = false;
+                            $reason = 'Graduated student status. New course enrolments are restricted.';
+                            break;
+                        case 5:
+                            $status = 'Suspended';
+                            $allowed = false;
+                            $reason = 'Account suspended due to outstanding dues or academic hold.';
+                            break;
+                        case 6:
+                            $status = 'Inactive';
+                            $allowed = false;
+                            $reason = 'Inactive student account. Please contact the admissions/accounts office.';
+                            break;
+                        case 7:
+                            $status = 'Dismissed';
+                            $allowed = false;
+                            $reason = 'Dismissed student status.';
+                            break;
+                        case 8:
+                            $status = 'Dropped';
+                            $allowed = false;
+                            $reason = 'Dropped student status.';
+                            break;
+                        default:
+                            $status = 'Active';
+                            $allowed = true;
+                    }
+                }
+            }
+        }
+
+        $res = [
+            'allowed' => $allowed,
+            'reason' => $reason,
+            'status' => $status,
+            'due' => $remaining_dues !== null ? $remaining_dues : 0.0
+        ];
+
+        // Store in session cache with timestamp.
+        $SESSION->$cache_key = [
+            'time' => time(),
+            'data' => $res
+        ];
+
+        return $res;
     }
 
     public function sync_api_students_to_moodle_db($students, $program_id = '', $batch_id = '') {
-        global $DB, $CFG;
         if (empty($students) || !is_array($students)) {
-            return;
+            return [];
         }
 
+        $synced = [];
         foreach ($students as $std) {
-            $std_obj = (object)$std;
-            $stud_id = $std_obj->stud_id ?? '';
-            $username = strtolower(trim($std_obj->username ?? ($stud_id ? str_replace('/', '', $stud_id) : '')));
-            if (empty($username)) continue;
-
-            $email = strtolower(trim($std_obj->email ?? $std_obj->university_email ?? ($stud_id ? str_replace('/', '.', $stud_id) . '@student.wub.edu.bd' : ($username . '@student.wub.edu.bd'))));
-            $full_name = trim($std_obj->full_name ?? (($std_obj->firstname ?? '') . ' ' . ($std_obj->lastname ?? '')));
-            if (!empty($full_name)) {
-                $name_parts = array_values(array_filter(explode(' ', $full_name)));
-                $firstname = $std_obj->firstname ?? $name_parts[0] ?? 'Student';
-                $lastname = $std_obj->lastname ?? (count($name_parts) > 1 ? implode(' ', array_slice($name_parts, 1)) : 'WUB');
-            } else {
-                $firstname = $std_obj->firstname ?? 'Student';
-                $lastname = $std_obj->lastname ?? 'WUB';
-            }
-
-            $user_program = $std_obj->program_name ?? $std_obj->program_id ?? $program_id ?? '';
-            $user_batch = $std_obj->mother_batch ?? $std_obj->batch_id ?? $batch_id ?? '';
-
-            $existing = $DB->get_record_select('user', 'username = :u OR email = :e', ['u' => $username, 'e' => $email]);
-            if ($existing) {
-                $existing->firstname = $firstname;
-                $existing->lastname = $lastname;
-                $existing->email = $email;
-                if (!empty($user_program)) {
-                    $existing->department = $user_program;
-                }
-                if (!empty($user_batch)) {
-                    $existing->institution = $user_batch;
-                }
-                $existing->deleted = 0;
-                $DB->update_record('user', $existing);
-                $std_obj->id = $existing->id;
-            } else {
-                $user = new stdClass();
-                $user->auth = 'manual';
-                $user->confirmed = 1;
-                $user->mnethostid = $CFG->mnet_localhost_id ?? 1;
-                $user->username = $username;
-                $user->password = hash_internal_user_password('Student123!');
-                $user->firstname = $firstname;
-                $user->lastname = $lastname;
-                $user->email = $email;
-                $user->department = $user_program;
-                $user->institution = $user_batch;
-                $user->timecreated = time();
-                $user->timemodified = time();
-                $user->deleted = 0;
-                $std_obj->id = $DB->insert_record('user', $user);
-            }
-
-            // Sync to local enrol_ums_user table as well
-            if (!empty($std_obj->id)) {
-                $ums_record = $DB->get_record('enrol_ums_user', ['user_id' => $std_obj->id]);
-                if (!$ums_record) {
-                    $rec = new stdClass();
-                    $rec->user_id = $std_obj->id;
-                    $rec->batch_id = (string)$user_batch;
-                    $rec->program_id = (string)$user_program;
-                    $rec->department_id = '0';
-                    $rec->timecreated = time();
-                    $DB->insert_record('enrol_ums_user', $rec);
-                } else {
-                    if (!empty($user_batch)) {
-                        $ums_record->batch_id = (string)$user_batch;
-                    }
-                    if (!empty($user_program)) {
-                        $ums_record->program_id = (string)$user_program;
-                    }
-                    $DB->update_record('enrol_ums_user', $ums_record);
-                }
+            $res = $this->sync_or_create_student_user($std, $program_id, $batch_id);
+            if ($res) {
+                $synced[] = $res;
             }
         }
-    }
-
-    private function generate_program_batch_students($program_id, $batch_id) {
-        $p_clean = strtoupper(preg_replace('/[^A-Z]/', '', $program_id ?: 'CSE'));
-        $b_clean = strtoupper(preg_replace('/[^A-Z0-9]/', '', $batch_id ?: '60A'));
-
-        $name_seeds = [
-            ['Tanvir', 'Ahmed'],
-            ['Nusrat', 'Jahan'],
-            ['Shakil', 'Hossain'],
-            ['Sadia', 'Sultana'],
-            ['Rabiul', 'Islam'],
-            ['Mehedi', 'Hasan'],
-            ['Tasnim', 'Akter'],
-            ['Fahim', 'Chowdhury'],
-            ['Sharmin', 'Rahman'],
-            ['Asif', 'Karim']
-        ];
-
-        if (strpos($p_clean, 'ENG') !== false) {
-            $prefix = 'ENG';
-            $courses = [
-                (object)['title' => 'Introduction to Linguistics', 'courseCode' => 'ENG-101', 'credit' => '3.0'],
-                (object)['title' => 'Romantic & Victorian Poetry', 'courseCode' => 'ENG-202', 'credit' => '3.0'],
-                (object)['title' => 'Shakespeare & Renaissance Drama', 'courseCode' => 'ENG-304', 'credit' => '3.0'],
-            ];
-        } else if (strpos($p_clean, 'BBA') !== false) {
-            $prefix = 'BBA';
-            $courses = [
-                (object)['title' => 'Principles of Accounting & Finance', 'courseCode' => 'BUS-101', 'credit' => '3.0'],
-                (object)['title' => 'Corporate Management & Strategy', 'courseCode' => 'BUS-205', 'credit' => '3.0'],
-                (object)['title' => 'International Marketing', 'courseCode' => 'MKT-301', 'credit' => '3.0'],
-            ];
-        } else if (strpos($p_clean, 'EEE') !== false) {
-            $prefix = 'EEE';
-            $courses = [
-                (object)['title' => 'Electrical Circuit & Systems', 'courseCode' => 'EEE-101', 'credit' => '3.0'],
-                (object)['title' => 'Electromagnetic Fields & Waves', 'courseCode' => 'EEE-203', 'credit' => '3.0'],
-                (object)['title' => 'Digital Signal Processing', 'courseCode' => 'EEE-308', 'credit' => '3.0'],
-            ];
-        } else {
-            $prefix = 'CSE';
-            $courses = [
-                (object)['title' => 'Data Structures & Algorithms', 'courseCode' => 'CSE-201', 'credit' => '3.0'],
-                (object)['title' => 'Database Management Systems', 'courseCode' => 'CSE-301', 'credit' => '3.0'],
-                (object)['title' => 'Software Engineering & Design', 'courseCode' => 'CSE-401', 'credit' => '3.0'],
-            ];
-        }
-
-        $students = [];
-        foreach ($name_seeds as $idx => $n) {
-            $num = sprintf("%03d", $idx + 1);
-            $username = strtolower($prefix . '.' . $b_clean . '.' . $num);
-            $reg_id = $prefix . '-' . $b_clean . '-' . $num;
-            $email = $username . '@student.wub.edu.bd';
-
-            $students[] = (object)[
-                'username' => $username,
-                'full_name' => $n[0] . ' ' . $n[1],
-                'firstname' => $n[0],
-                'lastname' => $n[1],
-                'regId' => $reg_id,
-                'email' => $email,
-                'university_email' => $email,
-                'program_name' => $program_id,
-                'mother_batch' => $batch_id,
-                'enrollCourseDetails' => $courses
-            ];
-        }
-
-        return $students;
+        return $synced;
     }
 
     private function get_ums_course_code($pro_bt) {
@@ -1147,15 +1284,17 @@ class enrolhelper {
             foreach ($output_raw as $st) {
                 $st_obj = (object)$st;
                 $stud_id = $st_obj->stud_id ?? $st_obj->student_id ?? $st_obj->regId ?? $st_obj->registration_no ?? '';
-                $username = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
-                if (empty($username)) continue;
+                $raw_un = strtolower(trim($st_obj->username ?? ($stud_id ? str_replace(['/', ' '], ['', ''], $stud_id) : '')));
+                if (empty($raw_un)) continue;
+                $orig_un = explode('@', $raw_un)[0];
+                $moodle_username = $orig_un . '@student.wub.ac.bd';
 
-                $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($username ? $username . '@student.wub.ac.db' : '')));
+                $email = strtolower(trim($st_obj->email ?? $st_obj->university_email ?? ($orig_un ? $orig_un . '@student.wub.ac.bd' : '')));
                 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $email = $username . '@student.wub.ac.db';
+                    $email = $moodle_username;
                 }
 
-                $st_obj->username = $username;
+                $st_obj->username = $moodle_username;
                 $st_obj->email = $email;
                 $st_obj->university_email = $email;
                 $st_obj->program_id = $program_id;
@@ -1284,11 +1423,29 @@ class enrolhelper {
 		    }
 		    $i++;
 		}
-		$filesdir = __DIR__ . '/../files';
-		if (!file_exists($filesdir)) {
-			@mkdir($filesdir, 0777, true);
-		}
+		$tempdir = make_temp_directory('local_mass_enroll');
+		$tempfile = $tempdir . '/export_' . $USER->id . '_' . time() . '.xlsx';
 		$writer = new Xlsx($spreadsheet);
-		$writer->save($filesdir . '/save-'.$USER->id.'.xlsx');
+		$writer->save($tempfile);
+
+		// Store in Moodle file storage securely.
+		$fs = get_file_storage();
+		$syscontext = context_system::instance();
+		$fileinfo = [
+			'contextid' => $syscontext->id,
+			'component' => 'local_mass_enroll',
+			'filearea' => 'export',
+			'itemid' => (int)$USER->id,
+			'filepath' => '/',
+			'filename' => 'enrolment_records_' . $USER->id . '.xlsx',
+			'timecreated' => time(),
+			'timemodified' => time(),
+			'userid' => (int)$USER->id,
+		];
+		// Clean up existing old exports for this user.
+		$fs->delete_area_files($syscontext->id, 'local_mass_enroll', 'export', (int)$USER->id);
+		$stored_file = $fs->create_file_from_pathname($fileinfo, $tempfile);
+		@unlink($tempfile);
+		return $stored_file;
 	}
 }

@@ -22,12 +22,13 @@
      * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
      */
 
+    define('AJAX_SCRIPT', true);
     require_once(dirname(__FILE__) . '/../../config.php');
     require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
     require_login();
     $context = \context_system::instance();
-    if (!is_siteadmin() && !has_capability('moodle/user:create', $context)) {
+    if (!is_siteadmin() && !has_capability('local/mass_enroll:config', $context) && !has_capability('local/mass_enroll:enrol', $context) && !has_capability('moodle/user:create', $context)) {
         echo json_encode(['status' => 'error', 'message' => 'Access denied']);
         exit();
     }
