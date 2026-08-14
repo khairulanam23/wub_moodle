@@ -114,6 +114,7 @@ $string['massenrolunenrolredirect_help'] = 'Sets the page to redirect to on canc
 $string['mass_enroll'] = 'Bulk enrolments';
 $string['mass_enroll:enrol'] = 'Enrol users to a course by CSV file';
 $string['mass_enroll:unenrol'] = 'Unenrol users from a course by CSV file';
+$string['mass_enroll:config'] = 'Configure mass enrolment and view bulk enrolment navigation';
 $string['mass_enroll_help'] = '<h1>Bulk enrolments</h1>
 <p>With this option you are going to enrol a list of known users from a file with one account per line</p>
 <p><b> The firstline </b> the empty lines or unknown accounts will be skipped. </p>
@@ -232,7 +233,6 @@ $string['pluginname'] = 'Mass enrolments';
 $string['bulk_enrollment'] = 'Bulk Enrollment';
 $string['bulk_enrollment_desc'] = 'Bulk enrolment plugin synchronises all members with course participants.';
 $string['enrolled_navbar'] = 'Enrol Students';
-$string['records_navbar'] = 'Enrol Students List';
 $string['enrolled_sync'] = 'Synchronization';
 $string['api_url'] = 'UMS API URL';
 $string['api_url_help'] = 'Enter UMS API URL';
@@ -252,4 +252,8 @@ $string['api_ums_sync'] = 'Enter UMS User Data Synchronization API';
 $string['api_ums_sync_help'] = 'Enter UMS User Data Synchronization API';
 $string['api_ums_courses'] = 'Enter UMS Students Registered Courses';
 $string['api_ums_courses_help'] = 'Enter UMS Students Registered Courses';
+$string['api_student_payment_info'] = 'UMS Student Payment Info API';
+$string['api_student_payment_info_help'] = 'Enter UMS Student Payment Info API endpoint';
+$string['payment_hold_title'] = 'Dashboard Access Restricted - Outstanding Payment';
+$string['payment_hold_message'] = 'Access to the Moodle dashboard is restricted due to outstanding dues exceeding the 100 BDT threshold. Please clear your pending payment in the UMS portal to restore access.';
 

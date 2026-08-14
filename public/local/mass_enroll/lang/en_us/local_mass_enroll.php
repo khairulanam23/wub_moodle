@@ -97,6 +97,7 @@ $string['mappings'] = 'Mappings';
 $string['mass_enroll'] = 'Bulk enrollments';
 $string['mass_enroll:enrol'] = 'Enroll users to a course by CSV file';
 $string['mass_enroll:unenrol'] = 'Unenroll users from a course by CSV file';
+$string['mass_enroll:config'] = 'Configure mass enrollment and view bulk enrollment navigation';
 $string['mass_enroll_help'] = '
 <h1>Bulk enrollments</h1>
 

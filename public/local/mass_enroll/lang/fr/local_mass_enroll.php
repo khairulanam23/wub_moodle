@@ -73,6 +73,7 @@ $string['mailreport'] = 'M\'envoyer un rapport par mail';
 $string['mass_enroll'] = 'Inscriptions massives';
 $string['mass_enroll:enrol'] = 'Inscrire des utilisateurs à un cours par fichier CSV';
 $string['mass_enroll:unenrol'] = 'Désinscrire des utilisateurs d\' un cours par fichier CSV';
+$string['mass_enroll:config'] = 'Configurer les inscriptions massives et afficher le menu';
 $string['mass_enroll_help'] = '
 
 <h1>Inscriptions massives</h1>

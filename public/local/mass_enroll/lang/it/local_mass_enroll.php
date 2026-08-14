@@ -81,6 +81,7 @@ $string['mailreportdefault_help'] = 'Configura il default per l\'invio dei repor
 $string['mass_enroll'] = 'Iscrizione massiva';
 $string['mass_enroll:enrol'] = 'Iscrivere gli utenti ad un corso con un file CSV';
 $string['mass_enroll:unenrol'] = 'Disiscrivere gli utenti da un corso con un file CSV';
+$string['mass_enroll:config'] = 'Configura iscrizioni massive e visualizza voce di menu';
 $string['mass_enroll_help'] = '
 
 <h1>Iscrizioni massive</h1>

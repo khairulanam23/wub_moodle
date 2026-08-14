@@ -74,6 +74,7 @@ $string['mailreport'] = 'Mail-Report schicken';
 $string['mass_enroll'] = 'Massen-Einschreibung';
 $string['mass_enroll:enrol'] = 'Einschreiben von Nutzer/innen in einen Kurs per CSV-Datei';
 $string['mass_enroll:unenrol'] = 'Austragen von Nutzer/innen aus einem Kurs per CSV-Datei';
+$string['mass_enroll:config'] = 'Masseneinschreibung konfigurieren und Menüeintrag anzeigen';
 $string['mass_enroll_help'] = '
 <h1>Masseneinschreibung</h1>
 
