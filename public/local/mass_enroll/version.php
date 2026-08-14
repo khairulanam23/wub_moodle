@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026081100;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2026081402;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2023100900;        // Requires Moodle 4.3 onwards
 $plugin->component = 'local_mass_enroll';    // Full name of the plugin
 
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '4.2.1 (Build 2026081100)';
+$plugin->release = '4.2.2 (Build 2026081402)';
