@@ -32,7 +32,8 @@ use stdClass;
  * @copyright  2026 World University of Bangladesh
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class penalty_checker {
+class penalty_checker
+{
 
     /**
      * Default due threshold limit in BDT.
@@ -62,7 +63,8 @@ class penalty_checker {
      * @param student_api|null $apiClient
      * @param due_calculator|null $calculator
      */
-    public function __construct(?student_api $apiClient = null, ?due_calculator $calculator = null) {
+    public function __construct(?student_api $apiClient = null, ?due_calculator $calculator = null)
+    {
         $this->apiClient = $apiClient ?? new student_api();
         $this->calculator = $calculator ?? new due_calculator();
     }
@@ -72,7 +74,8 @@ class penalty_checker {
      *
      * @return float
      */
-    public function get_due_threshold(): float {
+    public function get_due_threshold(): float
+    {
         $configured = get_config('local_wub_auth_penalty', 'due_threshold');
         if ($configured !== false && $configured !== '') {
             return (float)$configured;
@@ -94,7 +97,8 @@ class penalty_checker {
      * @param int $userid Moodle user ID.
      * @return array Status array ['allowed' => bool, 'reason' => string, 'status' => string, 'due' => float, 'redirect_url' => string]
      */
-    public function check_due_status(int $userid): array {
+    public function check_due_status(int $userid): array
+    {
         global $DB, $SESSION;
 
         // 1. Site administrators exempt
@@ -108,13 +112,29 @@ class penalty_checker {
             ];
         }
 
-        // 2. Teachers exempt
+        // 2. Teachers exempt (System-wide or Course-level)
+        $syscontext = \context_system::instance();
+        if (
+            has_capability('moodle/course:create', $syscontext, $userid) ||
+            has_capability('moodle/course:update', $syscontext, $userid)
+        ) {
+            return [
+                'allowed' => true,
+                'reason' => 'Teacher exempt',
+                'status' => 'Active',
+                'due' => 0.0,
+                'redirect_url' => ''
+            ];
+        }
+
         $courses = enrol_get_users_courses($userid, true, ['id']);
         if (!empty($courses)) {
             foreach ($courses as $c) {
-                $ccontext = context_course::instance($c->id);
-                if (has_capability('moodle/course:manageactivities', $ccontext, $userid, false) ||
-                    has_capability('moodle/course:viewhiddenactivities', $ccontext, $userid, false)) {
+                $ccontext = \context_course::instance($c->id);
+                if (
+                    has_capability('moodle/course:manageactivities', $ccontext, $userid, false) ||
+                    has_capability('moodle/course:viewhiddenactivities', $ccontext, $userid, false)
+                ) {
                     return [
                         'allowed' => true,
                         'reason' => 'Teacher exempt',
@@ -223,7 +243,8 @@ class penalty_checker {
         return $res;
     }
 
-    public function has_valid_special_permission(stdClass $user): bool {
+    public function has_valid_special_permission(stdClass $user): bool
+    {
         global $DB;
 
         // Ensure special_premission fields exist on user object
