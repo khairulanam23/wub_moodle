@@ -102,8 +102,6 @@
     </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(function(){
         $('.select2').select2({
@@ -111,8 +109,8 @@
             width: '100%',
         });
 
-        $('#program').change(function() {
-            let program_id = $(this).val();
+        $('#program').on('change select2:select', function(e) {
+            let program_id = $(this).val() || (e && e.params && e.params.data ? e.params.data.id : '');
             let batch_select = $('#batch');
             batch_select.empty().append('<option value="">All Batches</option>');
             if (program_id) {
@@ -125,15 +123,17 @@
                             let batches = (typeof res === 'string') ? JSON.parse(res) : res;
                             if (Array.isArray(batches)) {
                                 for (let b of batches) {
-                                    let b_val = b.batch_title || b.title || b.id;
-                                    let b_lbl = b.batch_title || b.title || b.id;
+                                    let b_val = (typeof b === 'object') ? (b.batch_title || b.title || b.id) : b;
+                                    let b_lbl = (typeof b === 'object') ? (b.batch_title || b.title || b.id) : b;
                                     batch_select.append(new Option(b_lbl, b_val, false, false));
                                 }
-                                batch_select.trigger('change');
                             }
                         } catch(e) {}
+                        batch_select.trigger('change');
                     }
                 });
+            } else {
+                batch_select.trigger('change');
             }
         });
 

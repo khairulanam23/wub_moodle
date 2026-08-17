@@ -174,8 +174,6 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>-->
 <!--<script src="/local/mass_enroll/js/spin.min.js"></script>-->
 <!--<script src="/local/mass_enroll/js/ladda.min.js"></script>-->
@@ -226,30 +224,33 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
             width: '100%',
         });
 
-        $('#program_id').on('select2:select', function (e) {
-            let obj = e.params.data;
+        $('#program_id').on('change select2:select', function (e) {
+            let program_id = $(this).val() || (e && e.params && e.params.data ? e.params.data.id : '');
+            let bs = $('#batch_id');
+            bs.empty();
+            bs.append(new Option('Choose Batch', '', true, true));
+            if (!program_id) {
+                bs.trigger('change');
+                return;
+            }
             $.ajax({
                 url: '/local/mass_enroll/api.php',
                 method: 'POST',
                 data: {
-                    program_id: obj.id,
+                    program_id: program_id,
                 },
                 success: function (res) {
-                    let bs = $('#batch_id');
-                    bs.empty();
-                    bs.append(new Option('', '', true, true));
                     if (res){
                         let batches = (typeof res === 'string') ? JSON.parse(res) : res;
                         if (Array.isArray(batches)) {
                             for (let batch of batches){
-                                let title = (typeof batch === 'object') ? (batch.batch_title || batch.id || batch) : batch;
-                                let val = (typeof batch === 'object') ? (batch.batch_title || batch.id || batch) : batch;
+                                let title = (typeof batch === 'object') ? (batch.batch_title || batch.title || batch.id || batch) : batch;
+                                let val = (typeof batch === 'object') ? (batch.batch_title || batch.title || batch.id || batch) : batch;
                                 const option = new Option(title, val, false, false);
                                 bs.append(option);
                             }
                         }
                     }
-                    bs.val('');
                     bs.trigger('change');
                 },
                 error: function (err) {
