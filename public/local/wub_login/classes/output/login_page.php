@@ -70,7 +70,7 @@ class login_page implements renderable, templatable {
      * @param renderer_base $output The renderer.
      * @return stdClass Template data.
      */
-    public function export_for_template(renderer_base $output): stdClass {
+    public function export_for_template($output): stdClass {
         global $CFG;
 
         $data = new stdClass();

@@ -30,6 +30,12 @@ require_once($CFG->libdir . '/authlib.php');
 if (file_exists($CFG->dirroot . '/local/wub_policy/lib.php')) {
     require_once($CFG->dirroot . '/local/wub_policy/lib.php');
 }
+if (file_exists($CFG->dirroot . '/local/wub_ums/lib.php')) {
+    require_once($CFG->dirroot . '/local/wub_ums/lib.php');
+}
+if (file_exists($CFG->dirroot . '/local/wub_auth_penalty/lib.php')) {
+    require_once($CFG->dirroot . '/local/wub_auth_penalty/lib.php');
+}
 
 global $CFG, $USER, $SESSION, $PAGE, $OUTPUT;
 
@@ -44,7 +50,7 @@ if (empty($role) && !empty($SESSION->wub_intended_role)) {
     $role = $SESSION->wub_intended_role;
 }
 
-// Normalize role if provided.
+// Normalize role if provided using wub_policy library.
 if (!empty($role)) {
     if (function_exists('wub_policy_normalize_role')) {
         $role = wub_policy_normalize_role($role);
@@ -77,19 +83,6 @@ $error = null;
 $username = optional_param('username', '', PARAM_RAW);
 $rememberusername = optional_param('rememberusername', -1, PARAM_INT);
 
-// Pre-fill remembered username on GET requests if not explicitly supplied.
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    if (empty($username)) {
-        $username = get_moodle_cookie();
-        if (!empty($username) && $rememberusername === -1) {
-            $rememberusername = 1;
-        }
-    }
-}
-if ($rememberusername === -1) {
-    $rememberusername = !empty($username) ? 1 : 0;
-}
-
 // Handle form submission.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = optional_param('password', '', PARAM_RAW);
@@ -100,17 +93,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorcode = 0;
         $user = authenticate_user_login($username, $password, false, $errorcode, $logintoken);
 
-        // Fallback: If user entered short username (e.g. 0326735386), try with @student.wub.ac.bd
-        if (!$user && strpos($username, '@') === false) {
-            $alt_username = trim($username) . '@student.wub.ac.bd';
-            $user = authenticate_user_login($alt_username, $password, false, $errorcode, $logintoken);
+        // Fallback 1: Extract digits from input (e.g. 0525641925@student.wub.edu.bd -> 0525641925)
+        if (!$user) {
+            $short_un = explode('@', $username)[0];
+            $digits = preg_replace('/[^0-9]/', '', $short_un);
+            if (!empty($digits) && $digits !== $username) {
+                $user = authenticate_user_login($digits, $password, false, $errorcode, $logintoken);
+            }
         }
 
-        // Fallback: If user entered an alternate domain email, try resolving to @student.wub.ac.bd
-        if (!$user && strpos($username, '@') !== false && strpos($username, '@student.wub.ac.bd') === false) {
+        // Fallback 2: Try email username (digits@student.wub.edu.bd)
+        if (!$user) {
             $short_un = explode('@', $username)[0];
-            $alt_username = trim($short_un) . '@student.wub.ac.bd';
-            $user = authenticate_user_login($alt_username, $password, false, $errorcode, $logintoken);
+            $digits = preg_replace('/[^0-9]/', '', $short_un);
+            if (!empty($digits)) {
+                $alt_username = $digits . '@student.wub.edu.bd';
+                $user = authenticate_user_login($alt_username, $password, false, $errorcode, $logintoken);
+            }
+        }
+
+        if ($user) {
+            // Check student financial due status & special permission before logging in
+            if (function_exists('wub_auth_penalty_check_student_due_status')) {
+                $status = wub_auth_penalty_check_student_due_status((int)$user->id);
+                if (!empty($status) && isset($status['allowed']) && $status['allowed'] === false) {
+                    $error = get_string('login_due_restriction_message', 'auth_wub_auth_penalty');
+                    $SESSION->loginerrormsg = $error;
+                    $user = false; // Block user login!
+                }
+            }
         }
 
         if ($user) {
@@ -141,12 +152,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 redirect(new moodle_url('/my/'));
             }
-        } else {
+        } else if (empty($error)) {
             $error = get_string('invalidlogin', 'local_wub_login');
         }
     } else {
         $error = get_string('invalidlogin', 'local_wub_login');
     }
+}
+
+// Pre-fill remembered username and extract session errors on GET requests
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    if (empty($username)) {
+        $username = get_moodle_cookie();
+        if (!empty($username) && $rememberusername === -1) {
+            $rememberusername = 1;
+        }
+    }
+}
+
+if (empty($error)) {
+    if (!empty($SESSION->loginerrormsg)) {
+        $error = $SESSION->loginerrormsg;
+        unset($SESSION->loginerrormsg);
+    } else {
+        $msg = optional_param('msg', 0, PARAM_INT);
+        if ($msg == 1) {
+            $error = get_string('login_due_restriction_message', 'auth_wub_auth_penalty');
+        } else if ($msg == 2) {
+            $error = 'Unable to connect to UMS payment service';
+        }
+    }
+}
+
+if ($rememberusername === -1) {
+    $rememberusername = !empty($username) ? 1 : 0;
 }
 
 // Page setup.

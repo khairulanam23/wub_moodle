@@ -1,117 +1,42 @@
-# Moodle Bulk Enrollment
-The bulk enrollment plugin provide multiple user & course enrol at a time. Also, if the user is already enrolled in the selected course, you could not enroll the user a second time.
+# Moodle Bulk Enrollment & Access Control (`local_mass_enroll`)
 
-This plugin can be used to show the user's external information using the REST API which will come from different software. For example, University management system software information at your university can be shown here.
+The bulk enrollment plugin provides multi-user & course enrolment capabilities, external UMS REST API synchronization, and student financial due access control.
+
 #### Developed By World University of Bangladesh
 https://wub.edu.bd/
 
-# Installation
-## Install from moodle.org
-* go to https://moodle.org/plugins/view.php?plugin=enrol_bulk_enrollment and use the "Install now" Button
+---
 
-## Install with git
-* use a command line interface of your choice on the destination system (server with moodle installation)
-* switch to the moodle enrol folder: cd /path/to/moodle/enrol/
-* git clone https://github.com/ProFarjan/moodle_bulk_enrollment.git
-* navigate on your moodle page to admin --> notifivations and follow the instructions
+## Hook Lifecycle & Access Interception Architecture
 
-# REST API Instruction (NOT REQUIRED)
-* UMS API URL Return External User Details
-<pre>
-    <code>
+### Overview
+`local_mass_enroll` intercepts page access for authenticated students with outstanding financial dues (> 100 BDT) who do not possess active temporary special permissions.
 
-    REQUEST PARAMETER (POST REQUEST)
-    {
-        email: 'email1,email2,email3', // email address must be @ before text
-        X-API-KEY: 'YOUR_SECURE_API_KEY', // settings defined
-        username: 'REST_API_USERNAME', // settings defined
-        password: 'REST_API_PASSWORD', // settings defined
-    }
+### Hook Implementation (`db/hooks.php`)
+- **Hook Subscription**: `\core\hook\output\before_http_headers::class`
+- **Callback Target**: `[\local_mass_enroll\hook_callbacks::class, 'before_http_headers']`
 
+### Why `before_http_headers` is Used
+- **Execution Phase**: Triggered inside `core_renderer::header()` **before** any HTTP header or HTML output body is sent to the client (`headers_sent()` is `false`).
+- **Context Safety**: Guarantees that `global $PAGE, $USER, $CFG, $SESSION;` are bound, `isloggedin()` and `!isguestuser()` are checked, and `$SESSION->loginerrormsg` session assignments execute safely.
+- **Architectural Isolation**: Avoids executing session redirects or property assignments inside HTML head rendering hooks (`before_standard_head_html_generation`), which run after output body generation has commenced inside Mustache page templates.
 
-    RESPONSE
+### Student Due Restriction Flow
+1. Intercepts dashboard access (`/my/`, `/my/index.php`, `my-index` page type) and enrolment attempts (`/enrol/index.php`).
+2. Evaluates student due status via `\enrolhelper::check_student_due_status((int)$USER->id)`.
+3. If access is restricted (`allowed === false`):
+   - Invokes `require_logout()` to terminate student session.
+   - Sets `$SESSION->loginerrormsg = 'Please complete the due payment to log in.'`.
+   - Redirects to `/login/index.php` where the error message renders in the login alert box.
 
-    {
-        status: success|failure
-        message: {
-            StudentDetails: [
-                {
-                    id: 1, // (int) required
-                    department_id: 1, // (int) required
-                    program_id: 1, // (int) required
-                    batch_id: 65A, // (string) required
-                    username: 'hellow', // (string) required
-                    student_status: 0, // (num) required // 0-Active, 4-Graduated,5-suspended/Access denied,6-Inactive/Withdraw, 7-Dismissed, 8-Dropped
-                    .............................
-                },{
-                    .............................
-                    .............................
-                    .............................
-                }
-            ]
-        }
-    }
-    </code>
-</pre>
+---
 
+## Installation & REST API Instructions
 
-* UMS Program API Return All Programs
-<pre>
-    <code>
+### Install from moodle.org
+* Go to https://moodle.org/plugins/view.php?plugin=enrol_bulk_enrollment and use the "Install now" button.
 
-    REQUEST PARAMETER (GET REQUEST)
-    {
-        X-API-KEY: 'YOUR_SECURE_API_KEY', // settings defined
-        username: 'REST_API_USERNAME', // settings defined
-        password: 'REST_API_PASSWORD', // settings defined
-    }
-
-
-    RESPONSE (Return All Programs)
-
-    {
-        status: success|failure
-        message: [
-            {
-                id: 1, // (int) required
-                title: 1, // (string) required
-                .............................
-            },{
-                .............................
-                .............................
-                .............................
-            }
-        ]
-    }
-    </code>
-</pre>
-
-*  UMS Batch API Return Batch ID Wise Batches Details
-<pre>
-    <code>
-
-    REQUEST URL (GET REQUEST)
-    http://BASE_URL/{BATCH_ID}?X-API-KEY=YOUR_SECURE_API_KEY
-
-
-    RESPONSE
-    {
-        status: success|failure
-        message: [
-            {
-                id: 1, // (int) required
-                batch_title: '50B', // (string) required
-                program_id: 1, // (num) required
-                .............................
-            },{
-                .............................
-                .............................
-                .............................
-            }
-        ]
-    }
-    </code>
-</pre>
-
-
-
+### Install with git
+* Switch to the moodle local folder: `cd /path/to/moodle/local/`
+* `git clone https://github.com/ProFarjan/moodle_bulk_enrollment.git mass_enroll`
+* Navigate on your moodle page to Site Administration -> Notifications to complete installation.

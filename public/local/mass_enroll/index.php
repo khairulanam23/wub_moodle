@@ -33,6 +33,6 @@ $data = (object)[
     "steps" => []
 ];
 
-print_r($OUTPUT->header());
-print_r($OUTPUT->render_from_template('local_mass_enroll/index',$data));
-print_r($OUTPUT->footer());
+echo $OUTPUT->header();
+echo $OUTPUT->render_from_template('local_mass_enroll/index', $data);
+echo $OUTPUT->footer();

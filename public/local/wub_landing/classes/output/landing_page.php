@@ -101,13 +101,13 @@ class landing_page implements renderable, templatable {
         $data->adminenabled = ($adminenabled === false || $adminenabled);
 
         if ($data->studentenabled) {
-            $data->studenturl = (new moodle_url('/local/wub_landing/auth.php', ['role' => 'student']))->out(false);
+            $data->studenturl = (new moodle_url('/local/wub_auth/auth.php', ['role' => 'student']))->out(false);
         }
         if ($data->teacherenabled) {
-            $data->teacherurl = (new moodle_url('/local/wub_landing/auth.php', ['role' => 'teacher']))->out(false);
+            $data->teacherurl = (new moodle_url('/local/wub_auth/auth.php', ['role' => 'teacher']))->out(false);
         }
         if ($data->adminenabled) {
-            $data->adminurl = (new moodle_url('/local/wub_landing/auth.php', ['role' => 'admin']))->out(false);
+            $data->adminurl = (new moodle_url('/local/wub_auth/auth.php', ['role' => 'admin']))->out(false);
         }
 
         // Course catalog.

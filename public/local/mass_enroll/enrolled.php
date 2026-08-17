@@ -58,7 +58,7 @@
     $PAGE->set_heading('');
 
     $courses_category = $enrol_helper->convert_arr($DB->get_records('course_categories'));
-    $programs = $enrol_helper->get_program();
+    $programs = $enrol_helper->get_all_programs();
     $_SESSION['programs'] = $programs;
 
     $context_data= (object)[
@@ -66,6 +66,6 @@
         "programs" => $programs,
     ];
 
-    print_r($OUTPUT->header());
-    print_r($OUTPUT->render_from_template('local_mass_enroll/enrolled',$context_data));
-    print_r($OUTPUT->footer());
+    echo $OUTPUT->header();
+    echo $OUTPUT->render_from_template('local_mass_enroll/enrolled', $context_data);
+    echo $OUTPUT->footer();

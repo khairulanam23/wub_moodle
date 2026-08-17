@@ -15,7 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details for local_footer.
+ * Version details and operational documentation for local_footer.
+ *
+ * PLUGIN OPERATIONAL SUMMARY:
+ * --------------------------------------------------------------------------------
+ * The local_footer plugin is a specialized, lightweight UI component plugin that
+ * renders the World University of Bangladesh (WUB) custom footer across all public
+ * portal pages and custom local plugin controllers.
+ *
+ * Key Responsibilities:
+ * 1. Global Footer Rendering: Exposes local_footer_render(renderer_base $output) in lib.php.
+ * 2. Component Logic: Instantiates \local_footer\output\main renderable class.
+ * 3. UI Presentation: Exports data to templates/footer.mustache and injects custom
+ *    styling defined in styles.css.
+ * --------------------------------------------------------------------------------
  *
  * @package    local_footer
  * @copyright  2026 WUB eLearning

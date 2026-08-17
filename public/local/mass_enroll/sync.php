@@ -55,11 +55,11 @@
     $PAGE->requires->js(new moodle_url('/local/mass_enroll/js/ladda.min.js'),true);
     $PAGE->requires->js(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.16.3/sweetalert2.min.js'),true);
 
-    $programs = $enrol_helper->get_program();
+    $programs = $enrol_helper->get_all_programs();
     $context_data = (object)[
         "programs" => $programs,
     ];
 
-    print_r($OUTPUT->header());
-    print_r($OUTPUT->render_from_template('local_mass_enroll/sync',$context_data));
-    print_r($OUTPUT->footer());
+    echo $OUTPUT->header();
+    echo $OUTPUT->render_from_template('local_mass_enroll/sync', $context_data);
+    echo $OUTPUT->footer();

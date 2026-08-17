@@ -57,6 +57,20 @@ $errormsg = '';
 $infomsg = '';
 $errorcode = 0;
 
+$msg = optional_param('msg', 0, PARAM_INT);
+if ($msg == 1 && empty($errormsg)) {
+    if (file_exists($CFG->dirroot . '/auth/wub_auth_penalty/lang/en/auth_wub_auth_penalty.php')) {
+        $errormsg = get_string('login_due_restriction_message', 'auth_wub_auth_penalty');
+    } else {
+        $errormsg = 'Please complete the due payment to log in.';
+    }
+} else if ($msg == 2 && empty($errormsg)) {
+    $errormsg = 'Unable to connect to UMS payment service';
+}
+if (!empty($SESSION->loginerrormsg) && empty($errormsg)) {
+    $errormsg = $SESSION->loginerrormsg;
+}
+
 // login page requested session test
 if ($testsession) {
     if ($testsession == $USER->id) {

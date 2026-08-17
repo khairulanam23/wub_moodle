@@ -23,6 +23,12 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+if (file_exists($CFG->dirroot . '/local/wub_auth_penalty/lib.php')) {
+    require_once($CFG->dirroot . '/local/wub_auth_penalty/lib.php');
+}
+if (file_exists($CFG->dirroot . '/local/wub_ums/lib.php')) {
+    require_once($CFG->dirroot . '/local/wub_ums/lib.php');
+}
 require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
 require_login();
@@ -35,12 +41,22 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('payment_hold_title', 'local_mass_enroll'));
 $PAGE->set_heading('');
 
-$helper = new \enrolhelper();
-$check = $helper->check_student_due_status((int)$USER->id);
+if (function_exists('wub_auth_penalty_check_student_due_status')) {
+    $check = wub_auth_penalty_check_student_due_status((int)$USER->id);
+} else if (function_exists('wub_ums_check_student_due_status')) {
+    $check = wub_ums_check_student_due_status((int)$USER->id);
+} else {
+    $helper = new \enrolhelper();
+    $check = $helper->check_student_due_status((int)$USER->id);
+}
 
-// If user is allowed (admin, teacher, or dues <= 100), redirect to dashboard.
+// If user is allowed, redirect to dashboard; if restricted, logout and redirect to login with alert.
 if (!empty($check) && isset($check['allowed']) && $check['allowed'] === true) {
     redirect(new moodle_url('/my/'));
+} else {
+    require_logout();
+    $SESSION->loginerrormsg = 'Please complete the due payment to log in.';
+    redirect(new moodle_url('/login/index.php'));
 }
 
 $due_amount = isset($check['due']) ? (float)$check['due'] : 0.0;

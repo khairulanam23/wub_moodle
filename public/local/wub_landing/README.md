@@ -47,7 +47,7 @@ sudo chown -R www-data:www-data /var/www/moodle/public/local/wub_landing
 ### Authentication Flow
 
 ```
-Landing Page → Role Button → auth.php → Moodle Login → postlogin.php → Role Verification → Destination
+Landing Page → Role Button → local_wub_auth/auth.php → Moodle Login → postlogin.php → Role Verification → Destination
 ```
 
 The role selection button is an **entry point only** — it does NOT assign or change any Moodle role. After Moodle authenticates the user, `postlogin.php` verifies the user's actual roles/capabilities before redirecting.

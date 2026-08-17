@@ -1,0 +1,64 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Public library for local_wub_auth plugin.
+ *
+ * @package    local_wub_auth
+ * @copyright  2026 World University of Bangladesh
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Check whether a user has student-level access.
+ *
+ * @param int $userid The Moodle user ID to check.
+ * @return bool True if the user is authorized as a student.
+ */
+function wub_auth_user_is_student(int $userid): bool {
+    if (is_siteadmin($userid)) {
+        return false;
+    }
+    if (wub_auth_user_is_teacher($userid)) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Check whether a user has teacher-level access across enrolled courses.
+ *
+ * @param int $userid The Moodle user ID to check.
+ * @return bool True if the user has teaching capabilities in any course.
+ */
+function wub_auth_user_is_teacher(int $userid): bool {
+    $courses = enrol_get_users_courses($userid, true, ['id']);
+    if (empty($courses)) {
+        return false;
+    }
+
+    foreach ($courses as $course) {
+        $coursecontext = context_course::instance($course->id);
+        if (has_capability('moodle/course:manageactivities', $coursecontext, $userid, false) ||
+            has_capability('moodle/course:viewhiddenactivities', $coursecontext, $userid, false)) {
+            return true;
+        }
+    }
+
+    return false;
+}

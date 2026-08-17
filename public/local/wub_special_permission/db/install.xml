@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/wub_special_permission/db" VERSION="2026081501" COMMENT="XMLDB file for Moodle local/wub_special_permission"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+  </TABLES>
+</XMLDB>

@@ -15,7 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for local_wub_landing.
+ * Version details and operational documentation for local_wub_landing.
+ *
+ * PLUGIN OPERATIONAL SUMMARY:
+ * --------------------------------------------------------------------------------
+ * The local_wub_landing plugin manages the public portal showcase and course discovery
+ * interface for the WUB eLearning Portal.
+ *
+ * Key Responsibilities:
+ * 1. Main Landing Page (index.php): Publicly accessible entry point featuring custom
+ *    hero sections, role selection buttons, and active course showcases.
+ * 2. Paginated Course Catalog (catalog.php): Searchable, category-filterable catalog.
+ * 3. Public Course View (course.php): Displays course details while enforcing Moodle
+ *    course visibility and capability checks.
+ * 4. Auth Integration: Routes role selection and authorization directly to local_wub_auth.
+ * --------------------------------------------------------------------------------
  *
  * @package    local_wub_landing
  * @copyright  2026 WUB eLearning

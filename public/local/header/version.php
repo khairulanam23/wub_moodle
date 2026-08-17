@@ -15,7 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details for local_header.
+ * Version details and operational documentation for local_header.
+ *
+ * PLUGIN OPERATIONAL SUMMARY:
+ * --------------------------------------------------------------------------------
+ * The local_header plugin is a specialized, lightweight UI component plugin that
+ * renders the World University of Bangladesh (WUB) custom top transparent navigation bar
+ * across all public portal pages and custom local plugin controllers.
+ *
+ * Key Responsibilities:
+ * 1. Global Header Rendering: Exposes local_header_render(renderer_base $output) in lib.php.
+ * 2. Component Logic: Instantiates \local_header\output\main renderable class.
+ * 3. UI Presentation: Exports data to templates/header.mustache and injects custom
+ *    styling defined in styles.css.
+ * --------------------------------------------------------------------------------
  *
  * @package    local_header
  * @copyright  2026 WUB eLearning

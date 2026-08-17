@@ -15,7 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details for local_wub_policy.
+ * Version details and operational documentation for local_wub_policy.
+ *
+ * PLUGIN OPERATIONAL SUMMARY:
+ * --------------------------------------------------------------------------------
+ * The local_wub_policy plugin manages institutional terms and policy agreements for the
+ * WUB eLearning Portal.
+ *
+ * Key Responsibilities:
+ * 1. Policy Agreement Interface (index.php): Displays 20 detailed university terms grouped
+ *    into 4 parts with sesskey CSRF validation.
+ * 2. 30-Day Policy Persistence Engine (lib.php):
+ *    - Session Cache: Immediate PHP memory lookup.
+ *    - Database Tracking: Stores agreement in {local_wub_policy_accept} table.
+ *    - Device Token Cookie: Sets 60-day secure cookie (wub_policy_device) surviving logout.
+ * 3. User Binding (wub_policy_bind_user_acceptance): Binds pre-login device tokens to
+ *    authenticated user IDs upon successful login.
+ * 4. Policy Verification API: Exposes wub_policy_is_accepted() for local_wub_auth.
+ * --------------------------------------------------------------------------------
  *
  * @package    local_wub_policy
  * @copyright  2026 WUB eLearning

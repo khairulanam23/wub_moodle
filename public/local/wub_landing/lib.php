@@ -43,3 +43,51 @@ function local_wub_landing_extend_navigation(global_navigation $navigation) {
         $navigation->add_node($node);
     }
 }
+
+/**
+ * Check whether a user has student-level access.
+ *
+ * @param int $userid The Moodle user ID to check.
+ * @return bool True if the user is authorized as a student.
+ */
+function wub_landing_user_is_student(int $userid): bool {
+    if (file_exists(__DIR__ . '/../wub_auth/lib.php')) {
+        require_once(__DIR__ . '/../wub_auth/lib.php');
+        return wub_auth_user_is_student($userid);
+    }
+    if (is_siteadmin($userid)) {
+        return false;
+    }
+    if (wub_landing_user_is_teacher($userid)) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Check whether a user has teacher-level access across enrolled courses.
+ *
+ * @param int $userid The Moodle user ID to check.
+ * @return bool True if the user has teaching capabilities in any course.
+ */
+function wub_landing_user_is_teacher(int $userid): bool {
+    if (file_exists(__DIR__ . '/../wub_auth/lib.php')) {
+        require_once(__DIR__ . '/../wub_auth/lib.php');
+        return wub_auth_user_is_teacher($userid);
+    }
+    $courses = enrol_get_users_courses($userid, true, ['id']);
+    if (empty($courses)) {
+        return false;
+    }
+
+    foreach ($courses as $course) {
+        $coursecontext = context_course::instance($course->id);
+        if (has_capability('moodle/course:manageactivities', $coursecontext, $userid, false) ||
+            has_capability('moodle/course:viewhiddenactivities', $coursecontext, $userid, false)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+

@@ -15,10 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Cohort enrolment plugin version specification.
+ * Version details and operational documentation for local_mass_enroll.
+ *
+ * PLUGIN OPERATIONAL SUMMARY:
+ * --------------------------------------------------------------------------------
+ * The local_mass_enroll plugin manages bulk course enrolment processing, student list
+ * exports, and payment hold restriction notices for the WUB eLearning Portal.
+ *
+ * Key Responsibilities:
+ * 1. Bulk Enrolments & Unenrolments (massenrol.php, massunenrol.php): Admin tools for
+ *    enrolling or unenrolling students in bulk via text code or CSV lists.
+ * 2. Enrolment Sync Table (enrolled.php, sync.php): Interactive table comparing UMS
+ *    students against local Moodle users and executing batch enrolments.
+ * 3. Excel Export Generator (export.php, enrolhelper::generateXl): Generates downloadable
+ *    XLSX spreadsheets of student course enrolments using PhpSpreadsheet.
+ * 4. Payment Hold Notice View (payment_notice.php): Renders user-facing dashboard
+ *    restriction notice when student dues exceed the allowable threshold.
+ * --------------------------------------------------------------------------------
  *
  * @package    local_mass_enroll
- * @copyright 2021 World University of Bangladesh (CIS)
+ * @copyright  2021 World University of Bangladesh (CIS)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

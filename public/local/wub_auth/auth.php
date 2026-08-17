@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Authentication entry point for WUB Landing.
+ * Role Selection Authentication Entry Point.
  *
  * Captures user role selection, checks session-based policy agreement,
  * and routes to the role policy or Moodle login flow.
  *
- * @package    local_wub_landing
- * @copyright  2026 WUB eLearning
+ * @package    local_wub_auth
+ * @copyright  2026 World University of Bangladesh
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,9 +35,13 @@ $role = required_param('role', PARAM_ALPHA);
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 // Validate the role parameter.
-$validroles = ['student', 'teacher', 'admin'];
-if (!in_array($role, $validroles)) {
-    throw new \moodle_exception('invalidrole', 'local_wub_landing');
+if (function_exists('wub_policy_normalize_role')) {
+    $role = wub_policy_normalize_role($role);
+} else {
+    $validroles = ['student', 'teacher', 'admin'];
+    if (!in_array($role, $validroles)) {
+        throw new \moodle_exception('invalidrole', 'local_wub_auth');
+    }
 }
 
 // If the user is already authenticated, go directly to post-login verification or return URL.
@@ -46,16 +50,16 @@ if (isloggedin() && !isguestuser()) {
     if (!empty($returnurl)) {
         $SESSION->wub_return_url = $returnurl;
     }
-    redirect(new moodle_url('/local/wub_landing/postlogin.php'));
+    redirect(new moodle_url('/local/wub_auth/postlogin.php'));
 }
 
 // Store the intended role and return URL in the session.
 $SESSION->wub_intended_role = $role;
 if (!empty($returnurl)) {
     $SESSION->wub_return_url = $returnurl;
-    $SESSION->wantsurl = (new moodle_url('/local/wub_landing/postlogin.php'))->out(false);
+    $SESSION->wantsurl = (new moodle_url('/local/wub_auth/postlogin.php'))->out(false);
 } else {
-    $SESSION->wantsurl = (new moodle_url('/local/wub_landing/postlogin.php'))->out(false);
+    $SESSION->wantsurl = (new moodle_url('/local/wub_auth/postlogin.php'))->out(false);
 }
 
 // Check if policy for this role has been accepted in the current session.

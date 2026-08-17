@@ -137,7 +137,7 @@ class course_details implements renderable, templatable {
         } else {
             // Guest — route through student policy & login flow, preserving the intended course enrollment URL.
             $enrolurl = (new moodle_url('/enrol/index.php', ['id' => $this->course->id]))->out(false);
-            $data->actionurl = (new moodle_url('/local/wub_landing/auth.php', [
+            $data->actionurl = (new moodle_url('/local/wub_auth/auth.php', [
                 'role' => 'student',
                 'returnurl' => $enrolurl,
             ]))->out(false);

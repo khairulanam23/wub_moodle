@@ -15,7 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details for local_wub_login.
+ * Version details and operational documentation for local_wub_login.
+ *
+ * PLUGIN OPERATIONAL SUMMARY:
+ * --------------------------------------------------------------------------------
+ * The local_wub_login plugin provides the custom authentication login interface
+ * for the WUB eLearning Portal.
+ *
+ * Key Responsibilities:
+ * 1. Custom Login Form (index.php): Renders modern, responsive login interface.
+ * 2. Moodle Authentication Dispatch: Passes submitted credentials to Moodle's
+ *    authenticate_user_login() and complete_user_login().
+ * 3. Username Normalization: Automatically converts short student IDs (e.g. 0326735386)
+ *    into full email addresses (0326735386@student.wub.ac.bd) via local_wub_ums.
+ * 4. Cookie Management: Manages encrypted "Remember Username" browser cookie.
+ * --------------------------------------------------------------------------------
  *
  * @package    local_wub_login
  * @copyright  2026 WUB eLearning

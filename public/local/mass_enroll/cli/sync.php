@@ -1,7 +1,7 @@
 <?php
 define('CLI_SCRIPT', true);
 
-require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
 
 global $DB;
