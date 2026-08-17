@@ -39,10 +39,10 @@ use stdClass;
  * ─────────────────────────────────────────────────────────────────────
  *
  * Account mapping:
- *   Student ID:  2925062687
- *   Username:    2925062687               (pure digits)
- *   Email:       2925062687@student.wub.edu.bd
- *   Password:    2925062687               (initial, hashed — only set on creation)
+ *   Student ID:  <student_id>
+ *   Username:    <student_id>               (pure digits)
+ *   Email:       <student_id>@student.wub.edu.bd
+ *   Password:    <student_id>               (initial, hashed — only set on creation)
  *
  * @package    local_wub_ums
  * @copyright  2026 World University of Bangladesh
