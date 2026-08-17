@@ -190,14 +190,18 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
             'full_name',
             'student_email',
             'dept',
+            'course_code',
             {data: ['id','email','name'] },
         ],
         item: '<li class="user-item student-${id} col-xs-12 selected" onclick="toggleUser(this)">' +
-                    '<div style="width: 100%;overflow: hidden;">' +
-                        '<div style="padding: 0 0 0 10px;width: 100%;float: left;overflow: hidden;">' +
-                            '<p class="full_name name col-xs-12"></p>' +
-                            '<p class="student_email email col-xs-12" style="text-align: left;font-style: italic;font-size: 12px;"></p>' +
-                            '<p class="dept col-xs-12" style="font-weight: 400;"></p>' +
+                    '<div style="width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: space-between;">' +
+                        '<div style="padding: 0 0 0 10px; flex-grow: 1; overflow: hidden;">' +
+                            '<p class="full_name name col-xs-12" style="margin-bottom: 2px; font-weight: 600;"></p>' +
+                            '<p class="student_email email col-xs-12" style="text-align: left; font-style: italic; font-size: 12px; margin-bottom: 2px;"></p>' +
+                            '<p class="dept col-xs-12" style="font-weight: 400; margin-bottom: 0;"></p>' +
+                        '</div>' +
+                        '<div style="padding-right: 10px; flex-shrink: 0; text-align: right;">' +
+                            '<span class="course_code badge bg-primary text-white" style="font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block;"></span>' +
                         '</div>' +
                     '</div>' +
                 '</li>',
@@ -415,6 +419,27 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
                                 let prog = student.program_id || student.program_name || program_id;
                                 let bt = student.batch_id || student.mother_batch || batch_id;
 
+                                let course_code = '';
+                                let cDetails = student.enrollCourseDetails || student.enroll_course_details || student.courseDetails || student.courseCode || student.course_code;
+                                if (cDetails) {
+                                    if (typeof cDetails === 'string') {
+                                        course_code = cDetails;
+                                    } else if (Array.isArray(cDetails)) {
+                                        let codes = cDetails.map(c => {
+                                            if (typeof c === 'object' && c !== null) {
+                                                return c.courseCode || c.course_code || c.code || c.title || '';
+                                            }
+                                            return String(c || '');
+                                        }).filter(Boolean);
+                                        course_code = codes.join(', ');
+                                    } else if (typeof cDetails === 'object') {
+                                        course_code = cDetails.courseCode || cDetails.course_code || cDetails.code || cDetails.title || '';
+                                    }
+                                }
+                                if (!course_code && (student.courseCode || student.course_code)) {
+                                    course_code = student.courseCode || student.course_code;
+                                }
+
                                 if (!exists_std.includes(s_id)){
                                     students_fm_list.push({
                                         full_name: (fname + ' ' + lname).trim(),
@@ -422,6 +447,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
                                         name: (fname + ' ' + lname).trim(),
                                         email: s_email,
                                         dept: prog + ' (' + bt + ')',
+                                        course_code: course_code ? course_code : '',
                                         id: s_id,
                                     });
                                     exists_std.push(s_id);

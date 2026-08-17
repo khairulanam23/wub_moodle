@@ -311,6 +311,20 @@
     font-weight: 500;
 }
 
+#users_list .user-item .course_code {
+    background: #e0e7ff;
+    color: #1e40af;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+#users_list .user-item .course_code:empty {
+    display: none !important;
+}
+
 .course_div span {
     background: #e0e7ff;
     color: #1e40af;
