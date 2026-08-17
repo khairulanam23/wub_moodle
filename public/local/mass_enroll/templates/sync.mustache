@@ -253,6 +253,10 @@
                                     if (cell.length) {
                                         cell.html('<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> Sync</span>');
                                     }
+                                    let chk = $('#chk_' + safe_un);
+                                    if (chk.length) {
+                                        chk.prop('checked', false).prop('disabled', true).css({'cursor': 'not-allowed', 'opacity': '0.4'});
+                                    }
                                 }
                             }
 
@@ -292,8 +296,8 @@
     function sAll(elemEnt, eachAll='input:checkbox'){
         var status = $(elemEnt).is(":checked");
         $(eachAll).each(function(){
-            const d = $(this).attr('disabled');
-            if (d != 'disabled'){
+            const d = $(this).prop('disabled') || $(this).attr('disabled') === 'disabled';
+            if (!d){
                 $(this).prop('checked', status);
             }
         });
@@ -320,9 +324,13 @@
 
         let tr = '<tr>';
         
-        // Checkbox: enabled for all valid students to create or synchronize
+        // Checkbox: disabled for synced students; enabled for unsynced
         tr += '<td class="text-center">';
-        tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" checked style="accent-color:#0A246A; width:16px; height:16px; cursor:pointer;" />';
+        if (is_existing) {
+            tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" disabled style="accent-color:#0A246A; width:16px; height:16px; cursor:not-allowed; opacity: 0.4;" />';
+        } else {
+            tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" checked style="accent-color:#0A246A; width:16px; height:16px; cursor:pointer;" />';
+        }
         tr += '</td>';
 
         // Student Name & Username
