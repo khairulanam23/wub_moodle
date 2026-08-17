@@ -117,7 +117,10 @@
                 $.ajax({
                     url: '/local/mass_enroll/api.php',
                     method: 'POST',
-                    data: { program_id: program_id },
+                    data: {
+                        program_id: program_id,
+                        sesskey: (typeof M !== 'undefined' && M.cfg ? M.cfg.sesskey : '')
+                    },
                     success: function (res) {
                         try {
                             let batches = (typeof res === 'string') ? JSON.parse(res) : res;
@@ -150,7 +153,8 @@
                     method: 'POST',
                     data: {
                         sync_program: program,
-                        batch: batch
+                        batch: batch,
+                        sesskey: (typeof M !== 'undefined' && M.cfg ? M.cfg.sesskey : '')
                     },
                     success: function (res) {
                         try {

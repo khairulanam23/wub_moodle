@@ -238,6 +238,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
                 method: 'POST',
                 data: {
                     program_id: program_id,
+                    sesskey: (typeof M !== 'undefined' && M.cfg ? M.cfg.sesskey : '')
                 },
                 success: function (res) {
                     if (res){
@@ -327,7 +328,10 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
             if (category && en_start && en_end){
                 $.ajax({
                     url: "/local/mass_enroll/api.php",
-                    data: {'category_id':category},
+                    data: {
+                        'category_id': category,
+                        sesskey: (typeof M !== 'undefined' && M.cfg ? M.cfg.sesskey : '')
+                    },
                     method: 'POST',
                     success: (res)=>{
                         courseList.clear();
@@ -391,7 +395,8 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
                     data: {
                         program: program_id,
                         batch: batch_id,
-                        emails: emails
+                        emails: emails,
+                        sesskey: (typeof M !== 'undefined' && M.cfg ? M.cfg.sesskey : '')
                     },
                     method: 'POST',
                     success: (res)=>{

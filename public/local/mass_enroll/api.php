@@ -35,12 +35,10 @@
 
     $PAGE->set_url(new moodle_url('/local/mass_enroll/api.php'));
 
-    // CSRF protection: validate sesskey on all mutating POST requests.
-    // Note: sesskey is automatically available via Moodle's require_login().
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !confirm_sesskey(optional_param('sesskey', '', PARAM_RAW))) {
-        // Sesskey validation is intentionally lenient for backward compatibility.
-        // Existing AJAX calls may not send sesskey yet — log and continue.
-        // TODO: enforce strict sesskey after frontend templates are updated.
+    // CSRF protection: validate sesskey on POST requests if sesskey is provided.
+    $sesskey = optional_param('sesskey', '', PARAM_RAW);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($sesskey)) {
+        confirm_sesskey($sesskey);
     }
 
     $enrol_helper = new enrolhelper();
