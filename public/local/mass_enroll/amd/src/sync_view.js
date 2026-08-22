@@ -71,14 +71,23 @@ define(['jquery'], function($) {
 
         // Student Name & Username
         tr += '<td>';
-        tr += '<strong style="color:var(--wub-primary, #0f6cbf); font-size: 14px;">' + escapeHtml(name) + '</strong>';
+        tr += '<div class="d-flex align-items-center">';
+        tr += '<div class="me-2 text-primary" style="font-size: 1.25rem;"><i class="fa fa-user-circle"></i></div>';
+        tr += '<div>';
+        tr += '<strong style="color:var(--wub-primary, #0f6cbf); font-size: 14px; display:block;">' + escapeHtml(name) + '</strong>';
         if (obj.username || obj.stud_id) {
-            tr += '<br/><small class="text-muted"><i class="fa fa-id-card-o me-1"></i>' + escapeHtml(obj.stud_id || obj.username) + '</small>';
+            tr += '<small class="text-muted"><i class="fa fa-id-card-o me-1"></i>' + escapeHtml(obj.stud_id || obj.username) + '</small>';
         }
+        tr += '</div>';
+        tr += '</div>';
         tr += '</td>';
 
         // Email
         tr += '<td><span style="color:#334155; font-size:13px;"><i class="fa fa-envelope-o me-1 text-muted"></i>' + escapeHtml(obj.email || '') + '</span></td>';
+
+        // Program & Batch
+        var progBatch = (obj.program_id || obj.program_name || '') + (obj.batch_id || obj.mother_batch ? ' (' + (obj.batch_id || obj.mother_batch) + ')' : '');
+        tr += '<td><span class="badge bg-light text-dark border" style="font-size:12px; font-weight:500;"><i class="fa fa-graduation-cap me-1 text-muted"></i>' + escapeHtml(progBatch || 'General') + '</span></td>';
 
         // UMS Status Badge
         tr += '<td class="text-center">' + getStatusBadgeHtml(statusCode, statusLabel) + '</td>';

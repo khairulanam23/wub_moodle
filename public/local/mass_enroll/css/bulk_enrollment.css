@@ -267,9 +267,9 @@
     border: 1.5px solid #e2e8f0;
     border-radius: 12px;
     background: #ffffff;
-    height: 380px;
+    height: 440px;
     overflow-y: auto;
-    padding: 0.5rem;
+    padding: 0.65rem;
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
@@ -284,55 +284,198 @@
 
 #courses_list .course-item, #users_list .user-item {
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.65rem 0.85rem;
-    margin-bottom: 0.4rem;
+    border-radius: 10px;
+    padding: 0.75rem 0.95rem;
+    margin-bottom: 0.55rem;
     background: #ffffff;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.18s ease;
     font-size: 0.9rem;
     color: #1e293b;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    list-style: none;
 }
 
 #courses_list .course-item:hover, #users_list .user-item:hover {
     border-color: #94a3b8;
     background: #f8fafc;
-    transform: translateX(2px);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
 }
 
 #courses_list .course-item.selected, #users_list .user-item.selected {
-    background: rgba(15, 108, 191, 0.08);
+    background: #f0f7ff;
     border-color: var(--wub-primary, #0f6cbf);
-    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(15, 108, 191, 0.12);
+}
+
+/* User Card Layout */
+.wub-user-card-inner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0.85rem;
+}
+
+.wub-user-card-avatar {
+    font-size: 1.6rem;
     color: var(--wub-primary, #0f6cbf);
-    box-shadow: 0 2px 6px rgba(15, 108, 191, 0.1);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#users_list .user-item .full_name {
-    color: #0f172a;
-    font-size: 0.92rem;
+.wub-user-card-body {
+    flex-grow: 1;
+    min-width: 0;
 }
 
-#users_list .user-item .student_email {
-    color: #64748b;
+.wub-user-card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.25rem;
 }
 
-#users_list .user-item .dept {
-    color: #475569;
-    font-size: 0.82rem;
-}
-
-#users_list .user-item .course_code {
-    background: #e0e7ff;
-    color: var(--wub-primary, #0f6cbf);
-    font-size: 0.8rem;
+.wub-user-card-title-row .full_name {
     font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 6px;
-    letter-spacing: 0.3px;
+    font-size: 0.95rem;
+    color: #0f172a;
+    word-break: break-word;
+}
+
+.wub-user-card-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.84rem;
+    color: #475569;
+}
+
+.wub-user-card-meta-row .student_email {
+    color: #475569;
+    word-break: break-all;
+}
+
+.wub-user-card-check, .wub-course-card-check {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: #cbd5e1;
+    transition: color 0.15s ease;
+}
+
+.user-item.selected .wub-user-card-check,
+.course-item.selected .wub-course-card-check {
+    color: var(--wub-primary, #0f6cbf);
+}
+
+/* Course Card Layout */
+.wub-course-card-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.75rem;
+}
+
+.wub-course-card-body {
+    flex-grow: 1;
+    min-width: 0;
+    font-size: 0.92rem;
+    word-break: break-word;
+}
+
+/* Selected User Chips */
+#selected_users {
+    margin-top: 1.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid var(--wub-me-border);
+    box-shadow: var(--wub-me-shadow);
+}
+
+#selected_users h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+}
+
+.selected-users-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.selected-user-item {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    color: #1e293b;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.selected-user-item:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+}
+
+/* Verification Output Styling */
+#output_users {
+    margin-top: 1.5rem;
+}
+
+.wub-verify-course-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--wub-me-border);
+    box-shadow: var(--wub-me-shadow);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.wub-verify-header {
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, #1487ed 100%);
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.wub-verify-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.wub-verify-table th {
+    background: #f8fafc;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.88rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+}
+
+.wub-verify-table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .course_div span {
