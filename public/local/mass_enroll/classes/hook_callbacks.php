@@ -46,28 +46,39 @@ class hook_callbacks {
             return;
         }
 
+        // Site administrators are immediately exempt.
+        if (is_siteadmin($USER->id)) {
+            return;
+        }
+
         if ($PAGE && $PAGE->has_set_url()) {
             $path = $PAGE->url->get_path();
 
-            // 1. Intercept Moodle Dashboard access (/my/, /my/index.php, pagetype my-index) for students with dues > 100 BDT
-            $is_dashboard = (strpos($path, '/my/') !== false || strpos($path, '/my/index.php') !== false || $path === '/my' || ($PAGE->pagetype ?? '') === 'my-index');
-            if ($is_dashboard) {
-                if (strpos($path, '/local/mass_enroll/payment_notice.php') === false) {
-                    require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
-                    $helper = new \enrolhelper();
-                    $check = $helper->check_student_due_status((int)$USER->id);
-                    if (!empty($check) && isset($check['allowed']) && $check['allowed'] === false) {
-                        require_logout();
-                        if (isset($SESSION)) {
-                            $SESSION->loginerrormsg = 'Please complete the due payment to log in.';
-                        }
-                        redirect(new moodle_url('/login/index.php', ['msg' => 1]));
-                    }
+            // Whitelist safe endpoints to strictly avoid redirect loops.
+            $whitelist = [
+                '/login/',
+                '/local/mass_enroll/payment_notice.php',
+                '/local/wub_policy/',
+                '/local/wub_landing/',
+                '/admin/',
+                '/pluginfile.php',
+                '/webservice/',
+            ];
+
+            foreach ($whitelist as $safe) {
+                if (strpos($path, $safe) !== false) {
+                    return;
                 }
             }
 
-            // 2. Intercept course enrolment attempts on /enrol/index.php
-            if (strpos($path, '/enrol/index.php') !== false) {
+            // Intercept Dashboard, Course views, Activity views, and Enrolment attempts.
+            $pagetype = $PAGE->pagetype ?? '';
+            $is_dashboard = (strpos($path, '/my/') !== false || strpos($path, '/my/index.php') !== false || $path === '/my' || $pagetype === 'my-index');
+            $is_course = (strpos($path, '/course/view.php') !== false || strpos($path, '/course/') !== false || strpos($pagetype, 'course-view') !== false);
+            $is_activity = (strpos($path, '/mod/') !== false || strpos($pagetype, 'mod-') === 0);
+            $is_enrol = (strpos($path, '/enrol/') !== false);
+
+            if ($is_dashboard || $is_course || $is_activity || $is_enrol) {
                 require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
                 $helper = new \enrolhelper();
                 $check = $helper->check_student_due_status((int)$USER->id);
@@ -85,39 +96,14 @@ class hook_callbacks {
     /**
      * Backward-compatibility wrapper for legacy hook invocations.
      *
-     * Delegates safely to before_http_headers logic to prevent null object assignments
-     * if called by legacy callers.
+     * Delegates safely to before_http_headers logic.
      *
      * @param before_standard_head_html_generation $hook
      */
     public static function before_standard_head_html_generation(
         before_standard_head_html_generation $hook,
     ): void {
-        // Delegate safely without triggering head generation renderer exceptions
-        global $PAGE, $USER, $CFG, $SESSION;
-
-        if (!isloggedin() || isguestuser()) {
-            return;
-        }
-
-        if ($PAGE && $PAGE->has_set_url()) {
-            $path = $PAGE->url->get_path();
-
-            $is_dashboard = (strpos($path, '/my/') !== false || strpos($path, '/my/index.php') !== false || $path === '/my' || ($PAGE->pagetype ?? '') === 'my-index');
-            if ($is_dashboard || strpos($path, '/enrol/index.php') !== false) {
-                if (strpos($path, '/local/mass_enroll/payment_notice.php') === false) {
-                    require_once($CFG->dirroot . '/local/mass_enroll/classes/enrolhelper.php');
-                    $helper = new \enrolhelper();
-                    $check = $helper->check_student_due_status((int)$USER->id);
-                    if (!empty($check) && isset($check['allowed']) && $check['allowed'] === false) {
-                        require_logout();
-                        if (isset($SESSION)) {
-                            $SESSION->loginerrormsg = 'Please complete the due payment to log in.';
-                        }
-                        redirect(new moodle_url('/login/index.php'));
-                    }
-                }
-            }
-        }
+        // Delegates to before_http_headers logic.
+        self::before_http_headers(new \core\hook\output\before_http_headers());
     }
 }

@@ -31,6 +31,11 @@
 
     $PAGE->set_url(new moodle_url('/local/mass_enroll/request_enrolled.php'));
 
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new moodle_exception('invalidrequest', 'error');
+    }
+    require_sesskey();
+
     $enrol_helper = new enrolhelper();
     $output = [];
     $ums = [];
@@ -165,7 +170,7 @@
             ?>
             <tr class="<?= $ums_deactivate ? 'bg-danger' : '' ;?>">
                 <td>
-                    <input type="checkbox" name="student[<?=$course_id;?>][<?=$user_id;?>]"
+                    <input type="checkbox" name="student[<?= (int)$course_id;?>][<?= (int)$user_id;?>]"
                         <?php if(($status == 'already exist') || in_array($ums_status,['Suspended','Inactive','Dismissed','Dropped'])): ?>
                             disabled
                         <?php elseif($ums_status == 'Not_Sync'):?>
@@ -175,25 +180,14 @@
                         <?php endif;?>
                     />
                 </td>
-                <td><?=$firstname. " " . $lastname;?></td>
-                <td><?=$user_email;?></td>
-                <td><?=$program_title;?></td>
-                <td><?=$student_batch_id;?></td>
-                <td style="text-align: right;"><?=$status;?></td>
+                <td><?= s($firstname . " " . $lastname);?></td>
+                <td><?= s($user_email);?></td>
+                <td><?= s($program_title);?></td>
+                <td><?= s($student_batch_id);?></td>
+                <td style="text-align: right;"><?= s($status);?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
 <?php endforeach; ?>
-<script>
-    function sAll(elemEnt,eachAll='input:checkbox'){
-        var status = $(elemEnt).is(":checked");
-        $(eachAll).each(function(){
-            const d = $(this).attr('disabled');
-            if (d != 'disabled'){
-                $(this).prop('checked',status);
-            }
-        });
-    }
-</script>
 <?php endif ?>

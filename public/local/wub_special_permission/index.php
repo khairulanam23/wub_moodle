@@ -204,7 +204,7 @@ echo $OUTPUT->header();
     width: 100%;
 }
 .wub-date-input-box:focus {
-    border-color: #0A246A;
+    border-color: var(--wub-primary, #0f6cbf);
     box-shadow: 0 0 0 3px rgba(10, 36, 106, 0.15);
     outline: none;
 }
@@ -214,7 +214,7 @@ echo $OUTPUT->header();
     <!-- Student Search Card -->
     <div class="wub-sp-card">
         <h3 class="wub-sp-card-title">
-            <i class="fa fa-search me-2" style="color: #0A246A;"></i>
+            <i class="fa fa-search me-2" style="color: var(--wub-primary, #0f6cbf);"></i>
             <?= get_string('search_student_heading', 'local_wub_special_permission'); ?>
         </h3>
         <form method="get" action="index.php">
@@ -226,7 +226,7 @@ echo $OUTPUT->header();
                            placeholder="<?= get_string('search_input_label', 'local_wub_special_permission'); ?>" required>
                 </div>
                 <div class="col-12 col-md-4 col-lg-3">
-                    <button type="submit" class="btn btn-primary btn-lg w-100" style="background-color: #0A246A; border-color: #0A246A;">
+                    <button type="submit" class="btn btn-primary btn-lg w-100" style="background-color: var(--wub-primary, #0f6cbf); border-color: var(--wub-primary, #0f6cbf);">
                         <i class="fa fa-search me-1"></i> <?= get_string('search_button', 'local_wub_special_permission'); ?>
                     </button>
                 </div>
@@ -248,7 +248,7 @@ echo $OUTPUT->header();
         <!-- Student Information Card -->
         <div class="wub-sp-card">
             <h3 class="wub-sp-card-title">
-                <i class="fa fa-user me-2" style="color: #0A246A;"></i>
+                <i class="fa fa-user me-2" style="color: var(--wub-primary, #0f6cbf);"></i>
                 <?= get_string('student_details_heading', 'local_wub_special_permission'); ?>
             </h3>
             <div class="wub-student-meta-grid">
@@ -276,7 +276,7 @@ echo $OUTPUT->header();
         <!-- Permission Status Card -->
         <div class="wub-sp-card">
             <h3 class="wub-sp-card-title">
-                <i class="fa fa-shield me-2" style="color: #0A246A;"></i>
+                <i class="fa fa-shield me-2" style="color: var(--wub-primary, #0f6cbf);"></i>
                 <?= get_string('permission_status_heading', 'local_wub_special_permission'); ?>
             </h3>
             <div class="d-flex flex-wrap align-items-center gap-3">
@@ -330,7 +330,7 @@ echo $OUTPUT->header();
         <!-- Grant / Revoke Form Card -->
         <div class="wub-sp-card">
             <h3 class="wub-sp-card-title">
-                <i class="fa fa-calendar-check-o me-2" style="color: #0A246A;"></i>
+                <i class="fa fa-calendar-check-o me-2" style="color: var(--wub-primary, #0f6cbf);"></i>
                 <?= get_string('grant_permission_heading', 'local_wub_special_permission'); ?>
             </h3>
             
@@ -358,7 +358,7 @@ echo $OUTPUT->header();
                     
                     <div class="col-12 col-md-5 col-lg-4">
                         <div class="d-flex flex-column flex-sm-row gap-2 w-100">
-                            <button type="submit" class="btn btn-primary btn-lg flex-fill font-weight-bold" style="background-color: #0A246A; border-color: #0A246A;">
+                            <button type="submit" class="btn btn-primary btn-lg flex-fill font-weight-bold" style="background-color: var(--wub-primary, #0f6cbf); border-color: var(--wub-primary, #0f6cbf);">
                                 <i class="fa fa-check-circle me-1"></i> <?= get_string('grant_button', 'local_wub_special_permission'); ?>
                             </button>
                             <?php if ($hasActive): ?>

@@ -53,9 +53,11 @@ class api_client {
      * @return mixed Array or object returned from JSON API response.
      */
     public function get(string $url) {
-        $apiKey = $this->get_setting('api_x_api_key', '9e50f38559e4bcwub12bfa9f43def1edhr1libr139ubo3f3f2ec06f3cedhrubo5c');
-        $username = $this->get_setting('api_username', 'rest_admin_user');
-        $password = $this->get_setting('api_password', 'EDHEECDH+CHACHA20:EECDH+AES128RUBO');
+        global $CFG;
+
+        $apiKey = $this->get_setting('api_x_api_key', '');
+        $username = $this->get_setting('api_username', '');
+        $password = $this->get_setting('api_password', '');
 
         if (!empty($apiKey) && strpos($url, 'X-API-KEY') === false) {
             $sep = (strpos($url, '?') !== false) ? '&' : '?';
@@ -72,9 +74,14 @@ class api_client {
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_TIMEOUT, 35);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($curl, CURLOPT_USERAGENT, 'WUB-Moodle-UMS-Client/1.0');
+
+        // Check if custom CA bundle is defined.
+        if (!empty($CFG->pathtocertificate) && file_exists($CFG->pathtocertificate)) {
+            curl_setopt($curl, CURLOPT_CAINFO, $CFG->pathtocertificate);
+        }
 
         $headers = [];
         if (!empty($apiKey)) {

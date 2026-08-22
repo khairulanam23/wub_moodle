@@ -31,6 +31,11 @@
 
     $PAGE->set_url(new moodle_url('/local/mass_enroll/submit_enrolled.php'));
 
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new moodle_exception('invalidrequest', 'error');
+    }
+    require_sesskey();
+
     $enrol_helper = new enrolhelper();
     $output = [];
     if (!empty($_POST)) {
@@ -48,7 +53,7 @@
             <thead>
             <tr>
                 <th colspan="5" style="text-align: center;font-size: 22px;background: lightgreen;border-top: 3px solid lightgreen;">
-                    <?=($data[0]['course']->fullname);?>
+                    <?= s($data[0]['course']->fullname);?>
                 </th>
             </tr>
             <tr>
@@ -63,9 +68,9 @@
             <?php foreach ($data as $k => $res):?>
                 <tr>
                     <td><?=++$i;?></td>
-                    <td><?=$res['user']->firstname. " " . $res['user']->lastname;?></td>
-                    <td><?=$res['user']->email;?></td>
-                    <td style="text-align: right;"><?=$res['status'];?></td>
+                    <td><?= s(fullname($res['user']));?></td>
+                    <td><?= s($res['user']->email);?></td>
+                    <td style="text-align: right;"><?= s($res['status']);?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

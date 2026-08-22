@@ -132,12 +132,18 @@ class student_api {
             return null;
         }
 
+        global $CFG;
+
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_TIMEOUT, 35);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+
+        if (!empty($CFG->pathtocertificate) && file_exists($CFG->pathtocertificate)) {
+            curl_setopt($curl, CURLOPT_CAINFO, $CFG->pathtocertificate);
+        }
 
         $headers = [];
         if (!empty($this->apiKey)) {

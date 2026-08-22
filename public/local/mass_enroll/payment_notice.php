@@ -82,7 +82,7 @@ echo $OUTPUT->header();
     overflow: hidden;
 }
 .wub-payment-header {
-    background: linear-gradient(135deg, #0A246A 0%, #1e3a8a 100%);
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, var(--wub-primary-light, #1487ed) 100%);
     color: #ffffff;
     padding: 32px 28px;
     text-align: center;
@@ -147,7 +147,7 @@ echo $OUTPUT->header();
     flex-wrap: wrap;
 }
 .wub-btn-primary {
-    background: #0A246A;
+    background: var(--wub-primary, #0f6cbf);
     color: #ffffff;
     padding: 12px 24px;
     border-radius: 8px;
@@ -158,7 +158,7 @@ echo $OUTPUT->header();
     align-items: center;
 }
 .wub-btn-primary:hover {
-    background: #1e3a8a;
+    background: var(--wub-primary-light, #1487ed);
     color: #ffffff;
 }
 .wub-btn-outline {
@@ -225,7 +225,7 @@ echo $OUTPUT->header();
                 <p>Under university guidelines, student access to the Moodle eLearning dashboard is restricted whenever outstanding fees exceed <strong>100 BDT</strong>. Your course enrolments remain secure in the system and will become immediately visible on your dashboard once your dues are settled.</p>
                 <p><strong>How to restore dashboard access:</strong></p>
                 <ol style="margin-left: 20px; padding-left: 0;">
-                    <li>Log into your <strong><a href="https://wub.e-dhrubo.com/users" target="_blank" style="color: #0A246A; text-decoration: underline;">WUB UMS Portal</a></strong> or visit the Accounts Office.</li>
+                    <li>Log into your <strong><a href="https://wub.e-dhrubo.com/users" target="_blank" style="color: var(--wub-primary, #0f6cbf); text-decoration: underline;">WUB UMS Portal</a></strong> or visit the Accounts Office.</li>
                     <li>Clear the outstanding balance of <strong><?= number_format($due_amount, 2); ?> BDT</strong>.</li>
                     <li>Once payment is recorded in UMS, log back into Moodle to access your dashboard and enrolled courses.</li>
                 </ol>

@@ -42,16 +42,18 @@
     $PAGE->set_pagelayout('standard');
     $PAGE->requires->jquery();
 
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot.'/local/mass_enroll/css/bulk_enrollment.css'),true);
-    $PAGE->requires->css(new moodle_url($CFG->wwwroot.'/local/mass_enroll/css/ladda.min.css'),true);
-    $PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.16.3/sweetalert2.min.css'),TRUE);
-    $PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'),TRUE);
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/mass_enroll/css/bulk_enrollment.css'), true);
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/mass_enroll/css/ladda.min.css'), true);
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/mass_enroll/css/sweetalert2.min.css'), true);
+    $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/local/mass_enroll/css/select2.min.css'), true);
 
-    $PAGE->requires->js(new moodle_url('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'),true);
-    $PAGE->requires->js(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js'),true);
-    $PAGE->requires->js(new moodle_url($CFG->wwwroot.'/local/mass_enroll/js/spin.min.js'),true);
-    $PAGE->requires->js(new moodle_url($CFG->wwwroot.'/local/mass_enroll/js/ladda.min.js'),true);
-    $PAGE->requires->js(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.16.3/sweetalert2.min.js'),true);
+    $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/mass_enroll/js/select2.min.js'), true);
+    $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/mass_enroll/js/list.min.js'), true);
+    $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/mass_enroll/js/spin.min.js'), true);
+    $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/mass_enroll/js/ladda.min.js'), true);
+    $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/local/mass_enroll/js/sweetalert2.min.js'), true);
+
+    $PAGE->requires->js_call_amd('local_mass_enroll/enrolled_view', 'init');
 
 
     $PAGE->navbar->add(get_string("enrolled_navbar","local_mass_enroll"), "/local/mass_enroll/enrolled.php");
@@ -64,6 +66,7 @@
     $context_data= (object)[
         "courses_category" => $courses_category,
         "programs" => $programs,
+        "sesskey" => sesskey(),
     ];
 
     echo $OUTPUT->header();
