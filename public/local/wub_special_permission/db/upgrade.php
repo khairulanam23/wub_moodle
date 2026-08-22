@@ -53,5 +53,35 @@ function xmldb_local_wub_special_permission_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026081501, 'local', 'wub_special_permission');
     }
 
+    if ($oldversion < 2026082201) {
+        // Define table wub_special_permission to be created.
+        $table = new xmldb_table('wub_special_permission');
+
+        // Adding fields to table wub_special_permission.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+        $table->add_field('timestart', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timeend', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('grantedby', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+        $table->add_field('reason', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table wub_special_permission.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fk_userid', XMLDB_KEY_FOREIGN_UNIQUE, ['userid'], 'user', ['id']);
+
+        // Adding indexes to table wub_special_permission.
+        $table->add_index('idx_timeend', XMLDB_INDEX_NOTUNIQUE, ['timeend']);
+
+        // Conditionally launch create table for wub_special_permission.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2026082201, 'local', 'wub_special_permission');
+    }
+
     return true;
 }

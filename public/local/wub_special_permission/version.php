@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026081501;
+$plugin->version   = 2026082201;
 $plugin->requires  = 2022041900;
 $plugin->component = 'local_wub_special_permission';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.0';
+$plugin->release   = '1.1.0';
