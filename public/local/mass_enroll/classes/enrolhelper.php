@@ -547,13 +547,19 @@ class enrolhelper {
         if ($curl === false) {
             return [];
         }
+        global $CFG;
+
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_TIMEOUT, 35);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+
+        if (!empty($CFG->pathtocertificate) && file_exists($CFG->pathtocertificate)) {
+            curl_setopt($curl, CURLOPT_CAINFO, $CFG->pathtocertificate);
+        }
         curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
         $headers = [];
@@ -694,22 +700,9 @@ class enrolhelper {
      * @return stdClass|null
      */
     public function sync_or_create_student_user($std_data, $program_id = '', $batch_id = '') {
-        // Delegate entirely to the canonical sync service in local_wub_ums.
-        // This avoids duplicating user creation, password handling, and special_premission logic.
-        global $CFG;
-        if (!class_exists('\\local_wub_ums\\sync_service')) {
-            $path = $CFG->dirroot . '/local/wub_ums/classes/sync_service.php';
-            if (file_exists($path)) {
-                require_once($CFG->dirroot . '/local/wub_ums/classes/api_client.php');
-                require_once($path);
-            }
-        }
-        if (class_exists('\\local_wub_ums\\sync_service')) {
-            $service = new \local_wub_ums\sync_service();
-            return $service->sync_student($std_data, (string)$program_id, (string)$batch_id);
-        }
-        // If sync_service is unavailable (plugin not installed), return null gracefully.
-        return null;
+        // Delegate to enrollment_service which consumes the canonical UMS sync service.
+        $enrolService = new \local_mass_enroll\service\enrollment_service();
+        return $enrolService->sync_or_create_student($std_data, (string)$program_id, (string)$batch_id);
     }
 
     /**

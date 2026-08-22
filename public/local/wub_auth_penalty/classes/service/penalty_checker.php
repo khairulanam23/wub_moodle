@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use context_course;
 use stdClass;
+use local_wub_auth_penalty\repository\penalty_repository;
 
 /**
  * Access Enforcement & Penalty Checker Service.
@@ -58,15 +59,23 @@ class penalty_checker
     protected due_calculator $calculator;
 
     /**
+     * Penalty repository instance.
+     * @var penalty_repository
+     */
+    protected penalty_repository $repository;
+
+    /**
      * Constructor.
      *
      * @param student_api|null $apiClient
      * @param due_calculator|null $calculator
+     * @param penalty_repository|null $repository
      */
-    public function __construct(?student_api $apiClient = null, ?due_calculator $calculator = null)
+    public function __construct(?student_api $apiClient = null, ?due_calculator $calculator = null, ?penalty_repository $repository = null)
     {
         $this->apiClient = $apiClient ?? new student_api();
         $this->calculator = $calculator ?? new due_calculator();
+        $this->repository = $repository ?? new penalty_repository();
     }
 
     /**
@@ -99,7 +108,7 @@ class penalty_checker
      */
     public function check_due_status(int $userid): array
     {
-        global $DB, $SESSION;
+        global $SESSION;
 
         // 1. Site administrators exempt
         if (is_siteadmin($userid)) {
@@ -127,26 +136,17 @@ class penalty_checker
             ];
         }
 
-        $courses = enrol_get_users_courses($userid, true, ['id']);
-        if (!empty($courses)) {
-            foreach ($courses as $c) {
-                $ccontext = \context_course::instance($c->id);
-                if (
-                    has_capability('moodle/course:manageactivities', $ccontext, $userid, false) ||
-                    has_capability('moodle/course:viewhiddenactivities', $ccontext, $userid, false)
-                ) {
-                    return [
-                        'allowed' => true,
-                        'reason' => 'Teacher exempt',
-                        'status' => 'Active',
-                        'due' => 0.0,
-                        'redirect_url' => ''
-                    ];
-                }
-            }
+        if ($this->repository->is_user_teacher_in_any_course($userid)) {
+            return [
+                'allowed' => true,
+                'reason' => 'Teacher exempt',
+                'status' => 'Active',
+                'due' => 0.0,
+                'redirect_url' => ''
+            ];
         }
 
-        $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0]);
+        $user = $this->repository->get_user($userid);
         if (!$user) {
             return [
                 'allowed' => false,
@@ -209,10 +209,7 @@ class penalty_checker
         }
 
         if (empty($programId)) {
-            $umsRec = $DB->get_record('enrol_ums_user', ['user_id' => $user->id], 'program_id');
-            if ($umsRec && !empty($umsRec->program_id)) {
-                $programId = $umsRec->program_id;
-            }
+            $programId = $this->repository->get_student_program_id($user->id);
         }
 
         $dueResult = $this->calculator->getDue($paymentInfo, $programId, $feeDetails);
@@ -245,32 +242,15 @@ class penalty_checker
 
     public function has_valid_special_permission(stdClass $user): bool
     {
-        global $DB;
-
-        // Ensure special_premission fields exist on user object
-        if (!isset($user->special_premission) || !isset($user->special_premission_expiry)) {
-            $dbUser = $DB->get_record('user', ['id' => $user->id], 'id, special_premission, special_premission_expiry');
-            if ($dbUser) {
-                $user->special_premission = $dbUser->special_premission ?? 0;
-                $user->special_premission_expiry = $dbUser->special_premission_expiry ?? 0;
-            }
+        $dbUser = $this->repository->get_user_special_permission($user->id);
+        if ($dbUser) {
+            $user->special_premission = $dbUser->special_premission ?? 0;
+            $user->special_premission_expiry = $dbUser->special_premission_expiry ?? 0;
         }
 
         $isPermissionEnabled = !empty($user->special_premission) && (int)$user->special_premission === 1;
 
         if (!$isPermissionEnabled) {
-            // Check legacy user preference for backward compatibility
-            $legacyPref = get_user_preferences('wub_permission', null, $user->id);
-            if (!empty($legacyPref)) {
-                $expiryTimestamp = is_numeric($legacyPref) ? (int)$legacyPref : strtotime(trim($legacyPref) . ' 23:59:59');
-                if ($expiryTimestamp !== false && time() <= $expiryTimestamp) {
-                    // Self-heal database field
-                    $DB->execute("UPDATE {user} SET special_premission = 1, special_premission_expiry = ? WHERE id = ?", [$expiryTimestamp, $user->id]);
-                    $user->special_premission = 1;
-                    $user->special_premission_expiry = $expiryTimestamp;
-                    return true;
-                }
-            }
             return false;
         }
 
@@ -284,8 +264,8 @@ class penalty_checker
             return true;
         }
 
-        // Automatic expiration: if special_premission = true but expired, safely update DB to false
-        $DB->execute("UPDATE {user} SET special_premission = 0 WHERE id = ?", [$user->id]);
+        // Automatic expiration: if special_premission = true but expired, safely update DB to false via repository
+        $this->repository->update_user_special_permission($user->id, 0);
         $user->special_premission = 0;
         unset_user_preference('wub_permission', $user->id);
 
