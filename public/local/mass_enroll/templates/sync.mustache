@@ -18,7 +18,7 @@
     @template local_mass_enroll/sync
 }}
 
-    <div class="wub-mass-enroll-container">
+<div class="wub-mass-enroll-container">
     <div class="wub-banner-header">
         <div>
             <h2><i class="fa fa-refresh me-2"></i>WUB UMS Student Synchronization</h2>
@@ -30,6 +30,7 @@
     </div>
 
     <form action="/local/mass_enroll/api.php" method="POST" id="bulk_sync">
+        <input type="hidden" name="sesskey" value="{{sesskey}}" />
         <input type="hidden" name="action" value="create_selected_users" />
         
         <div class="wub-section-card mb-4">
@@ -73,15 +74,15 @@
 
             <div class="wub-search-box-wrapper mb-3">
                 <i class="fa fa-search search-icon"></i>
-                <input type="text" id="sync_search_box" class="search" placeholder="Type to filter loaded students by name, email or status..." onkeyup="filterSyncTable()" />
+                <input type="text" id="sync_search_box" class="search" placeholder="Type to filter loaded students by name, email or status..." />
             </div>
 
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle mb-0" style="background: #ffffff; border-radius: 10px; overflow: hidden;">
-                    <thead style="background: #0A246A; color: #ffffff;">
+                    <thead style="background: var(--wub-primary, #0f6cbf); color: #ffffff;">
                         <tr>
                             <th width="5%" class="text-center" style="color: #fff;">
-                                <input type="checkbox" id="select_all_sync" onclick="sAll(this,'#sync_table input:checkbox');" checked style="accent-color: #ffffff; width: 16px; height: 16px; cursor: pointer;" />
+                                <input type="checkbox" id="select_all_sync" checked style="accent-color: #ffffff; width: 16px; height: 16px; cursor: pointer;" />
                             </th>
                             <th width="30%" style="color: #fff;">Student Name & ID</th>
                             <th width="30%" style="color: #fff;">Email Address</th>
@@ -101,305 +102,3 @@
         </div>
     </form>
 </div>
-
-<script>
-    $(function(){
-        $('.select2').select2({
-            theme: 'classic',
-            width: '100%',
-        });
-
-        $('#program').on('change select2:select', function(e) {
-            let program_id = $(this).val() || (e && e.params && e.params.data ? e.params.data.id : '');
-            let batch_select = $('#batch');
-            batch_select.empty().append('<option value="">All Batches</option>');
-            if (program_id) {
-                $.ajax({
-                    url: '/local/mass_enroll/api.php',
-                    method: 'POST',
-                    data: {
-                        program_id: program_id,
-                        sesskey: (typeof M !== 'undefined' && M.cfg ? M.cfg.sesskey : '')
-                    },
-                    success: function (res) {
-                        try {
-                            let batches = (typeof res === 'string') ? JSON.parse(res) : res;
-                            if (Array.isArray(batches)) {
-                                for (let b of batches) {
-                                    let b_val = (typeof b === 'object') ? (b.batch_title || b.title || b.id) : b;
-                                    let b_lbl = (typeof b === 'object') ? (b.batch_title || b.title || b.id) : b;
-                                    batch_select.append(new Option(b_lbl, b_val, false, false));
-                                }
-                            }
-                        } catch(e) {}
-                        batch_select.trigger('change');
-                    }
-                });
-            } else {
-                batch_select.trigger('change');
-            }
-        });
-
-        $('#search_programs').click(function () {
-            let l = Ladda.create(this);
-            l.start();
-
-            let program = $('#program').val();
-            let batch = $('#batch').val() || '0';
-
-            if (program){
-                $.ajax({
-                    url: '/local/mass_enroll/api.php',
-                    method: 'POST',
-                    data: {
-                        sync_program: program,
-                        batch: batch,
-                        sesskey: (typeof M !== 'undefined' && M.cfg ? M.cfg.sesskey : '')
-                    },
-                    success: function (res) {
-                        try {
-                            let obj = (typeof res === 'string') ? JSON.parse(res) : res;
-                            let tr = '';
-                            let new_count = 0;
-                            let existing_count = 0;
-
-                            if (Array.isArray(obj)) {
-                                for (let o of obj){
-                                    tr += setTableBodyTr(o);
-                                    if (o.is_existing || o.selectable === false) {
-                                        existing_count++;
-                                    } else {
-                                        new_count++;
-                                    }
-                                }
-                            } else if (typeof obj === 'object') {
-                                Object.entries(obj).forEach(([key, o]) => {
-                                    tr += setTableBodyTr(o);
-                                    if (o.is_existing || o.selectable === false) {
-                                        existing_count++;
-                                    } else {
-                                        new_count++;
-                                    }
-                                });
-                            }
-                            ls(l);
-                            let table_body = $('#sync_table');
-                            table_body.empty();
-                            if (tr){
-                                table_body.append(tr);
-                                $('#sync_summary_badge').html('<span class="text-success fw-bold">' + existing_count + ' Sync (In Local DB)</span> | <span class="text-muted fw-bold">' + new_count + ' Not Sync (Only in UMS)</span>');
-                            } else {
-                                table_body.append('<tr><td colspan="5" class="text-center text-muted p-4">No student records returned from UMS for this selection.</td></tr>');
-                                $('#sync_summary_badge').text('');
-                            }
-                            $("#output").show();
-                            $('#sync_btn').show();
-                        } catch (e) {
-                            ls(l, 1000);
-                        }
-                    },
-                    error: function (err) {
-                        ls(l, 1000);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: "Failed to connect to UMS synchronization service. Code: " + err.status,
-                        });
-                    }
-                });
-            } else {
-                ls(l, 1500);
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Select Program',
-                    text: "Please select a program to synchronize.",
-                });
-            }
-        });
-
-        $("#bulk_sync").submit(function (e) {
-            e.preventDefault();
-            let checked_boxes = $('#sync_table input:checkbox:checked:not(:disabled)');
-            if (checked_boxes.length === 0) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'No Selection',
-                    text: 'Please select at least one student from the local database to synchronize.',
-                });
-                return;
-            }
-
-            let l = Ladda.create(document.querySelector('#sync_btn'));
-            l.start();
-
-            $.ajax({
-                url: '/local/mass_enroll/api.php',
-                cache: false,
-                contentType: false,
-                processData: false,
-                method: 'POST',
-                data: new FormData(this),
-                success: function (res) {
-                    try {
-                        let obj = (typeof res === 'string') ? JSON.parse(res) : res;
-                        if (obj && obj.status === 'success') {
-                            let created_cnt = (obj.created) ? obj.created.length : 0;
-                            let skipped_cnt = (obj.skipped) ? obj.skipped.length : 0;
-
-                            if (Array.isArray(obj.created)) {
-                                for (let u of obj.created) {
-                                    let safe_un = (u.username || '').replace(/[^a-zA-Z0-9_-]/g, '_');
-                                    let cell = $('#sync_cell_' + safe_un);
-                                    if (cell.length) {
-                                        cell.html('<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> Sync</span>');
-                                    }
-                                    let chk = $('#chk_' + safe_un);
-                                    if (chk.length) {
-                                        chk.prop('checked', false).prop('disabled', true).css({'cursor': 'not-allowed', 'opacity': '0.4'});
-                                    }
-                                }
-                            }
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Synchronization Complete',
-                                html: 'Successfully synchronized <strong>' + created_cnt + '</strong> student record(s) in local database.' + (skipped_cnt > 0 ? '<br/><small class="text-muted">' + skipped_cnt + ' student(s) not in local DB were skipped.</small>' : ''),
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Synchronization Warning',
-                                text: obj.message || 'Operation completed with warnings.',
-                            });
-                        }
-                    } catch (e) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Processed',
-                            text: 'Student records synchronized.',
-                        });
-                    }
-                    ls(l);
-                },
-                error: function (err) {
-                    ls(l, 2000);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to synchronize student records.',
-                    });
-                }
-            });
-        });
-    });
-
-    function sAll(elemEnt, eachAll='input:checkbox'){
-        var status = $(elemEnt).is(":checked");
-        $(eachAll).each(function(){
-            const d = $(this).prop('disabled') || $(this).attr('disabled') === 'disabled';
-            if (!d){
-                $(this).prop('checked', status);
-            }
-        });
-    }
-
-    function setTableBodyTr(obj){
-        let is_existing = (obj.is_existing === true || obj.sync_state === 'synced');
-        let safe_un = (obj.username || '').replace(/[^a-zA-Z0-9_-]/g, '_');
-        let name = obj.full_name || ((obj.firstname || '') + ' ' + (obj.lastname || ''));
-        if (!name.trim()) name = obj.username || 'Student';
-
-        let status_code = obj.status_code !== undefined ? obj.status_code : 0;
-        let status_label = obj.status_label || getUmsStatusLabel(status_code);
-
-        let payload_str = JSON.stringify({
-            username: obj.username,
-            full_name: name,
-            firstname: obj.firstname,
-            lastname: obj.lastname,
-            email: obj.email,
-            program_id: obj.program_id,
-            batch_id: obj.batch_id
-        }).replace(/"/g, '&quot;');
-
-        let tr = '<tr>';
-        
-        // Checkbox: disabled for synced students; enabled for unsynced
-        tr += '<td class="text-center">';
-        if (is_existing) {
-            tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" disabled style="accent-color:#0A246A; width:16px; height:16px; cursor:not-allowed; opacity: 0.4;" />';
-        } else {
-            tr += '<input type="checkbox" id="chk_'+safe_un+'" name="user[]" value="' + payload_str + '" checked style="accent-color:#0A246A; width:16px; height:16px; cursor:pointer;" />';
-        }
-        tr += '</td>';
-
-        // Student Name & Username
-        tr += '<td>';
-        tr += '<strong style="color:#0A246A; font-size: 14px;">' + escapeHtml(name) + '</strong>';
-        if (obj.username || obj.stud_id) {
-            tr += '<br/><small class="text-muted"><i class="fa fa-id-card-o me-1"></i>' + escapeHtml(obj.stud_id || obj.username) + '</small>';
-        }
-        tr += '</td>';
-
-        // Email
-        tr += '<td><span style="color:#334155; font-size:13px;"><i class="fa fa-envelope-o me-1 text-muted"></i>' + escapeHtml(obj.email || '') + '</span></td>';
-
-        // UMS Status Badge
-        tr += '<td class="text-center">' + getStatusBadgeHtml(status_code, status_label) + '</td>';
-
-        // Local DB Sync Status Badge
-        tr += '<td class="text-end" id="sync_cell_' + safe_un + '">';
-        if (is_existing) {
-            tr += '<span class="badge badge-success" style="background:#059669; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-check me-1"></i> Sync</span>';
-        } else {
-            tr += '<span class="badge badge-secondary" style="background:#64748b; color:#fff; padding:4px 10px; border-radius:12px;"><i class="fa fa-times-circle me-1"></i> Not Sync</span>';
-        }
-        tr += '</td>';
-
-        tr += '</tr>';
-        return tr;
-    }
-
-    function getUmsStatusLabel(code) {
-        let map = { 0: 'Active', 4: 'Graduated', 5: 'Suspended', 6: 'Inactive', 7: 'Dismissed', 8: 'Dropped' };
-        return map[code] || 'Active';
-    }
-
-    function getStatusBadgeHtml(code, label) {
-        code = parseInt(code);
-        let bg = '#64748b';
-        if (code === 0) bg = '#10b981'; // Active - green
-        else if (code === 4) bg = '#3b82f6'; // Graduated - blue
-        else if (code === 5) bg = '#ef4444'; // Suspended - red
-        else if (code === 6) bg = '#f59e0b'; // Inactive - amber
-        else if (code === 7) bg = '#881337'; // Dismissed - dark red
-        else if (code === 8) bg = '#6b7280'; // Dropped - gray
-
-        return '<span class="badge" style="background:' + bg + '; color:#fff; padding:4px 8px; font-weight:500; border-radius:8px;">' + escapeHtml(label) + '</span>';
-    }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    function ls(l, m_sec=500){
-        setTimeout(()=>{
-            if (l) l.stop();
-        }, m_sec);
-    }
-
-    function filterSyncTable() {
-        var input = document.getElementById('sync_search_box');
-        var filter = input.value.toLowerCase();
-        var rows = document.querySelectorAll('#sync_table tr');
-        rows.forEach(function(row) {
-            var text = row.textContent || row.innerText;
-            if (text.toLowerCase().indexOf(filter) > -1) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-</script>

@@ -27,8 +27,6 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/wub_policy/lib.php');
-require_once($CFG->dirroot . '/local/header/lib.php');
-require_once($CFG->dirroot . '/local/footer/lib.php');
 
 global $CFG, $PAGE, $OUTPUT, $SESSION, $USER;
 
@@ -80,25 +78,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/wub_policy/index.php', array_filter(['role' => $role, 'returnurl' => $returnurl])));
-$PAGE->set_pagelayout('base');
+$PAGE->set_pagelayout('wubportal');
 $PAGE->set_title(get_string('pluginname', 'local_wub_policy'));
 $PAGE->set_heading(get_string('pluginname', 'local_wub_policy'));
 
 // Render Page.
 echo $OUTPUT->header();
 
-// Render custom WUB transparent header.
-if (function_exists('local_header_render')) {
-    echo local_header_render($OUTPUT);
-}
-
 $renderable = new \local_wub_policy\output\policy_page($role, $error, $returnurl);
 $templatedata = $renderable->export_for_template($OUTPUT);
 echo $OUTPUT->render_from_template('local_wub_policy/policy_page', $templatedata);
-
-// Render custom WUB transparent footer.
-if (function_exists('local_footer_render')) {
-    echo local_footer_render($OUTPUT);
-}
 
 echo $OUTPUT->footer();

@@ -24,15 +24,34 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'WUB Custom Header';
-$string['brandname'] = 'WUB eLearning';
+$string['pluginname'] = 'WUB Portal Header';
+$string['brandname'] = 'World University of Bangladesh';
+
+// Utility bar.
+$string['phonelabel'] = 'QUESTION? CALL:';
+$string['phone'] = '09643204060 Ext: 111-114';
+$string['email'] = 'info@wub.edu.bd';
+$string['faculty'] = 'Faculty';
+$string['career'] = 'Career';
+$string['studentsupport'] = 'Student Support';
+$string['alumni'] = 'Alumni';
+
+// Navigation.
 $string['home'] = 'Home';
 $string['coursecatalog'] = 'Course Catalog';
-$string['contactus'] = 'Contact Us';
 $string['howtoguides'] = 'How-to Guides';
+$string['contactus'] = 'Contact';
 $string['signin'] = 'Sign In';
 $string['dashboard'] = 'Dashboard';
-$string['logout'] = 'Logout';
-$string['phone'] = '+880 9666775577';
-$string['email'] = 'info@wub.edu.bd';
-$string['privacy:metadata'] = 'The WUB Custom Header plugin does not store any personal data.';
+$string['logout'] = 'Log out';
+
+// Settings.
+$string['shownav'] = 'Show navigation and sign-in button';
+$string['shownav_desc'] = 'When enabled, the portal header shows the navigation links and the sign-in / dashboard button on the right of the bar. When disabled (the default) the header shows the WUB logo only.';
+
+// Accessibility.
+$string['togglenav'] = 'Toggle navigation';
+$string['primarynav'] = 'WUB portal navigation';
+$string['quicklinks'] = 'Quick links';
+
+$string['privacy:metadata'] = 'The WUB Portal Header plugin does not store any personal data.';

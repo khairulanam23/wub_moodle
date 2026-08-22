@@ -1,68 +1,321 @@
 /**
- * WUB Custom Header - Styles
- * White Background with 60% Opacity and Glassmorphism
+ * WUB Portal Header - Styles
+ *
+ * Mirrors the header on https://wub.edu.bd/ : a dark utility bar above a white
+ * sticky main bar.
+ *
+ * COLOURS: this file declares no palette of its own. Every colour comes from
+ * the --wub-* custom properties published by theme_academi (scss/wubtokens.scss),
+ * which are derived from the Academi "Primary colour" setting. Change the
+ * setting and purge caches; do not hardcode hex values here.
  *
  * @package    local_header
  * @copyright  2026 WUB eLearning
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-.wub-custom-header.wub-header-transparent {
-    width: 100vw !important;
-    position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
+.wub-custom-header {
     font-family: inherit;
-    background-color: rgba(255, 255, 255, 0.6) !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    z-index: 1000;
-    padding: 0.85rem 0;
-    box-sizing: border-box !important;
+    position: relative;
+    z-index: 1030;
 }
 
-.wub-header-container.wub-navbar-inner {
-    max-width: 1200px;
+.wub-header-inner {
+    max-width: var(--wub-container, 1200px);
+    width: 100%;
     margin: 0 auto;
     padding: 0 1rem;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
     box-sizing: border-box;
-    width: 100%;
 }
 
-.wub-header-brand-logo {
-    display: inline-block;
-    text-decoration: none !important;
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), filter 0.25s ease, opacity 0.25s ease;
+/* ============================================================
+   UTILITY BAR
+   ============================================================ */
+
+.wub-header-topbar {
+    background-color: var(--wub-topbar-bg, var(--wub-topbar-bg, #0f6cbf));
+    color: var(--wub-topbar-fg, #fff);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    padding: 0.5rem 0;
 }
 
-.wub-header-brand-logo:hover {
-    transform: translateY(-1px) scale(1.04);
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.75)) brightness(1.12);
+.wub-topbar-notify {
+    margin: 0;
+    letter-spacing: 0.02em;
 }
 
-.wub-navbar-logo {
+.wub-topbar-notify a,
+.wub-topbar-links a {
+    color: var(--wub-topbar-fg, #fff);
+    text-decoration: none;
+    opacity: 0.88;
+    transition: opacity 0.2s ease;
+}
+
+.wub-topbar-notify a {
+    font-weight: 600;
+    opacity: 1;
+}
+
+.wub-topbar-links a:hover,
+.wub-topbar-links a:focus,
+.wub-topbar-notify a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.wub-topbar-links {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================================
+   MAIN BAR
+   ============================================================ */
+
+.wub-header-mainmenu {
+    background-color: var(--wub-header-bg, #fff);
+    box-shadow: var(--wub-header-shadow, 0 6px 15px 0 rgba(0, 0, 0, 0.05));
+    padding: 0.75rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    transition: padding 0.25s ease, box-shadow 0.25s ease;
+}
+
+.wub-header-mainmenu.is-stuck {
+    padding: 0.4rem 0;
+    box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.12);
+}
+
+.wub-header-brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.wub-header-logo {
     height: 55px;
     width: auto;
     max-width: 280px;
     object-fit: contain;
     display: block;
-    transform: scaleX(1.05);
-    transform-origin: left center;
+    transition: height 0.25s ease;
 }
 
-@media (max-width: 768px) {
-    .wub-navbar-logo {
-        height: 44px;
+.wub-header-mainmenu.is-stuck .wub-header-logo {
+    height: 44px;
+}
+
+.wub-header-collapse {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    flex-grow: 1;
+}
+
+/* Navigation */
+
+.wub-header-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wub-header-nav a {
+    color: var(--wub-heading, #181818);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    display: inline-block;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.wub-header-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background-color: var(--wub-primary, var(--wub-primary, #0f6cbf));
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.25s ease;
+}
+
+.wub-header-nav a:hover,
+.wub-header-nav a:focus,
+.wub-header-nav a.is-active {
+    color: var(--wub-primary, var(--wub-primary, #0f6cbf));
+}
+
+.wub-header-nav a:hover::after,
+.wub-header-nav a:focus::after,
+.wub-header-nav a.is-active::after {
+    transform: scaleX(1);
+}
+
+/* Actions */
+
+.wub-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-shrink: 0;
+}
+
+.wub-btn {
+    display: inline-block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.4;
+    padding: 0.5rem 1.375rem;
+    border-radius: 3px;
+    border: 2px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.wub-btn-primary {
+    background-color: var(--wub-primary, var(--wub-primary, #0f6cbf));
+    border-color: var(--wub-primary, var(--wub-primary, #0f6cbf));
+    color: var(--wub-on-primary, #fff);
+}
+
+.wub-btn-primary:hover,
+.wub-btn-primary:focus {
+    background-color: var(--wub-secondary, var(--wub-secondary, #1487ed));
+    border-color: var(--wub-secondary, var(--wub-secondary, #1487ed));
+    color: var(--wub-on-secondary, #fff);
+    text-decoration: none;
+}
+
+.wub-btn-ghost {
+    background-color: transparent;
+    border-color: var(--wub-border-color, #e5e5e5);
+    color: var(--wub-heading, #181818);
+}
+
+.wub-btn-ghost:hover,
+.wub-btn-ghost:focus {
+    border-color: var(--wub-primary, var(--wub-primary, #0f6cbf));
+    color: var(--wub-primary, var(--wub-primary, #0f6cbf));
+    text-decoration: none;
+}
+
+/* Mobile toggle */
+
+.wub-nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 0 10px;
+    background: transparent;
+    border: 1px solid var(--wub-border-color, #e5e5e5);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.wub-nav-toggle-bar {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background-color: var(--wub-heading, #181818);
+    border-radius: 2px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 991.98px) {
+    .wub-header-topbar .wub-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.375rem;
     }
 
-    .wub-header-container.wub-navbar-inner {
-        padding: 0 0.625rem;
+    .wub-topbar-links {
+        flex-wrap: wrap;
+        gap: 0.875rem;
+    }
+
+    .wub-nav-toggle {
+        display: flex;
+    }
+
+    .wub-header-collapse {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        width: 100%;
+        order: 3;
+        padding: 1rem 0 0.25rem;
+    }
+
+    .wub-header-collapse.is-open {
+        display: flex;
+    }
+
+    .wub-header-mainmenu .wub-header-inner {
+        flex-wrap: wrap;
+    }
+
+    .wub-header-nav ul {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    .wub-header-nav a {
+        padding: 0.625rem 0;
+        border-bottom: 1px solid var(--wub-border-color, #e5e5e5);
+    }
+
+    .wub-header-nav a::after {
+        display: none;
+    }
+
+    .wub-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .wub-btn {
+        text-align: center;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .wub-header-logo,
+    .wub-header-mainmenu.is-stuck .wub-header-logo {
+        height: 40px;
+    }
+
+    .wub-topbar-email {
+        display: none;
     }
 }

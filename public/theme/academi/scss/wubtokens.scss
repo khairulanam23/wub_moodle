@@ -1,0 +1,119 @@
+// WUB brand token layer.
+//
+// This is the SINGLE SOURCE OF TRUTH for every WUB colour in Moodle.
+//
+// Everything below is derived from $primary / $secondary, which come from the
+// theme settings (Site administration > Appearance > Academi > Primary colour).
+// Change the setting, purge caches, and the whole site follows -- including the
+// local_header / local_footer / wub_* plugins, which consume these custom
+// properties instead of declaring their own palettes.
+//
+// Palette reference: https://wub.edu.bd/ (brand blue #0054A6, top bar #0b2c50,
+// footer #111212, footer link #bababa).
+
+// ---------------------------------------------------------------------------
+// Lightness floor.
+//
+// House rule: #0f6cbf is the brand colour and the DARKEST shade allowed on any
+// brand or chrome surface. Lighter tints are fine, darker ones are not.
+// wub-floor() enforces that, so a darker Primary colour setting (or a darker
+// derived shade) is raised to the floor instead of shipping.
+//
+// The floor applies to brand/chrome surfaces only -- headings, body copy and
+// greys are neutral text colours and are left alone.
+// ---------------------------------------------------------------------------
+
+$wub-brand: #0f6cbf !default;
+$wub-lightness-floor: lightness($wub-brand) !default;
+
+@function wub-floor($color) {
+    @if lightness($color) < $wub-lightness-floor {
+        @return lighten($color, $wub-lightness-floor - lightness($color));
+    }
+    @return $color;
+}
+
+$wub-primary-safe: wub-floor($primary);
+$wub-secondary-safe: wub-floor($secondary);
+
+// Chrome colours. Every one is at or above the floor.
+$wub-topbar-bg:      $wub-primary-safe !default;
+$wub-footer-bg:      $wub-primary-safe !default;
+$wub-footer-link:    rgba($white, .9) !default;
+$wub-header-bg:      $white !default;
+$wub-heading:        #181818 !default;
+$wub-body:           #808080 !default;
+$wub-border:         #e5e5e5 !default;
+
+// Accent colours, also floored.
+$wub-accent:         wub-floor(#d97706) !default;
+$wub-accent-hover:   wub-floor(#e8890a) !default;
+$wub-accent-success: wub-floor(#059669) !default;
+$wub-accent-success-hover: wub-floor(#06b981) !default;
+
+:root {
+    // Brand. --wub-primary is the house colour (#0f6cbf) and the darkest tone
+    // used anywhere in the chrome; every other brand token is equal or lighter.
+    --wub-primary: #{$wub-primary-safe};
+    --wub-primary-strong: #{$wub-primary-safe};
+    --wub-primary-light: #{lighten($wub-primary-safe, 10%)};
+    --wub-primary-lighter: #{lighten($wub-primary-safe, 22%)};
+    --wub-primary-10: #{rgba($wub-primary-safe, .1)};
+    --wub-primary-30: #{rgba($wub-primary-safe, .3)};
+    --wub-primary-70: #{rgba($wub-primary-safe, .7)};
+    --wub-on-primary: #{color-yiq($wub-primary-safe)};
+
+    --wub-secondary: #{$wub-secondary-safe};
+    --wub-secondary-light: #{lighten($wub-secondary-safe, 10%)};
+    --wub-on-secondary: #{color-yiq($wub-secondary-safe)};
+
+    // Chrome.
+    --wub-topbar-bg: #{$wub-topbar-bg};
+    --wub-topbar-fg: #{$white};
+    --wub-header-bg: #{$wub-header-bg};
+    --wub-header-shadow: 0 6px 15px 0 #{rgba($black, .05)};
+    --wub-footer-bg: #{$wub-footer-bg};
+    --wub-footer-fg: #{$wub-footer-link};
+    --wub-footer-heading: #{$white};
+    --wub-footer-divider: #{rgba($white, .18)};
+
+    // Neutral text and surfaces. Not brand colours, so the lightness floor
+    // does not apply -- body copy still needs to be readable.
+    --wub-heading: #{$wub-heading};
+    --wub-body: #{$wub-body};
+    --wub-text-dark: #{$gray-900};
+    --wub-text-muted: #{$gray-600};
+    --wub-border-color: #{$wub-border};
+    --wub-surface: #{$white};
+
+    // Status colours, floored so they sit alongside the brand blue.
+    --wub-success: #{wub-floor($success)};
+    --wub-info: #{wub-floor($info)};
+    --wub-warning: #{wub-floor($warning)};
+    --wub-danger: #{wub-floor($danger)};
+
+    // Elevation.
+    --wub-shadow-card: 0 20px 40px #{rgba($black, .25)};
+    --wub-shadow-btn: 0 2px 4px #{rgba($black, .1)};
+    --wub-shadow-btn-hover: 0 6px 12px #{rgba($black, .18)};
+
+    // Metrics shared by the portal chrome.
+    --wub-container: #{$course-content-maxwidth};
+    --wub-header-height: 76px;
+
+    // Legacy aliases.
+    //
+    // The wub_landing / wub_login / wub_policy stylesheets used to each declare
+    // their own :root palette, and those blocks collided. The names are kept so
+    // those stylesheets keep working, but they now resolve to one definition.
+    // The old "navy" tones were darker than the house colour, so they collapse
+    // onto it rather than shipping a darker blue.
+    --wub-navy: #{$wub-primary-safe};
+    --wub-navy-dark: #{$wub-primary-safe};
+    --wub-navy-light: #{lighten($wub-primary-safe, 10%)};
+    --wub-orange: #{$wub-accent};
+    --wub-orange-hover: #{$wub-accent-hover};
+    --wub-green: #{$wub-accent-success};
+    --wub-green-hover: #{$wub-accent-success-hover};
+    --wub-primary-dark: #{$wub-primary-safe};
+}

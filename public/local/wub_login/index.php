@@ -192,12 +192,9 @@ if ($rememberusername === -1) {
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/wub_login/index.php', array_filter(['role' => $role])));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout('wubportal');
 $PAGE->set_title(get_string('pluginname', 'local_wub_login'));
 $PAGE->set_heading(get_string('pluginname', 'local_wub_login'));
-
-require_once($CFG->dirroot . '/local/header/lib.php');
-require_once($CFG->dirroot . '/local/footer/lib.php');
 
 // Prepare renderable.
 $validroles = ['student', 'teacher', 'admin'];
@@ -207,17 +204,7 @@ $renderable = new \local_wub_login\output\login_page($displayrole, $error, $user
 // Render page.
 echo $OUTPUT->header();
 
-// Render custom header.
-if (function_exists('local_header_render')) {
-    echo local_header_render($OUTPUT);
-}
-
 $templatedata = $renderable->export_for_template($OUTPUT);
 echo $OUTPUT->render_from_template('local_wub_login/login_page', $templatedata);
-
-// Render custom footer.
-if (function_exists('local_footer_render')) {
-    echo local_footer_render($OUTPUT);
-}
 
 echo $OUTPUT->footer();

@@ -1,0 +1,173 @@
+// One container system.
+//
+// The problem this solves: the Academi header and footer use .container-fluid
+// (edge to edge) while page content is capped at $course-content-maxwidth. On a
+// wide screen the logo sits hard against the viewport edge and the content
+// floats in the middle, so nothing lines up.
+//
+// Here the coloured bands stay full-bleed -- only their INNER content is
+// constrained, to the same width and the same gutters as the page content. That
+// is the standard pattern and it is what wub.edu.bd does.
+//
+// $course-content-maxwidth is set from theme_academi\helper::load_additional_scss_settings().
+
+$wub-gutter: 1.5rem !default;
+$wub-gutter-md: 1rem !default;
+$wub-gutter-sm: .75rem !default;
+
+@mixin wub-container {
+    max-width: $course-content-maxwidth;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: $wub-gutter;
+    padding-right: $wub-gutter;
+
+    @include media-breakpoint-down(md) {
+        padding-left: $wub-gutter-md;
+        padding-right: $wub-gutter-md;
+    }
+
+    @include media-breakpoint-down(sm) {
+        padding-left: $wub-gutter-sm;
+        padding-right: $wub-gutter-sm;
+    }
+}
+
+// Layouts that are deliberately full-bleed or manage their own chrome are left
+// alone, so nothing that currently works gets narrowed.
+body:not(.pagelayout-embedded):not(.pagelayout-maintenance):not(.pagelayout-secure):not(.pagelayout-print):not(.pagelayout-redirect):not(.pagelayout-wubportal) {
+
+    // Utility bar and logo bar.
+    #header > .container-fluid,
+    .header-main > .container-fluid {
+        @include wub-container;
+    }
+
+    // Footer columns and copyright bar.
+    #page-footer .footer-main > .container-fluid,
+    #page-footer .footer-bottom {
+        @include wub-container;
+    }
+}
+
+// The frontpage builds its own full-bleed sections (slider, marketing spots),
+// so only its inner content is aligned, never the sections themselves.
+body.pagelayout-frontpage {
+    #header > .container-fluid,
+    .header-main > .container-fluid,
+    #page-footer .footer-main > .container-fluid,
+    #page-footer .footer-bottom {
+        @include wub-container;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Responsive chrome.
+//
+// Academi's small-screen logo rule is `.navbar-light .navbar-brand .has-logo`
+// -- a descendant selector, but `has-logo` sits ON .navbar-brand, so it never
+// matches and the logo overflows the viewport below ~575px, colliding with the
+// primary navigation. These rules cap the brand at every width instead.
+// ---------------------------------------------------------------------------
+
+// Academi's own brand rules are .header-main .navbar.navbar-light
+// .navbar-brand.has-logo (0,5,0), so these match that specificity -- a shorter
+// selector silently loses and the sizing appears to do nothing.
+//
+// The logo is 792x186 (4.26:1). Height is what should be controlled; width
+// follows from the ratio.
+
+#header .navbar-brand,
+.header-main .navbar.navbar-light .navbar-brand,
+.header-main .navbar.navbar-light .navbar-brand.has-logo {
+    max-width: 100%;
+}
+
+#header .navbar-brand img,
+.header-main .navbar.navbar-light .navbar-brand.has-logo .logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+@include media-breakpoint-up(lg) {
+    .header-main .navbar.navbar-light .navbar-brand.has-logo {
+        max-width: 340px;
+
+        .logo img {
+            max-height: 80px;
+        }
+    }
+}
+
+@include media-breakpoint-between(md, lg) {
+    .header-main .navbar.navbar-light .navbar-brand.has-logo {
+        max-width: 280px;
+
+        .logo img {
+            max-height: 66px;
+        }
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .header-main .navbar.navbar-light .navbar-brand.has-logo {
+        max-width: 240px;
+
+        .logo img {
+            max-height: 56px;
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .header-main .navbar.navbar-light .navbar-brand.has-logo {
+        max-width: 76%;
+
+        .logo img {
+            max-height: 46px;
+        }
+    }
+}
+
+@include media-breakpoint-down(lg) {
+    // Let the logo bar wrap rather than overlap once it runs out of room.
+    .header-main .navbar {
+        flex-wrap: wrap;
+        row-gap: .5rem;
+    }
+
+    .header-main .primary-navigation {
+        flex-basis: 100%;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .header-main .navbar-brand img {
+        max-height: 52px;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    // The fixed top bar wraps to two lines on narrow screens, which would push
+    // it past the 60px that standard.scss reserves on #page-wrapper and cover
+    // the content. Letting it scroll with the page removes that failure mode.
+    #header.fixed-top {
+        position: static;
+    }
+
+    body:not(.pagelayout-maintenance) #page-wrapper {
+        margin-top: 0;
+    }
+
+    #page.drawers {
+        margin-top: 0;
+    }
+
+    .header-main .navbar-brand {
+        max-width: 78%;
+
+        img {
+            max-height: 44px;
+        }
+    }
+}

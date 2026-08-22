@@ -1,23 +1,7 @@
-/**
- * WUB Custom Login - Scoped Styles
- * Edge-to-Edge Responsive Layout Overriding Theme Constraints
- *
- * @package    local_wub_login
- * @copyright  2026 WUB eLearning
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-:root {
-    --wub-navy: #0A246A;
-    --wub-navy-dark: #071B50;
-    --wub-navy-light: #153894;
-    --wub-green: #059669;
-    --wub-orange: #d97706;
-    --wub-text-dark: #1f2937;
-    --wub-text-muted: #6b7280;
-    --wub-border-color: #e5e7eb;
-    --wub-shadow-card: 0 20px 40px rgba(0, 0, 0, 0.25);
-}
+/* Design tokens now come from theme_academi (scss/wubtokens.scss).
+   They are derived from the Academi "Primary colour" setting, so this
+   file must not redeclare them -- two plugins declaring the same token
+   let CSS load order silently pick the winner. */
 
 /* ============================================================
    MOODLE THEME OVERRIDES (Eliminate Outer Box & Title Bounds)
@@ -42,37 +26,25 @@
     box-shadow: none !important;
 }
 
-/* Hide default Moodle theme header, page heading, navbar, and footer elements */
-#page-local-wub_login-index #header,
-#page-local-wub_login-index #page-header,
-#page-local-wub_login-index .page-header-headings,
-#page-local-wub_login-index .header-main,
-#page-local-wub_login-index .secondary-navigation,
-#page-local-wub_login-index .drawer-toggles,
-#page-local-wub_login-index #page-footer,
-#page-local-wub_login-index .footer-popover,
-#page-local-wub_login-index .navbar,
-#page-local-wub_login-index #backToTop {
-    display: none !important;
-}
-
 /* ============================================================
    LOGIN PAGE CONTAINER & HERO WRAPPER
    ============================================================ */
 
 .wub-login-page {
     background: url('/local/wub_login/pix/wubImage.jpg') center/cover no-repeat fixed;
-    min-height: calc(100vh - 280px);
+    min-height: 0;
+    flex: 1 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 3.5rem 1.5rem;
-    width: 100vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
     position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     box-sizing: border-box !important;
 }
 
@@ -127,7 +99,7 @@
     flex-direction: column;
     justify-content: center;
     padding: 3rem 2.5rem;
-    background: linear-gradient(135deg, #071B50 0%, #0A246A 100%);
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, var(--wub-primary-light, #1487ed) 100%);
     box-sizing: border-box;
 }
 
@@ -168,7 +140,7 @@
 
 .wub-role-badge-student {
     background-color: rgba(37, 99, 235, 0.25);
-    color: #60a5fa;
+    color: var(--wub-primary-light, #1487ed);
     border: 1px solid rgba(96, 165, 250, 0.35);
 }
 

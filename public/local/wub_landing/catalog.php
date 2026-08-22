@@ -52,12 +52,9 @@ $PAGE->set_url(new moodle_url('/local/wub_landing/catalog.php', [
     'categoryid' => $categoryid,
     'page' => $page,
 ]));
-$PAGE->set_pagelayout('base');
+$PAGE->set_pagelayout('wubportal');
 $PAGE->set_title(get_string('coursecatalog', 'local_wub_landing'));
 $PAGE->set_heading(get_string('coursecatalog', 'local_wub_landing'));
-
-require_once($CFG->dirroot . '/local/header/lib.php');
-require_once($CFG->dirroot . '/local/footer/lib.php');
 
 // Prepare renderable.
 $renderable = new \local_wub_landing\output\course_catalog($search, $categoryid, $page, $perpage);
@@ -65,17 +62,7 @@ $renderable = new \local_wub_landing\output\course_catalog($search, $categoryid,
 // Render — header() must be called first to initialize the full renderer.
 echo $OUTPUT->header();
 
-// Render custom WUB header.
-if (function_exists('local_header_render')) {
-    echo local_header_render($OUTPUT);
-}
-
 $templatedata = $renderable->export_for_template($OUTPUT);
 echo $OUTPUT->render_from_template('local_wub_landing/course_catalog', $templatedata);
-
-// Render custom WUB footer.
-if (function_exists('local_footer_render')) {
-    echo local_footer_render($OUTPUT);
-}
 
 echo $OUTPUT->footer();

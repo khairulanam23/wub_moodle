@@ -28,38 +28,27 @@
     box-shadow: none !important;
 }
 
-#page-local-wub_policy-index #header,
-#page-local-wub_policy-index #page-header,
-#page-local-wub_policy-index .page-header-headings,
-#page-local-wub_policy-index .header-main,
-#page-local-wub_policy-index .secondary-navigation,
-#page-local-wub_policy-index .drawer-toggles,
-#page-local-wub_policy-index #page-footer,
-#page-local-wub_policy-index .footer-popover,
-#page-local-wub_policy-index .navbar,
-#page-local-wub_policy-index #backToTop {
-    display: none !important;
-}
-
 /* ============================================================
    PAGE LAYOUT & CONTAINER
    ============================================================ */
 
 .wub-policy-page {
     background: linear-gradient(180deg, #f0f4f9 0%, #e9eef5 100%);
-    min-height: calc(100vh - 160px);
+    min-height: 0;
+    flex: 1 0 auto;
     display: flex;
     justify-content: center;
     padding: 2.5rem 1.25rem 6rem 1.25rem;
-    width: 100vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
     position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     box-sizing: border-box !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #1e293b;
+    color: var(--wub-text-dark, #1d2125);
 }
 
 .wub-policy-container {
@@ -81,11 +70,11 @@
 
 /* Header Bar */
 .wub-policy-header-bar {
-    background: linear-gradient(135deg, #0A246A 0%, #1e3a8a 60%, #172554 100%);
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, var(--wub-primary-light, #1487ed) 60%, var(--wub-primary, #0f6cbf) 100%);
     color: #ffffff;
     padding: 2.25rem 2.5rem;
     position: relative;
-    border-bottom: 2px solid #3b82f6;
+    border-bottom: 2px solid var(--wub-primary-light, #1487ed);
 }
 
 .wub-policy-badges-row {
@@ -111,7 +100,7 @@
 .wub-role-badge-student {
     background: rgba(59, 130, 246, 0.25);
     color: #93c5fd;
-    border: 1px solid #60a5fa;
+    border: 1px solid var(--wub-primary-light, #1487ed);
 }
 
 .wub-role-badge-teacher {
@@ -142,12 +131,12 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #60a5fa;
+    background: var(--wub-primary-light, #1487ed);
     display: inline-block;
 }
 
 .pill-dot.green {
-    background: #10b981;
+    background: var(--wub-green, #07c78c);
     box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
 }
 
@@ -173,7 +162,7 @@
     padding: 1rem 1.35rem;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
-    border-left: 4px solid #0A246A;
+    border-left: 4px solid var(--wub-primary, #0f6cbf);
     border-radius: 8px;
     display: flex;
     gap: 1rem;
@@ -181,19 +170,19 @@
 }
 
 .advisory-icon {
-    color: #0A246A;
+    color: var(--wub-primary, #0f6cbf);
     flex-shrink: 0;
     margin-top: 2px;
 }
 
 .advisory-content {
     font-size: 0.92rem;
-    color: #1e3a8a;
+    color: var(--wub-primary-light, #1487ed);
     line-height: 1.55;
 }
 
 .advisory-content strong {
-    color: #0A246A;
+    color: var(--wub-primary, #0f6cbf);
 }
 
 /* Error Alert */
@@ -248,16 +237,16 @@
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     font-size: 0.82rem;
-    color: #0A246A;
+    color: var(--wub-primary, #0f6cbf);
     font-weight: 600;
     text-decoration: none;
     transition: all 0.15s ease;
 }
 
 .toc-chip:hover {
-    background: #0A246A;
+    background: var(--wub-primary, #0f6cbf);
     color: #ffffff;
-    border-color: #0A246A;
+    border-color: var(--wub-primary, #0f6cbf);
     text-decoration: none;
 }
 
@@ -273,7 +262,7 @@
 .category-heading {
     font-size: 1.18rem;
     font-weight: 800;
-    color: #0A246A;
+    color: var(--wub-primary, #0f6cbf);
     border-bottom: 2px solid #e2e8f0;
     padding-bottom: 0.5rem;
     margin-bottom: 1.25rem;
@@ -310,7 +299,7 @@
 }
 
 .policy-num-badge {
-    background: #0A246A;
+    background: var(--wub-primary, #0f6cbf);
     color: #ffffff;
     font-size: 0.78rem;
     font-weight: 800;
@@ -326,7 +315,7 @@
 .policy-title-text {
     font-size: 1.02rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--wub-text-dark, #1d2125);
     margin: 0;
     line-height: 1.35;
 }
@@ -347,7 +336,7 @@
 }
 
 .policy-item-body strong {
-    color: #0f172a;
+    color: var(--wub-text-dark, #1d2125);
 }
 
 /* Sticky Action & Agreement Form */
@@ -384,7 +373,7 @@
     width: 20px;
     height: 20px;
     margin: 2px 0 0 0 !important;
-    accent-color: #0A246A;
+    accent-color: var(--wub-primary, #0f6cbf);
     cursor: pointer;
     flex-shrink: 0;
 }
@@ -392,7 +381,7 @@
 .wub-agree-text {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #0f172a;
+    color: var(--wub-text-dark, #1d2125);
     line-height: 1.45;
 }
 
@@ -419,7 +408,7 @@
 
 .wub-btn-cancel:hover {
     background: #e2e8f0;
-    color: #1e293b;
+    color: var(--wub-text-dark, #1d2125);
     text-decoration: none;
 }
 
@@ -440,19 +429,19 @@
 }
 
 .wub-btn-continue.is-ready {
-    background: #059669;
+    background: var(--wub-green, #07c78c);
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
 }
 
 .wub-btn-continue.is-ready:hover {
-    background: #047857;
+    background: var(--wub-green-hover, #06c88b);
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
 }
 
 .wub-btn-continue.is-submitting {
-    background: #0284c7 !important;
+    background: var(--wub-primary, #0f6cbf) !important;
     cursor: wait !important;
     opacity: 0.85;
 }

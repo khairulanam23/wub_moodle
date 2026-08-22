@@ -77,6 +77,30 @@ class helper {
         $primary70 = $this->get_hexa($primary, '0.7');
         $secondary70 = $this->get_hexa($secondary, '0.7');
         $scss .= $primary ? '$primary:'.$primary.";\n" : "";
+        // Bootstrap's $blue is what core Moodle uses for drag-and-drop borders,
+        // activity icons and --bs-blue. colors.scss declares it with !default, so
+        // it would otherwise keep Moodle's stock blue and never follow this
+        // setting -- one of the ways a "changed" brand colour appears not to apply.
+        $scss .= $primary ? '$blue:'.$primary.";\n" : "";
+        // House rule: nothing darker than the brand colour. Bootstrap derives
+        // $link-hover-color by shading $link-color, which would go darker, so
+        // it is set explicitly to a lighter tint instead. ($link-shade-percentage
+        // is left alone -- _colored-links.scss passes it straight to
+        // shade-color(), which rejects negative weights.)
+        $scss .= $primary ? '$link-hover-color: lighten('.$primary.', 12%);'."\n" : "";
+
+        // Content width.
+        //
+        // Boost ships $course-content-maxwidth: 830px, which drives .main-inner,
+        // .secondary-navigation, .footer-popover, .header-maxwidth, the sticky
+        // footer and the admin pages. On a wide screen that leaves the content
+        // as a narrow column while the theme header and footer run edge to edge.
+        // Setting the variable here (before Bootstrap and core Moodle are
+        // imported, so it beats their !default) realigns all of them at once --
+        // no per-selector overrides and no specificity fights.
+        $pagewidth = theme_academi_get_setting('pagesizecustomval');
+        $pagewidth = (!empty($pagewidth) && $pagewidth > 600) ? $pagewidth : 1320;
+        $scss .= '$course-content-maxwidth:'.$pagewidth."px;\n";
         $scss .= $secondary ? '$secondary:'.$secondary.";\n" : "";
         $scss .= $slideopacity ? '$url_1:'.$slideopacity.";\n" : "";
         $scss .= $pagesizecustomval ? '$custom-container:'.$pagesizecustomval."px;\n" : "";

@@ -1,0 +1,392 @@
+Backup of the theme_academi 'customcss' setting, taken before it was replaced
+by theme/academi/scss/wubcustom.scss. Kept for reference only; not compiled.
+
+/* ============================================================
+
+/* ============================================================
+   PAGINATION LIGHT BLUE (#e0f2fe) BOX WITH BLACK TEXT (#111111)
+   ============================================================ */
+.wub-pagination .wub-page-link,
+.wub-page-link,
+.pagination .page-item .page-link {
+    background-color: #e0f2fe !important;
+    background: #e0f2fe !important;
+    color: #111111 !important;
+    border: 1px solid #bae6fd !important;
+    font-weight: 700 !important;
+}
+
+.wub-pagination .wub-page-link *,
+.wub-page-link *,
+.pagination .page-item .page-link * {
+    color: #111111 !important;
+    fill: #111111 !important;
+    stroke: #111111 !important;
+}
+
+.wub-pagination .wub-page-link:hover,
+.wub-page-link:hover,
+.pagination .page-item .page-link:hover {
+    background-color: #bae6fd !important;
+    background: #bae6fd !important;
+    border-color: #0284c7 !important;
+    color: #111111 !important;
+}
+
+.wub-pagination .wub-page-link.wub-page-active,
+.wub-pagination a.wub-page-link.wub-page-active,
+.wub-page-link.wub-page-active,
+a.wub-page-active,
+.pagination .page-item.active .page-link {
+    background-color: #e0f2fe !important;
+    background: #e0f2fe !important;
+    color: #111111 !important;
+    border: 2px solid #0284c7 !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25) !important;
+}
+
+.wub-pagination .wub-page-link.wub-page-active *,
+.wub-pagination a.wub-page-link.wub-page-active *,
+.wub-page-link.wub-page-active *,
+a.wub-page-active *,
+.pagination .page-item.active .page-link * {
+    color: #111111 !important;
+    fill: #111111 !important;
+    stroke: #111111 !important;
+}
+
+/* ============================================================
+   SLEEK COMPACT FOOTER (#0f6cbf TOP HEADER MATCHING COLOR)
+   ============================================================ */
+
+#page-footer,
+#page-footer.footer-dark,
+#page-footer .footer-main,
+#page-footer .footer-bottom,
+#footer,
+footer,
+.wub-custom-footer,
+.footer-popover {
+    background-color: #0f6cbf !important;
+    background: #0f6cbf !important;
+    color: #ffffff !important;
+    padding: 8px 0 !important;
+    min-height: auto !important;
+    border-top: none !important;
+    box-shadow: none !important;
+}
+
+#page-footer .footer-main,
+.footer-main,
+#page-footer .footer-main .container-fluid,
+#page-footer .footer-main .row {
+    display: none !important;
+}
+
+#page-footer .footer-bottom,
+.footer-bottom,
+.wub-footer-compact-inner {
+    background-color: #0f6cbf !important;
+    background: #0f6cbf !important;
+    padding: 8px 15px !important;
+    text-align: center !important;
+    font-size: 0.9rem !important;
+    color: #ffffff !important;
+    border-top: none !important;
+}
+
+#page-footer .footer-bottom p,
+#page-footer p,
+.footer-bottom p,
+.wub-footer-text {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+}
+
+#page-footer .footer-bottom a,
+#page-footer a,
+.footer-bottom a,
+.wub-footer-text a {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-decoration: underline !important;
+}
+
+#page-footer .footer-bottom a:hover,
+#page-footer a:hover,
+.footer-bottom a:hover,
+.wub-footer-text a:hover {
+    color: #ffa756 !important;
+}
+
+.footer-content-debugging,
+[data-region=footer-container-popover],
+[data-region=footer-content-popover],
+.tool_usertours-resettourcontainer,
+.helplink,
+#page-footer .footer-content-debugging,
+.footer-content-popover {
+    display: none !important;
+}
+
+/* ============================================================
+
+/* ============================================================
+   MOODLE FULL-WIDTH OUTER LAYOUT + PRESERVED INNER DESIGN SPACING
+   ============================================================ */
+
+/* Outer Page Wrappers */
+#page-wrapper,
+#page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#page-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#region-main-box,
+#region-main,
+.main-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Outer Footer Layer: Full Viewport Width Outer Background (#0f6cbf) */
+#page-footer,
+#page-footer.footer-dark,
+#footer,
+footer,
+.wub-custom-footer,
+.wub-footer-compact {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-radius: 0 !important;
+    background-color: #0f6cbf !important;
+    background: #0f6cbf !important;
+    color: #ffffff !important;
+    box-sizing: border-box !important;
+}
+
+/* Inner Footer Content Layer: Preserved Intentional Spacing & Centered Alignment */
+#page-footer .footer-bottom,
+.footer-bottom,
+.wub-footer-compact-inner {
+    width: 100% !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    padding: 10px 1.25rem !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    background-color: transparent !important;
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+#page-footer .footer-bottom p,
+#page-footer p,
+.footer-bottom p,
+.wub-footer-text {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+    line-height: 1.4 !important;
+}
+
+#page-footer .footer-bottom a,
+#page-footer a,
+.footer-bottom a,
+.wub-footer-text a {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-decoration: underline !important;
+}
+
+#page-footer .footer-bottom a:hover,
+#page-footer a:hover,
+.footer-bottom a:hover,
+.wub-footer-text a:hover {
+    color: #ffa756 !important;
+}
+
+/* Hide multi-column blocks and debug output */
+#page-footer .footer-main,
+.footer-main,
+.footer-content-debugging,
+[data-region=footer-container-popover],
+[data-region=footer-content-popover],
+.tool_usertours-resettourcontainer,
+.helplink {
+    display: none !important;
+}
+
+/* ============================================================
+   LOCAL_MASS_ENROLL FULL EDGE-TO-EDGE FOOTER (MATCHING DASHBOARD)
+   ============================================================ */
+.path-local-mass_enroll #page-wrapper,
+.path-local-mass_enroll #page,
+.path-local-mass_enroll #page-content,
+.path-local-mass_enroll #region-main-box,
+.path-local-mass_enroll #region-main,
+.path-local-mass_enroll .main-inner,
+#page-local-mass_enroll-enrolled #page-wrapper,
+#page-local-mass_enroll-enrolled #page,
+#page-local-mass_enroll-enrolled #page-content,
+#page-local-mass_enroll-enrolled #region-main-box,
+#page-local-mass_enroll-enrolled #region-main,
+#page-local-mass_enroll-enrolled .main-inner,
+#page-local-mass_enroll-sync #page-wrapper,
+#page-local-mass_enroll-sync #page,
+#page-local-mass_enroll-sync #page-content,
+#page-local-mass_enroll-sync #region-main-box,
+#page-local-mass_enroll-sync #region-main,
+#page-local-mass_enroll-sync .main-inner {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.path-local-mass_enroll #page-footer,
+#page-local-mass_enroll-enrolled #page-footer,
+#page-local-mass_enroll-sync #page-footer {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-radius: 0 !important;
+    background-color: #0f6cbf !important;
+    background: #0f6cbf !important;
+}
+
+/* ============================================================
+
+/* ============================================================
+
+/* ============================================================
+   WUB REFERENCE IMAGE FOOTER STYLING (#0f6cbf OCEAN BLUE)
+   ============================================================ */
+
+/* Excluded pages: Hide footer-main completely & collapse empty space */
+.path-local-wub_landing #page-footer .footer-main,
+.path-local-wub_policy #page-footer .footer-main,
+#page-local-wub_landing-index #page-footer .footer-main,
+#page-local-wub_landing-catalog #page-footer .footer-main,
+#page-local-wub_landing-course #page-footer .footer-main,
+.path-course-view #page-footer .footer-main,
+#page-course-view-topics #page-footer .footer-main,
+#page-course-view-weeks #page-footer .footer-main,
+.notloggedin #page-footer .footer-main {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+}
+
+.path-local-wub_landing #page-footer #footer,
+.path-local-wub_policy #page-footer #footer,
+.path-course-view #page-footer #footer,
+.notloggedin #page-footer #footer {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Logged-in internal pages: Display 4-column reference footer-main */
+body:not(.notloggedin):not(.path-local-wub_landing):not(.path-local-wub_policy):not(.path-course-view) #page-footer .footer-main {
+    display: block !important;
+    background-color: #0f6cbf !important;
+    background: #0f6cbf !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    padding: 2.5rem 0 1.75rem 0 !important;
+}
+
+#page-footer .footer-main .container,
+#page-footer .footer-main .container-fluid {
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    padding: 0 1.25rem !important;
+}
+
+#page-footer .footer-main h2,
+#page-footer .footer-main h3,
+#page-footer .footer-main h4,
+#page-footer .footer-main h5,
+#page-footer .footer-main .ftitle {
+    color: #ffffff !important;
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 1.25rem !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+}
+
+#page-footer .footer-main p,
+#page-footer .footer-main span,
+#page-footer .footer-main li,
+#page-footer .footer-main div,
+#page-footer .footer-main address {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.88rem !important;
+    line-height: 1.6 !important;
+}
+
+#page-footer .footer-main a {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: none !important;
+    font-weight: 400 !important;
+    transition: all 0.2s ease !important;
+}
+
+#page-footer .footer-main a:hover {
+    color: #ffffff !important;
+    text-decoration: underline !important;
+}
+
+#page-footer .footer-main ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#page-footer .footer-main ul li {
+    margin-bottom: 0.55rem !important;
+}
+
+#page-footer .footer-bottom,
+.footer-bottom,
+.wub-footer-compact-inner {
+    background-color: #0f6cbf !important;
+    background: #0f6cbf !important;
+    padding: 12px 1.25rem !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+}

@@ -435,7 +435,8 @@
 
 @media (max-width: 575px) {
     #header {
-        &.moodle-based-header ~ .drawer-right {
+        &.moodle-based-header ~ .drawer-right,
+        &.wub-custom-header ~ .drawer-right {
             margin-top: 60px;
         }
         &.navbar.fixed-top {

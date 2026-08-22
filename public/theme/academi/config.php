@@ -68,6 +68,14 @@ $THEME->blockrtlmanipulations = [
 ];
 
 $THEME->layouts = [
+    // WUB public portal chrome (local_header + local_footer only, no Moodle
+    // navbar / theme header / theme footer). Used by the local_wub_* pages so
+    // the WUB header and footer are rendered exactly once, by the layout.
+    'wubportal' => [
+        'file' => 'wubportal.php',
+        'regions' => [],
+        'options' => ['nofooter' => true, 'nonavbar' => true, 'langmenu' => true],
+    ],
     // Most backwards compatible layout without the blocks.
     'base' => [
         'file' => 'drawers.php',

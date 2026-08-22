@@ -17,13 +17,108 @@
 {{!
     @template local_footer/footer
 
-    Single-Line Compact Footer Template.
-}}
+    WUB portal footer: link columns and contact details over a copyright bar
+    carrying the logo and social icons, mirroring https://wub.edu.bd/.
 
-<footer class="wub-custom-footer wub-footer-compact" id="wub-custom-footer">
-    <div class="wub-footer-container wub-footer-compact-inner">
-        <p class="wub-footer-text">
-            Copyright &copy; {{ year }} - Developed by <a href="{{ companyurl }}" target="_blank" rel="noopener">Computing and Information Services Ltd</a>. Powered by <a href="{{ moodleurl }}" target="_blank" rel="noopener">Moodle</a>
-        </p>
+    This template is rendered by the theme_academi/wubportal layout. Pages must
+    not echo it themselves.
+
+    Context variables required for this template:
+    * columns - [{title, links: [{text, url, haslink, isexternal}]}]
+    * contacttitle, hascontact, contact - [{icon, text, url, haslink}]
+    * hassocial, social - [{icon, url, color}], getsocial
+    * logourl, logolinkurl, sitename
+    * showfull - false renders the copyright line alone (portal default)
+    * copyright - HTML copyright line
+
+    Example context (json):
+    {
+        "columns": [{"title": "IMPORTANT LINKS", "links": [{"text": "Notice", "url": "#", "haslink": true}]}],
+        "contacttitle": "CONTACT US",
+        "hascontact": true,
+        "contact": [{"icon": "fa fa-envelope", "text": "info@wub.edu.bd", "url": "#", "haslink": true}],
+        "hassocial": true,
+        "getsocial": "GET SOCIAL",
+        "social": [{"icon": "fab fa-facebook-f", "url": "#", "color": "#3598dc"}],
+        "logourl": "/local/footer/pix/wub-logo.png",
+        "logolinkurl": "/",
+        "sitename": "World University of Bangladesh",
+        "showfull": false,
+        "copyright": "Copyright &copy; 2026 WUB."
+    }
+}}
+<footer class="wub-custom-footer" id="wub-custom-footer" aria-label="{{#str}}footernav, local_footer{{/str}}">
+
+    {{#showfull}}
+    <div class="wub-footer-top">
+        <div class="wub-footer-inner">
+            {{#columns}}
+                <div class="wub-footer-col">
+                    <h2 class="wub-footer-heading">{{title}}</h2>
+                    <ul class="wub-footer-links">
+                        {{#links}}
+                            <li>
+                                {{#haslink}}
+                                    <a href="{{{url}}}" {{#isexternal}}target="_blank" rel="noopener"{{/isexternal}}>
+                                        <i class="fa fa-angle-double-right" aria-hidden="true"></i>{{text}}
+                                    </a>
+                                {{/haslink}}
+                                {{^haslink}}
+                                    <span>{{text}}</span>
+                                {{/haslink}}
+                            </li>
+                        {{/links}}
+                    </ul>
+                </div>
+            {{/columns}}
+
+            {{#hascontact}}
+                <div class="wub-footer-col">
+                    <h2 class="wub-footer-heading">{{contacttitle}}</h2>
+                    <ul class="wub-footer-links wub-footer-contact">
+                        {{#contact}}
+                            <li>
+                                {{#haslink}}
+                                    <a href="{{{url}}}">
+                                        <i class="{{icon}}" aria-hidden="true"></i>{{text}}
+                                    </a>
+                                {{/haslink}}
+                                {{^haslink}}
+                                    <span><i class="{{icon}}" aria-hidden="true"></i>{{text}}</span>
+                                {{/haslink}}
+                            </li>
+                        {{/contact}}
+                    </ul>
+                </div>
+            {{/hascontact}}
+        </div>
     </div>
+    {{/showfull}}
+
+    <div class="wub-footer-bottom {{^showfull}}wub-footer-bottom-only{{/showfull}}">
+        <div class="wub-footer-inner">
+            {{#showfull}}
+                <a href="{{{logolinkurl}}}" class="wub-footer-brand" title="{{sitename}}">
+                    <img src="{{{logourl}}}" alt="{{sitename}}" class="wub-footer-logo">
+                </a>
+            {{/showfull}}
+
+            <p class="wub-footer-copyright">{{{copyright}}}</p>
+
+            {{#hassocial}}
+                <ul class="wub-footer-social">
+                    <li class="wub-footer-social-label">{{getsocial}}</li>
+                    {{#social}}
+                        <li>
+                            <a href="{{{url}}}" target="_blank" rel="noopener"
+                               {{#color}}style="background-color: {{color}};"{{/color}}>
+                                <i class="{{icon}}" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {{/social}}
+                </ul>
+            {{/hassocial}}
+        </div>
+    </div>
+
 </footer>

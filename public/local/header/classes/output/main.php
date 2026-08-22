@@ -15,7 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderable class for WUB Custom Header (Transparent Navbar with Logo).
+ * Renderable class for the WUB portal header.
+ *
+ * Mirrors the two-tier header on https://wub.edu.bd/ : a dark utility bar
+ * (contact number + quick links) above a white sticky main bar (logo, portal
+ * navigation, call-to-action).
  *
  * @package    local_header
  * @copyright  2026 WUB eLearning
@@ -37,6 +41,9 @@ use stdClass;
  */
 class main implements renderable, templatable {
 
+    /** @var string Base URL of the public WUB website. */
+    protected const WUB_SITE = 'https://wub.edu.bd';
+
     /**
      * Export data for Mustache template.
      *
@@ -44,25 +51,108 @@ class main implements renderable, templatable {
      * @return stdClass Data for Mustache.
      */
     public function export_for_template(renderer_base $output): stdClass {
-        global $USER, $CFG;
+        global $PAGE;
 
         $data = new stdClass();
 
         $isauthenticated = isloggedin() && !isguestuser();
         $data->isauthenticated = $isauthenticated;
 
-        // Logo click redirection target:
-        // If user is logged in -> redirect to home page ('/').
-        // If user is NOT logged in -> redirect to /local/wub_landing/index.php.
-        if ($isauthenticated) {
-            $data->logolinkurl = (new moodle_url('/'))->out(false);
-        } else {
-            $data->logolinkurl = (new moodle_url('/local/wub_landing/index.php'))->out(false);
+        // Utility bar: contact number and the quick links carried over from
+        // the public site's header-top-bar.
+        $data->phonelabel = get_string('phonelabel', 'local_header');
+        $data->phone = get_string('phone', 'local_header');
+        $data->phoneurl = 'tel:' . preg_replace('/[^0-9+]/', '', get_string('phone', 'local_header'));
+        $data->email = get_string('email', 'local_header');
+        $data->quicklinks = [
+            ['text' => get_string('faculty', 'local_header'), 'url' => self::WUB_SITE . '/main/wub_faculty'],
+            ['text' => get_string('career', 'local_header'), 'url' => 'https://jobs.wub.edu.bd/'],
+            ['text' => get_string('studentsupport', 'local_header'), 'url' => self::WUB_SITE . '/main/student_support'],
+            ['text' => get_string('alumni', 'local_header'), 'url' => self::WUB_SITE . '/alumni/alumni_registration_form'],
+        ];
+
+        // Branding. The asset lives in this plugin so local_header no longer
+        // depends on local_wub_landing being installed.
+        $data->logourl = (new moodle_url('/local/header/pix/wub-logo.png'))->out(false);
+        $data->sitename = get_string('brandname', 'local_header');
+        $data->logolinkurl = $isauthenticated
+            ? (new moodle_url('/'))->out(false)
+            : (new moodle_url('/local/wub_landing/index.php'))->out(false);
+
+        // Portal navigation and call to action. Off by default -- the public
+        // portal pages carry the logo only, with nothing on the right of the bar.
+        $data->shownav = (bool) get_config('local_header', 'shownav');
+        if (!$data->shownav) {
+            $data->navitems = [];
+            $data->hassecondary = false;
+            $data->currenturl = '';
+            return $data;
         }
 
-        // WUB Logo URL pointing to /local/wub_landing/pix/wub-logo.png.
-        $data->logourl = (new moodle_url('/local/wub_landing/pix/wub-logo.png'))->out(false);
+        $data->navitems = $this->build_nav($isauthenticated);
+
+        // Call to action.
+        if ($isauthenticated) {
+            $data->ctatext = get_string('dashboard', 'local_header');
+            $data->ctaurl = (new moodle_url('/my/'))->out(false);
+            $data->secondarytext = get_string('logout', 'local_header');
+            $data->secondaryurl = (new moodle_url('/login/logout.php', ['sesskey' => sesskey()]))->out(false);
+        } else {
+            $data->ctatext = get_string('signin', 'local_header');
+            $data->ctaurl = (new moodle_url('/local/wub_login/index.php'))->out(false);
+        }
+        $data->hassecondary = !empty($data->secondaryurl);
+
+        $data->currenturl = $PAGE->url ? $PAGE->url->out_omit_querystring() : '';
 
         return $data;
+    }
+
+    /**
+     * Build the portal navigation, honouring the local_wub_landing toggles.
+     *
+     * @param bool $isauthenticated Whether the current user is a real logged in user.
+     * @return array List of nav items for the template.
+     */
+    protected function build_nav(bool $isauthenticated): array {
+        global $PAGE;
+
+        $items = [];
+
+        $items[] = [
+            'text' => get_string('home', 'local_header'),
+            'url' => $isauthenticated
+                ? (new moodle_url('/my/'))->out(false)
+                : (new moodle_url('/local/wub_landing/index.php'))->out(false),
+        ];
+
+        // The course catalog is optional; local_wub_landing owns that switch.
+        if (get_config('local_wub_landing', 'catalog_enabled')) {
+            $items[] = [
+                'text' => get_string('coursecatalog', 'local_header'),
+                'url' => (new moodle_url('/local/wub_landing/catalog.php'))->out(false),
+            ];
+        }
+
+        // These two are optional URLs configured on local_wub_landing. Only
+        // render them when an admin has actually set a destination.
+        $howto = get_config('local_wub_landing', 'howtoguides_url');
+        if (!empty($howto)) {
+            $items[] = ['text' => get_string('howtoguides', 'local_header'), 'url' => $howto];
+        }
+
+        $contact = get_config('local_wub_landing', 'contactus_url');
+        $items[] = [
+            'text' => get_string('contactus', 'local_header'),
+            'url' => !empty($contact) ? $contact : self::WUB_SITE . '/contact',
+        ];
+
+        // Mark the active item so the header reflects where the user is.
+        $current = $PAGE->url ? $PAGE->url->out_omit_querystring() : '';
+        foreach ($items as $i => $item) {
+            $items[$i]['isactive'] = ($current !== '' && strpos($item['url'], $current) !== false);
+        }
+
+        return $items;
     }
 }

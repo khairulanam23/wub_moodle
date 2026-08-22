@@ -24,16 +24,31 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'WUB Custom Footer';
-$string['brandname'] = 'WUB eLearning';
-$string['description'] = 'World University of Bangladesh is a premier institution providing flexible, quality digital learning and academic management.';
-$string['quicklinks'] = 'Quick Links';
-$string['contactus'] = 'Contact Us';
-$string['address'] = 'Avenue 6, Lake Drive Road, Sector 17/H, Uttara, Dhaka-1230, Bangladesh';
-$string['phone'] = '+880 9666775577';
-$string['email'] = 'info@wub.edu.bd';
-$string['copyright'] = 'Copyright © 2026 World University of Bangladesh. All rights reserved. Powered by Moodle.';
-$string['home'] = 'Home';
-$string['coursecatalog'] = 'Course Catalog';
-$string['signin'] = 'Portal Login';
-$string['privacy:metadata'] = 'The WUB Custom Footer plugin does not store any personal data.';
+$string['pluginname'] = 'WUB Portal Footer';
+$string['brandname'] = 'World University of Bangladesh';
+
+// Settings.
+$string['showfull'] = 'Show full footer on portal pages';
+$string['showfull_desc'] = 'When enabled, the portal footer shows the link columns, contact details, logo and social icons. When disabled (the default) the portal pages carry only the copyright line. This does not affect the Academi theme footer used on logged-in pages.';
+
+$string['linksheading'] = 'Footer link columns';
+$string['linksheading_desc'] = 'The three link columns shown in the portal footer. '
+    . 'Contact details, social media icons and the copyright line are read from the '
+    . 'Academi theme settings (Site administration > Appearance > Themes > Academi) '
+    . 'so they are not duplicated here.';
+$string['coltitle'] = 'Column {$a} heading';
+$string['collinks'] = 'Column {$a} links';
+$string['collinks_desc'] = 'One link per line, in the form <code>Label|https://example.com</code>. '
+    . 'Lines without a URL are rendered as plain text.';
+$string['coltitle4_desc'] = 'Heading for the contact column. Its content comes from the '
+    . 'Academi theme address, phone and email settings.';
+$string['whatsapp'] = 'WhatsApp number';
+$string['whatsapp_desc'] = 'Optional. Shown in the contact column with a WhatsApp link. Leave blank to hide.';
+
+// Footer chrome.
+$string['backtotop'] = 'Back to top';
+$string['getsocial'] = 'GET SOCIAL';
+$string['footernav'] = 'Footer';
+$string['poweredby'] = 'Powered by <a href="https://moodle.org" target="_blank" rel="noopener">Moodle</a>';
+
+$string['privacy:metadata'] = 'The WUB Portal Footer plugin does not store any personal data.';

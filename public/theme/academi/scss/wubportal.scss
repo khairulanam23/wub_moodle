@@ -1,0 +1,65 @@
+// WUB public portal layout.
+//
+// Neutralises the chrome offsets that the standard layouts rely on. The portal
+// layout renders no fixed Moodle navbar, so the 60px reservation that
+// standard.scss puts on #page-wrapper would otherwise show as a blank strip
+// above the WUB header.
+
+body.pagelayout-wubportal {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    #page-wrapper.wub-portal-wrapper {
+        margin-top: 0;
+        height: auto;
+        width: 100%;
+        max-width: none;
+        display: flex;
+        flex-direction: column;
+        flex: 1 0 auto;
+    }
+
+    #page.wub-portal-page {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: none;
+        background: none;
+
+        // Both a flex item (so it grows) and a flex container (so #page-content
+        // below it can grow in turn). Missing the container half silently
+        // breaks the chain and the page stops filling the viewport.
+        display: flex;
+        flex-direction: column;
+        flex: 1 0 auto;
+    }
+
+    #page-content,
+    #region-main-box,
+    #region-main {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+
+        // Stretch the content region so a short page still pushes the footer
+        // to the bottom. Pages used to hardcode calc(100vh - 280px), which
+        // left a white band once the footer became the compact copyright bar.
+        display: flex;
+        flex-direction: column;
+        flex: 1 0 auto;
+    }
+
+    // Moodle wraps main_content in <div role="main">. It is part of the chain,
+    // so without it the page content cannot grow and short pages leave a band
+    // of background above the footer.
+    #region-main > [role="main"] {
+        display: flex;
+        flex-direction: column;
+        flex: 1 0 auto;
+    }
+}

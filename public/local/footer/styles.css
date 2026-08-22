@@ -1,62 +1,237 @@
 /**
- * WUB Custom Footer - Styles
- * Blue Background with 60% Opacity and Glassmorphism
+ * WUB Portal Footer - Styles
+ *
+ * Mirrors the footer on https://wub.edu.bd/ : link columns on a dark ground
+ * over a copyright bar with the logo and social icons.
+ *
+ * COLOURS: this file declares no palette of its own. Every colour comes from
+ * the --wub-* custom properties published by theme_academi (scss/wubtokens.scss),
+ * which are derived from the Academi "Primary colour" setting. Change the
+ * setting and purge caches; do not hardcode hex values here.
  *
  * @package    local_footer
  * @copyright  2026 WUB eLearning
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-.wub-custom-footer.wub-footer-compact {
-    width: 100vw !important;
-    position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
+.wub-custom-footer {
+    background-color: var(--wub-footer-bg, var(--wub-footer-bg, #0f6cbf));
+    color: var(--wub-footer-fg, #bababa);
     font-family: inherit;
-    background-color: #071B50 !important;
-    color: rgba(255, 255, 255, 0.9);
-    padding: 0.85rem 0;
-    box-sizing: border-box !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: auto;
 }
 
-.wub-footer-compact-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 0.75rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    box-sizing: border-box;
+.wub-footer-inner {
+    max-width: var(--wub-container, 1200px);
     width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
 }
 
-.wub-footer-text {
+/* ============================================================
+   LINK COLUMNS
+   ============================================================ */
+
+.wub-footer-top {
+    padding: 3rem 0 2rem;
+}
+
+.wub-footer-top .wub-footer-inner {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+}
+
+.wub-footer-heading {
+    color: var(--wub-footer-heading, #fff);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin: 0 0 1.25rem;
+}
+
+.wub-footer-links {
+    list-style: none;
     margin: 0;
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.95);
-    line-height: 1.4;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    padding: 0;
 }
 
-.wub-footer-text a {
-    color: #d97706 !important;
-    text-decoration: underline !important;
-    font-weight: 600;
+.wub-footer-links li {
+    margin-bottom: 0.55rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.wub-footer-links a,
+.wub-footer-links span {
+    color: var(--wub-footer-fg, #bababa);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
     transition: color 0.2s ease;
 }
 
-.wub-footer-text a:hover {
-    color: #ffffff !important;
+.wub-footer-links a:hover,
+.wub-footer-links a:focus {
+    color: var(--wub-footer-heading, #fff);
+    text-decoration: underline;
 }
 
-@media (max-width: 768px) {
-    .wub-footer-text {
-        font-size: 0.78rem;
-        padding: 0 0.25rem;
+.wub-footer-links i {
+    font-size: 0.8em;
+    flex-shrink: 0;
+    color: var(--wub-primary-light, #1487ed);
+}
+
+.wub-footer-contact li {
+    margin-bottom: 0.75rem;
+}
+
+.wub-footer-contact i {
+    width: 1em;
+    text-align: center;
+}
+
+/* ============================================================
+   COPYRIGHT BAR
+   ============================================================ */
+
+.wub-footer-bottom {
+    border-top: 1px solid var(--wub-footer-divider, rgba(255, 255, 255, 0.12));
+    padding: 1.125rem 0;
+}
+
+.wub-footer-bottom .wub-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.wub-footer-brand {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.wub-footer-logo {
+    height: 42px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+    display: block;
+}
+
+.wub-footer-copyright {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    text-align: center;
+    flex: 1 1 auto;
+    color: var(--wub-footer-fg, #bababa);
+}
+
+/* Compact mode: the portal pages (landing, login, catalog, course, policy)
+   carry the copyright line only. Declared AFTER the full-footer rules above --
+   .wub-footer-bottom-only .wub-footer-inner and .wub-footer-bottom
+   .wub-footer-inner have equal specificity (0,2,0), so source order decides.
+   When this block sat first, justify-content:space-between won and the single
+   child was pushed to the left edge instead of centring. */
+.wub-footer-bottom-only {
+    border-top: 0;
+    padding: 0.85rem 0;
+}
+
+.wub-footer-bottom-only .wub-footer-inner {
+    justify-content: center;
+    text-align: center;
+}
+
+.wub-footer-bottom-only .wub-footer-copyright {
+    flex: 0 1 auto;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.wub-footer-copyright a {
+    color: var(--wub-footer-heading, #fff);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.wub-footer-copyright a:hover {
+    color: var(--wub-primary-light, #1487ed);
+}
+
+/* Social */
+
+.wub-footer-social {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.wub-footer-social-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--wub-footer-fg, #bababa);
+    margin-right: 0.25rem;
+}
+
+.wub-footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: var(--wub-footer-heading, #fff);
+    background-color: var(--wub-primary, var(--wub-primary, #0f6cbf));
+    text-decoration: none;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.wub-footer-social a:hover,
+.wub-footer-social a:focus {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 991.98px) {
+    .wub-footer-top .wub-footer-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .wub-footer-top {
+        padding: 2rem 0 1.5rem;
+    }
+
+    .wub-footer-top .wub-footer-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+
+    .wub-footer-bottom .wub-footer-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .wub-footer-social {
+        justify-content: center;
+        flex-wrap: wrap;
     }
 }

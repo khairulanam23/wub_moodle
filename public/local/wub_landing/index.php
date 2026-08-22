@@ -40,12 +40,9 @@ $isauthenticated = isloggedin() && !isguestuser();
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/wub_landing/index.php'));
-$PAGE->set_pagelayout('base');
+$PAGE->set_pagelayout('wubportal');
 $PAGE->set_title(get_string('pluginname', 'local_wub_landing'));
 $PAGE->set_heading(get_string('pluginname', 'local_wub_landing'));
-
-require_once($CFG->dirroot . '/local/header/lib.php');
-require_once($CFG->dirroot . '/local/footer/lib.php');
 
 // Prepare renderable.
 $user = $isauthenticated ? $USER : null;
@@ -54,22 +51,12 @@ $renderable = new \local_wub_landing\output\landing_page($isauthenticated, $user
 // Render output — header() must be called first to initialize the full renderer.
 echo $OUTPUT->header();
 
-// Render custom header.
-if (function_exists('local_header_render')) {
-    echo local_header_render($OUTPUT);
-}
-
 $templatedata = $renderable->export_for_template($OUTPUT);
 
 if ($isauthenticated) {
     echo $OUTPUT->render_from_template('local_wub_landing/landing_page_auth', $templatedata);
 } else {
     echo $OUTPUT->render_from_template('local_wub_landing/landing_page', $templatedata);
-}
-
-// Render custom footer.
-if (function_exists('local_footer_render')) {
-    echo local_footer_render($OUTPUT);
 }
 
 echo $OUTPUT->footer();

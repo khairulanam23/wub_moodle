@@ -17,13 +17,115 @@
 {{!
     @template local_header/header
 
-    Transparent WUB Header Mustache Template with Logo on the Left.
-}}
+    WUB portal header: dark utility bar over a white sticky main bar, mirroring
+    the header on https://wub.edu.bd/.
 
-<header class="wub-custom-header wub-header-transparent" id="wub-custom-header">
-    <div class="wub-header-container wub-navbar-inner">
-        <a href="{{ logolinkurl }}" class="wub-header-brand-logo" id="wub-logo-link" title="World University of Bangladesh">
-            <img src="{{ logourl }}" alt="World University of Bangladesh" class="wub-navbar-logo">
-        </a>
+    This template is rendered by the theme_academi/wubportal layout. Pages must
+    not echo it themselves.
+
+    Context variables required for this template:
+    * logolinkurl - where the logo links to
+    * logourl - the WUB logo image
+    * sitename - accessible name for the logo
+    * phonelabel, phone, phoneurl, email - utility bar contact details
+    * quicklinks - [{text, url}] external quick links
+    * navitems - [{text, url, isactive}] portal navigation
+    * shownav - whether to render navigation and actions at all
+    * ctatext, ctaurl - primary call to action
+    * hassecondary, secondarytext, secondaryurl - optional secondary action
+
+    Example context (json):
+    {
+        "logolinkurl": "/",
+        "logourl": "/local/header/pix/wub-logo.png",
+        "sitename": "World University of Bangladesh",
+        "phonelabel": "QUESTION? CALL:",
+        "phone": "09643204060 Ext: 111-114",
+        "phoneurl": "tel:09643204060",
+        "email": "info@wub.edu.bd",
+        "quicklinks": [{"text": "Faculty", "url": "#"}],
+        "navitems": [{"text": "Home", "url": "#", "isactive": true}],
+        "ctatext": "Sign In",
+        "ctaurl": "#",
+        "hassecondary": false,
+        "shownav": true
+    }
+}}
+<header class="wub-custom-header" id="wub-custom-header">
+
+    <div class="wub-header-topbar">
+        <div class="wub-header-inner">
+            <p class="wub-topbar-notify">
+                {{phonelabel}}
+                <a href="{{phoneurl}}">{{phone}}</a>
+            </p>
+            <ul class="wub-topbar-links" aria-label="{{#str}}quicklinks, local_header{{/str}}">
+                {{#quicklinks}}
+                    <li><a href="{{{url}}}" target="_blank" rel="noopener">{{text}}</a></li>
+                {{/quicklinks}}
+                <li class="wub-topbar-email">
+                    <a href="mailto:{{email}}">{{email}}</a>
+                </li>
+            </ul>
+        </div>
     </div>
+
+    <div class="wub-header-mainmenu" data-region="wub-sticky-header">
+        <div class="wub-header-inner">
+            <a href="{{{logolinkurl}}}" class="wub-header-brand" title="{{sitename}}">
+                <img src="{{{logourl}}}" alt="{{sitename}}" class="wub-header-logo">
+            </a>
+
+            {{#shownav}}
+            <button class="wub-nav-toggle" type="button"
+                    aria-expanded="false"
+                    aria-controls="wub-header-nav"
+                    data-action="wub-toggle-nav">
+                <span class="sr-only">{{#str}}togglenav, local_header{{/str}}</span>
+                <span class="wub-nav-toggle-bar" aria-hidden="true"></span>
+                <span class="wub-nav-toggle-bar" aria-hidden="true"></span>
+                <span class="wub-nav-toggle-bar" aria-hidden="true"></span>
+            </button>
+
+            <div class="wub-header-collapse" id="wub-header-nav">
+                <nav class="wub-header-nav" aria-label="{{#str}}primarynav, local_header{{/str}}">
+                    <ul>
+                        {{#navitems}}
+                            <li>
+                                <a href="{{{url}}}" class="{{#isactive}}is-active{{/isactive}}"
+                                   {{#isactive}}aria-current="page"{{/isactive}}>{{text}}</a>
+                            </li>
+                        {{/navitems}}
+                    </ul>
+                </nav>
+
+                <div class="wub-header-actions">
+                    {{#hassecondary}}
+                        <a href="{{{secondaryurl}}}" class="wub-btn wub-btn-ghost">{{secondarytext}}</a>
+                    {{/hassecondary}}
+                    <a href="{{{ctaurl}}}" class="wub-btn wub-btn-primary">{{ctatext}}</a>
+                </div>
+            </div>
+            {{/shownav}}
+        </div>
+    </div>
+
 </header>
+{{#js}}
+require(['jquery'], function($) {
+    var $toggle = $('[data-action="wub-toggle-nav"]');
+    $toggle.on('click', function() {
+        var expanded = $toggle.attr('aria-expanded') === 'true';
+        $toggle.attr('aria-expanded', expanded ? 'false' : 'true');
+        $('#wub-header-nav').toggleClass('is-open', !expanded);
+    });
+
+    // Shrink the main bar once the utility bar has scrolled away, matching
+    // the sticky behaviour on wub.edu.bd.
+    var $bar = $('[data-region="wub-sticky-header"]');
+    var trigger = $('.wub-header-topbar').outerHeight() || 40;
+    $(window).on('scroll', function() {
+        $bar.toggleClass('is-stuck', $(window).scrollTop() > trigger);
+    });
+});
+{{/js}}

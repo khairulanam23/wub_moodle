@@ -7,27 +7,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/* ============================================================
-   DESIGN TOKENS
-   ============================================================ */
-
-:root {
-    --wub-navy: #0A246A;
-    --wub-navy-dark: #071B50;
-    --wub-navy-light: #153894;
-    --wub-green: #059669;
-    --wub-green-hover: #047857;
-    --wub-gray-btn: #374151;
-    --wub-gray-btn-hover: #1F2937;
-    --wub-orange: #d97706;
-    --wub-orange-hover: #b45309;
-    --wub-text-dark: #1f2937;
-    --wub-text-muted: #4b5563;
-    --wub-border-color: #e5e7eb;
-    --wub-shadow-card: 0 20px 40px rgba(0, 0, 0, 0.25);
-    --wub-shadow-btn: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --wub-shadow-btn-hover: 0 6px 12px rgba(0, 0, 0, 0.18);
-}
+/* Design tokens now come from theme_academi (scss/wubtokens.scss).
+   They are derived from the Academi "Primary colour" setting, so this
+   file must not redeclare them -- two plugins declaring the same token
+   let CSS load order silently pick the winner. */
 
 /* ============================================================
    MOODLE THEME OVERRIDES (Eliminate Outer Box & Title Bounds)
@@ -52,40 +35,29 @@
     box-shadow: none !important;
 }
 
-/* Hide default Moodle theme header, page heading, navbar, and footer elements */
-#page-local-wub_landing-index #header,
-#page-local-wub_landing-index #page-header,
-#page-local-wub_landing-index .page-header-headings,
-#page-local-wub_landing-index .header-main,
-#page-local-wub_landing-index .secondary-navigation,
-#page-local-wub_landing-index .drawer-toggles,
-#page-local-wub_landing-index #page-footer,
-#page-local-wub_landing-index .footer-popover,
-#page-local-wub_landing-index .navbar,
-#page-local-wub_landing-index #backToTop {
-    display: none !important;
-}
-
 /* ============================================================
    LANDING PAGE CONTAINER & HERO WRAPPER
    ============================================================ */
 
 .wub-landing-page.landing-page-bg {
     background: url('/local/wub_landing/pix/wubImage.jpg') center/cover no-repeat fixed;
-    min-height: calc(100vh - 280px);
+    min-height: 0;
+    flex: 1 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 3.5rem 1.5rem;
-    width: 100vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
     position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     box-sizing: border-box !important;
 }
 
+.wub-landing-container,
 .wub-container {
     max-width: 900px;
     width: 100%;
@@ -142,7 +114,7 @@
     flex-direction: column;
     justify-content: center;
     padding: 2.75rem 2.25rem;
-    background: linear-gradient(135deg, #071B50 0%, #0A246A 100%);
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, var(--wub-primary-light, #1487ed) 100%);
     box-sizing: border-box;
 }
 
@@ -200,11 +172,13 @@
 }
 
 .student-login-btn {
-    background-color: #2563eb;
+    /* Sits on a --wub-primary card, so it needs a lighter tint to read as a
+       button at all. Lighter is allowed; darker is not. */
+    background-color: var(--wub-primary-light, #1487ed);
 }
 
 .student-login-btn:hover {
-    background-color: #1d4ed8;
+    background-color: var(--wub-primary-lighter, #4da4f1);
     transform: translateY(-2px);
     box-shadow: var(--wub-shadow-btn-hover);
 }
@@ -333,10 +307,10 @@
 }
 
 .wub-auth-btn-dashboard {
-    background-color: #2563eb;
+    background-color: var(--wub-primary, #0f6cbf);
 }
 .wub-auth-btn-dashboard:hover {
-    background-color: #1d4ed8;
+    background-color: var(--wub-primary-light, #1487ed);
     transform: translateY(-2px);
     box-shadow: var(--wub-shadow-btn-hover);
 }
@@ -364,12 +338,14 @@
    ============================================================ */
 
 @media (min-width: 992px) {
+    .wub-landing-container,
     .wub-container {
         max-width: 900px;
     }
 }
 
 @media (max-width: 991px) and (min-width: 768px) {
+    .wub-landing-container,
     .wub-container {
         max-width: 720px;
     }
@@ -457,19 +433,6 @@
     box-shadow: none !important;
 }
 
-#page-local-wub_landing-catalog #header,
-#page-local-wub_landing-catalog #page-header,
-#page-local-wub_landing-catalog .page-header-headings,
-#page-local-wub_landing-catalog .header-main,
-#page-local-wub_landing-catalog .secondary-navigation,
-#page-local-wub_landing-catalog .drawer-toggles,
-#page-local-wub_landing-catalog #page-footer,
-#page-local-wub_landing-catalog .footer-popover,
-#page-local-wub_landing-catalog .navbar,
-#page-local-wub_landing-catalog #backToTop {
-    display: none !important;
-}
-
 /* ============================================================
    MOODLE THEME OVERRIDES — COURSE DETAILS PAGE
    ============================================================ */
@@ -491,39 +454,28 @@
     box-shadow: none !important;
 }
 
-#page-local-wub_landing-course #header,
-#page-local-wub_landing-course #page-header,
-#page-local-wub_landing-course .page-header-headings,
-#page-local-wub_landing-course .header-main,
-#page-local-wub_landing-course .secondary-navigation,
-#page-local-wub_landing-course .drawer-toggles,
-#page-local-wub_landing-course #page-footer,
-#page-local-wub_landing-course .footer-popover,
-#page-local-wub_landing-course .navbar,
-#page-local-wub_landing-course #backToTop {
-    display: none !important;
-}
-
 /* ============================================================
    COURSE CATALOG PAGE
    ============================================================ */
 
 .wub-catalog-page {
-    width: 100vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
     position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     box-sizing: border-box !important;
     background: #f4f6f9;
-    min-height: calc(100vh - 200px);
+    min-height: 0;
+    flex: 1 0 auto;
 }
 
 /* --- Catalog Header Banner --- */
 
 .wub-catalog-header {
-    background: linear-gradient(135deg, #071B50 0%, #0A246A 60%, #153894 100%);
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, var(--wub-primary, #0f6cbf) 60%, var(--wub-primary-light, #1487ed) 100%);
     padding: 2.5rem 1.5rem 2rem;
     text-align: center;
     position: relative;
@@ -737,7 +689,7 @@
 }
 
 .wub-course-card-placeholder {
-    background: linear-gradient(135deg, #071B50 0%, #0A246A 60%, #153894 100%);
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, var(--wub-primary, #0f6cbf) 60%, var(--wub-primary-light, #1487ed) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -964,34 +916,17 @@
    ============================================================ */
 
 .wub-course-details-page {
-    width: 100vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
     position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     box-sizing: border-box !important;
     background: #f4f6f9;
-    min-height: calc(100vh - 200px);
-    padding-bottom: 2.5rem;
-}
-
-/* --- Back Navigation --- */
-
-/* ============================================================
-   COURSE DETAILS PAGE
-   ============================================================ */
-
-.wub-course-details-page {
-    width: 100vw !important;
-    position: relative !important;
-    left: 50% !important;
-    right: 50% !important;
-    margin-left: -50vw !important;
-    margin-right: -50vw !important;
-    box-sizing: border-box !important;
-    background: #f4f6f9;
-    min-height: calc(100vh - 200px);
+    min-height: 0;
+    flex: 1 0 auto;
     padding-bottom: 2.5rem;
 }
 
@@ -1020,7 +955,7 @@
     height: 280px;
     overflow: hidden;
     position: relative;
-    background: linear-gradient(135deg, #071B50 0%, #0A246A 60%, #153894 100%);
+    background: linear-gradient(135deg, var(--wub-primary, #0f6cbf) 0%, var(--wub-primary, #0f6cbf) 60%, var(--wub-primary-light, #1487ed) 100%);
 }
 
 .wub-course-details-img {

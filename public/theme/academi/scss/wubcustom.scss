@@ -1,0 +1,247 @@
+// WUB site-wide overrides.
+//
+// This file replaces the 388-line "Custom CSS" theme setting that previously
+// lived in the database. It is version controlled, reviewable, and uses $primary
+// instead of hardcoded hex values -- the old blob hardcoded #0f6cbf in ~15
+// places with !important, which is why changing the Primary colour setting
+// appeared to do nothing.
+//
+// Three behaviours from the old blob are deliberately NOT carried over:
+//   1. Bare `footer`, `.footer-main` and `.footer-bottom` element/class
+//      selectors. They were unscoped and repainted every <footer> in Moodle.
+//   2. `.footer-main { display: none }` declared twice and then re-enabled by a
+//      higher-specificity rule. The footer link columns now simply show.
+//   3. Global hiding of `.helplink` and the footer popover, which removed the
+//      support email, docs link and login info from every page.
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+
+.pagination .page-item .page-link,
+.wub-pagination .wub-page-link {
+    background-color: rgba($primary, .08);
+    color: $gray-900;
+    border: 1px solid rgba($primary, .25);
+    font-weight: 700;
+
+    &:hover,
+    &:focus {
+        background-color: rgba($primary, .18);
+        border-color: $primary;
+        color: $gray-900;
+    }
+}
+
+.pagination .page-item.active .page-link,
+.wub-pagination .wub-page-link.wub-page-active {
+    background-color: rgba($primary, .12);
+    color: $gray-900;
+    border: 2px solid $primary;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba($primary, .25);
+}
+
+/* ============================================================
+   FULL WIDTH LMS LAYOUT
+   ============================================================ */
+
+body:not(.pagelayout-wubportal) {
+    #page-wrapper,
+    #page,
+    #page-content {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    // .main-inner is deliberately NOT listed here -- its width is owned by
+    // wubcontainer.scss so the content lines up with the header and footer.
+    #region-main-box,
+    #region-main {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* ============================================================
+   THEME FOOTER (LMS pages)
+
+   Scoped to #page-footer throughout so nothing leaks onto other
+   <footer> elements. Colours follow the brand tokens.
+   ============================================================ */
+
+#page-footer {
+    background-color: $wub-footer-bg;
+    color: $wub-footer-link;
+
+    .footer-main {
+        background-color: $wub-footer-bg;
+        border-bottom: 1px solid rgba($white, .15);
+        padding: 2.5rem 0 1.75rem;
+
+        .container,
+        .container-fluid {
+            max-width: $course-content-maxwidth;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+
+        h2,
+        h3,
+        h4,
+        h5 {
+            color: $white;
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        p,
+        span,
+        li,
+        address {
+            color: rgba($white, .9);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                margin-bottom: 0.55rem;
+            }
+        }
+
+        a {
+            color: rgba($white, .9);
+            text-decoration: none;
+            font-weight: 400;
+
+            &:hover,
+            &:focus {
+                color: $white;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .footer-bottom {
+        background-color: $wub-footer-bg;
+        max-width: $course-content-maxwidth;
+        margin: 0 auto;
+        padding: 12px 1.25rem;
+        text-align: center;
+
+        p {
+            margin: 0;
+            color: rgba($white, .9);
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        a {
+            color: $white;
+            font-weight: 700;
+            text-decoration: underline;
+
+            &:hover,
+            &:focus {
+                color: lighten($primary, 25%);
+            }
+        }
+    }
+}
+
+/* ============================================================
+   LIGHTNESS FLOOR - INTERACTIVE STATES
+
+   Bootstrap's button-variant() mixin shades (darkens) $primary for
+   hover and active states, because the brand blue takes light text.
+   The house rule forbids anything darker than the brand colour, so
+   those states are re-pointed at tints.
+   ============================================================ */
+
+.btn-primary {
+    // Bootstrap 5.3 drives button states through custom properties, so the
+    // hover/active shades have to be replaced there, not just on the rule.
+    --bs-btn-bg: #{$wub-primary-safe};
+    --bs-btn-border-color: #{$wub-primary-safe};
+    --bs-btn-hover-bg: #{lighten($wub-primary-safe, 9%)};
+    --bs-btn-hover-border-color: #{lighten($wub-primary-safe, 9%)};
+    --bs-btn-active-bg: #{lighten($wub-primary-safe, 5%)};
+    --bs-btn-active-border-color: #{lighten($wub-primary-safe, 5%)};
+    --bs-btn-disabled-bg: #{$wub-primary-safe};
+    --bs-btn-disabled-border-color: #{$wub-primary-safe};
+
+    background-color: $wub-primary-safe;
+    border-color: $wub-primary-safe;
+    color: color-yiq($wub-primary-safe);
+
+    &:hover,
+    &:focus,
+    &.focus {
+        background-color: lighten($wub-primary-safe, 9%);
+        border-color: lighten($wub-primary-safe, 9%);
+        color: color-yiq($wub-primary-safe);
+    }
+
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &.show,
+    .show > &.dropdown-toggle {
+        background-color: lighten($wub-primary-safe, 5%);
+        border-color: lighten($wub-primary-safe, 5%);
+        color: color-yiq($wub-primary-safe);
+    }
+}
+
+.btn-outline-primary {
+    --bs-btn-color: #{$wub-primary-safe};
+    --bs-btn-border-color: #{$wub-primary-safe};
+    --bs-btn-hover-bg: #{$wub-primary-safe};
+    --bs-btn-hover-border-color: #{$wub-primary-safe};
+    --bs-btn-active-bg: #{$wub-primary-safe};
+    --bs-btn-active-border-color: #{$wub-primary-safe};
+
+    color: $wub-primary-safe;
+    border-color: $wub-primary-safe;
+
+    &:hover,
+    &:focus,
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active {
+        background-color: $wub-primary-safe;
+        border-color: $wub-primary-safe;
+        color: color-yiq($wub-primary-safe);
+    }
+}
+
+/* Core Moodle components that hardcode a darkened $primary. Re-pointed at the
+   brand colour so nothing on screen sits below the #0f6cbf floor. */
+
+.calendar_event_category .commands a,
+.calendar_event_course .commands a,
+.calendar_event_site .commands a,
+.calendar_event_group .commands a,
+.calendar_event_user .commands a,
+.calendar_event_other .commands a,
+.block .minicalendar td a,
+.block .calendar_filters li span[class^="calendar_event_"] i {
+    color: $wub-primary-safe;
+}
+
+.path-mod-workshop .message.info,
+.path-mod-workshop .allocation-init-results .info {
+    color: $wub-primary-safe;
+}
+
+.fp-viewbar:not(.disabled) a.checked {
+    border-color: $wub-primary-safe;
+}
