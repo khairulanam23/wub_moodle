@@ -9,53 +9,40 @@ define(['jquery'], function($) {
     var selectedCourses = [];
     var selectedUsers = [];
 
-    function escapeHtml(str) {
-        if (!str) {
-            return '';
-        }
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
     function updateSelectedUsersListEmptyMessage() {
-        $('#selected_count').text(selectedUsers.length);
         if (selectedUsers.length === 0) {
-            $('#selected-users-list-empty').text('No users selected').show();
-            $('.selected-users-list').empty();
+            $('#selected-users-list-empty').text('No users selected');
         } else {
-            $('#selected-users-list-empty').hide();
+            $('#selected-users-list-empty').text('');
         }
     }
 
     function toggleUser(el) {
         var $el = $(el);
-        var id = String($el.attr('data-id') || $el.data('id') || '');
+        var id = $el.attr('data-id');
         var email = $el.attr('data-email') || '';
         var name = $el.attr('data-name') || '';
 
         $el.toggleClass('selected');
 
-        var index = selectedUsers.indexOf(id);
+        var idStr = String(id);
+        var index = selectedUsers.indexOf(idStr);
 
         if (index > -1) {
             selectedUsers.splice(index, 1);
-            $('.selected-user-item-' + id).remove();
+            $('.selected-user-item-' + idStr).remove();
         } else {
-            selectedUsers.push(id);
+            selectedUsers.push(idStr);
             $('.selected-users-list').append(
-                '<li class="selected-user-item selected-user-item-' + id + '">' +
-                '<span class="selected-user-name"><i class="fa fa-user-circle me-1 text-primary"></i>' + escapeHtml(name) + '</span>' +
-                '<span class="selected-user-email ms-2 text-muted">(' + escapeHtml(email) + ')</span>' +
-                '<span class="selected-user-item-close ms-2 text-danger" title="Remove" style="cursor:pointer;"><i class="fa fa-times-circle"></i></span>' +
+                '<li class="selected-user-item selected-user-item-' + idStr + '">' +
+                name + ' - ' + email +
+                '<img class="selected-user-item-close" src="/course/icons/close.png" style="cursor:pointer; margin-left:8px;">' +
                 '</li>'
             );
 
-            $('.selected-user-item-' + id).off('click').on('click', function() {
+            $('.selected-user-item-' + idStr).off('click').on('click', function() {
                 $(this).remove();
-                var idx = selectedUsers.indexOf(id);
+                var idx = selectedUsers.indexOf(idStr);
                 if (idx > -1) {
                     selectedUsers.splice(idx, 1);
                 }
@@ -71,7 +58,7 @@ define(['jquery'], function($) {
 
     function toggleCourse(el) {
         var $el = $(el);
-        var id = String($el.attr('data-id') || $el.data('id') || '');
+        var id = String($el.attr('data-id'));
 
         $el.toggleClass('selected');
 
@@ -89,7 +76,7 @@ define(['jquery'], function($) {
         selectedCourses = [];
         $('#list_courses li').each(function() {
             var $li = $(this);
-            var id = String($li.data('id') || $li.attr('data-id') || '');
+            var id = String($li.data('id') || $li.attr('data-id'));
             if (isChecked) {
                 $li.addClass('selected');
                 if (id) {
@@ -111,7 +98,7 @@ define(['jquery'], function($) {
         selectedUsers = [];
         $('#list_users li').each(function() {
             var $li = $(this);
-            var id = String($li.data('id') || $li.attr('data-id') || '');
+            var id = String($li.data('id') || $li.attr('data-id'));
             if (isChecked) {
                 $li.addClass('selected');
                 if (id) {
@@ -151,23 +138,15 @@ define(['jquery'], function($) {
                 'course_code',
                 {data: ['id', 'email', 'name']}
             ],
-            item: '<li class="user-item student-${id} selected" data-id="${id}" data-email="${email}" data-name="${name}">' +
-                  '<div class="wub-user-card-inner">' +
-                      '<div class="wub-user-card-avatar">' +
-                          '<i class="fa fa-user-circle"></i>' +
+            item: '<li class="user-item student-${id} col-xs-12 selected">' +
+                  '<div style="width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: space-between;">' +
+                      '<div style="padding: 0 0 0 10px; flex-grow: 1; overflow: hidden;">' +
+                          '<p class="full_name name col-xs-12" style="margin-bottom: 2px; font-weight: 600;"></p>' +
+                          '<p class="student_email email col-xs-12" style="text-align: left; font-style: italic; font-size: 12px; margin-bottom: 2px;"></p>' +
+                          '<p class="dept col-xs-12" style="font-weight: 400; margin-bottom: 0;"></p>' +
                       '</div>' +
-                      '<div class="wub-user-card-body">' +
-                          '<div class="wub-user-card-title-row">' +
-                              '<span class="full_name name"></span>' +
-                              '<span class="course_code badge bg-primary text-white ms-auto"></span>' +
-                          '</div>' +
-                          '<div class="wub-user-card-meta-row">' +
-                              '<span class="student_email email"><i class="fa fa-envelope-o me-1 text-muted"></i></span>' +
-                              '<span class="dept badge bg-light text-dark border ms-2"><i class="fa fa-graduation-cap me-1 text-muted"></i></span>' +
-                          '</div>' +
-                      '</div>' +
-                      '<div class="wub-user-card-check">' +
-                          '<i class="fa fa-check-circle check-icon"></i>' +
+                      '<div style="padding-right: 10px; flex-shrink: 0; text-align: right;">' +
+                          '<span class="course_code badge bg-primary text-white" style="font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block;"></span>' +
                       '</div>' +
                   '</div>' +
                   '</li>'
@@ -179,17 +158,7 @@ define(['jquery'], function($) {
                 'shortname',
                 {data: ['id']}
             ],
-            item: '<li class="course-item selected" data-id="${id}">' +
-                  '<div class="wub-course-card-inner">' +
-                      '<div class="wub-course-card-body">' +
-                          '<strong class="fullname"></strong>' +
-                          '<span class="shortname badge bg-light text-dark border ms-2"></span>' +
-                      '</div>' +
-                      '<div class="wub-course-card-check">' +
-                          '<i class="fa fa-check-circle check-icon"></i>' +
-                      '</div>' +
-                  '</div>' +
-                  '</li>'
+            item: '<li class="course-item selected"><span class="fullname"></span> - (<span class="shortname"></span>)</li>'
         };
 
         if (typeof window.List !== 'undefined') {
@@ -373,7 +342,7 @@ define(['jquery'], function($) {
                                             student_email: sEmail,
                                             name: (fname + ' ' + lname).trim(),
                                             email: sEmail,
-                                            dept: prog + (bt ? ' (' + bt + ')' : ''),
+                                            dept: prog + ' (' + bt + ')',
                                             course_code: courseCode ? courseCode : '',
                                             id: sId
                                         });
