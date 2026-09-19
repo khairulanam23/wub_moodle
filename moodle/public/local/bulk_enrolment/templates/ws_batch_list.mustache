@@ -1,0 +1,41 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_bulk_enrolment/ws_batch_list
+
+    Batches grouped by program.
+
+    Context variables required for this template:
+    * groups (array of {program_id, program_title, batches: [{id, title, shift, program_type, total_students, selected}]})
+}}
+{{#groups}}
+<div class="be-batch-group border-bottom" data-program="{{program_id}}">
+    <div class="be-batch-group-head d-flex align-items-center gap-2 px-2 py-2">
+        <input type="checkbox" class="form-check-input be-batch-all mt-0" id="be-batch-all-{{program_id}}" data-program="{{program_id}}" {{#allselected}}checked{{/allselected}}>
+        <label class="mb-0 flex-grow-1 font-weight-bold small text-truncate cursor-pointer" for="be-batch-all-{{program_id}}">{{program_title}} — {{#str}}ws_all_batches, local_bulk_enrolment{{/str}}</label>
+        <span class="badge be-code-pill small">{{count}}</span>
+    </div>
+    {{#batches}}
+    <label class="be-item be-batch-item d-flex align-items-center gap-2 ps-4 pe-2 py-1 mb-0 border-top">
+        <input type="checkbox" class="form-check-input be-batch-checkbox mt-0" value="{{title}}" data-program="{{program_id}}" {{#selected}}checked{{/selected}}>
+        <span class="flex-grow-1 be-item-title"><strong class="text-dark">{{title}}</strong>{{#shift}} <span class="text-muted small">· {{shift}}</span>{{/shift}}{{#program_type}} <span class="text-muted small">· {{program_type}}</span>{{/program_type}}</span>
+        <span class="badge badge-light border small text-muted font-monospace" title="Students reported by UMS">{{total_students}}</span>
+    </label>
+    {{/batches}}
+    {{^batches}}<div class="text-muted small ps-4 py-2">No batches found for this program.</div>{{/batches}}
+</div>
+{{/groups}}

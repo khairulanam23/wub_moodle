@@ -1,0 +1,167 @@
+<div class="container-fluid py-3" id="wub-waivers-view">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div>
+            <h2 class="h3 font-weight-bold text-dark mb-1">{{#str}}waivers_title, local_wub_auth{{/str}}</h2>
+            <p class="text-muted mb-0">{{#str}}waivers_desc, local_wub_auth{{/str}}</p>
+        </div>
+        <div>
+            <a href="{{diagnostics_url}}" class="btn btn-outline-primary btn-sm">
+                <i class="fa fa-stethoscope mr-1"></i> Diagnostics
+            </a>
+        </div>
+    </div>
+
+    {{#notice_message}}
+    <div class="alert alert-{{notice_type}} alert-dismissible fade show" role="alert">
+        {{notice_message}}
+    </div>
+    {{/notice_message}}
+
+    <!-- Search Box -->
+    <div class="wub-admin-panel mb-4">
+        <form action="{{search_action}}" method="get" class="form-inline">
+            <label for="student_query" class="mr-2 font-weight-bold">{{#str}}waiver_search_label, local_wub_auth{{/str}}:</label>
+            <input type="text"
+                   name="q"
+                   id="student_query"
+                   class="form-control mr-2"
+                   style="min-width: 320px;"
+                   placeholder="{{#str}}waiver_search_placeholder, local_wub_auth{{/str}}"
+                   value="{{search_query}}"
+                   required />
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-search mr-1"></i> {{#str}}waiver_search_btn, local_wub_auth{{/str}}
+            </button>
+        </form>
+    </div>
+
+    {{#selected_student}}
+    <!-- Student Detail & Grant Panel -->
+    <div class="wub-admin-panel mb-4 border-primary">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+            <div>
+                <h4 class="h5 font-weight-bold mb-1">{{name}}</h4>
+                <div class="text-muted small">
+                    <strong>ID:</strong> {{username}} &bull;
+                    <strong>Reg ID:</strong> {{idnumber}} &bull;
+                    <strong>Email:</strong> {{email}} &bull;
+                    <strong>Dept:</strong> {{department}}
+                </div>
+            </div>
+            <div>
+                {{#has_active_waiver}}
+                <span class="wub-badge-active">
+                    <i class="fa fa-check-circle mr-1"></i> {{#str}}waiver_status_active, local_wub_auth{{/str}} (until {{active_waiver_expiry}})
+                </span>
+                {{/has_active_waiver}}
+                {{^has_active_waiver}}
+                <span class="wub-badge-expired">
+                    <i class="fa fa-circle-xmark mr-1"></i> {{#str}}waiver_status_none, local_wub_auth{{/str}}
+                </span>
+                {{/has_active_waiver}}
+            </div>
+        </div>
+
+        <hr>
+
+        <form action="{{grant_action}}" method="post" class="mt-3">
+            <input type="hidden" name="sesskey" value="{{sesskey}}" />
+            <input type="hidden" name="userid" value="{{id}}" />
+            <input type="hidden" name="q" value="{{search_query}}" />
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="expiry_date" class="font-weight-bold small">
+                        {{#str}}waiver_expiry_date, local_wub_auth{{/str}}
+                    </label>
+                    <input type="date"
+                           name="expiry_date"
+                           id="expiry_date"
+                           class="form-control"
+                           value="{{default_expiry_date}}"
+                           min="{{min_expiry_date}}"
+                           required />
+                </div>
+                <div class="col-md-8 mb-3">
+                    <label for="reason" class="font-weight-bold small">
+                        {{#str}}waiver_reason, local_wub_auth{{/str}}
+                    </label>
+                    <input type="text"
+                           name="reason"
+                           id="reason"
+                           class="form-control"
+                           placeholder="{{#str}}waiver_reason_placeholder, local_wub_auth{{/str}}"
+                           value="{{current_reason}}"
+                           required />
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" name="action" value="grant" class="btn btn-success font-weight-bold mr-2">
+                    <i class="fa fa-file-signature mr-1"></i> {{#str}}waiver_grant_btn, local_wub_auth{{/str}}
+                </button>
+                {{#has_active_waiver}}
+                <button type="submit" name="action" value="revoke" class="btn btn-outline-danger font-weight-bold" onclick="return confirm('Are you sure you want to revoke this student\'s waiver?');">
+                    <i class="fa fa-ban mr-1"></i> {{#str}}waiver_revoke_btn, local_wub_auth{{/str}}
+                </button>
+                {{/has_active_waiver}}
+            </div>
+        </form>
+    </div>
+    {{/selected_student}}
+
+    <!-- Recent Waivers Table -->
+    <div class="wub-admin-panel">
+        <h4 class="h5 font-weight-bold mb-3">
+            <i class="fa fa-clock-rotate-left text-primary mr-1"></i> {{#str}}waiver_history_title, local_wub_auth{{/str}}
+        </h4>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="thead-light">
+                    <tr>
+                        <th>{{#str}}waiver_col_student, local_wub_auth{{/str}}</th>
+                        <th>{{#str}}waiver_col_status, local_wub_auth{{/str}}</th>
+                        <th>{{#str}}waiver_col_expires, local_wub_auth{{/str}}</th>
+                        <th>{{#str}}waiver_col_granted_by, local_wub_auth{{/str}}</th>
+                        <th>{{#str}}waiver_col_reason, local_wub_auth{{/str}}</th>
+                        <th>{{#str}}waiver_col_actions, local_wub_auth{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#recent_waivers}}
+                    <tr>
+                        <td>
+                            <strong>{{student_name}}</strong><br>
+                            <span class="text-muted small">{{student_username}} ({{student_idnumber}})</span>
+                        </td>
+                        <td>
+                            {{#is_active}}
+                            <span class="wub-badge-active">Active</span>
+                            {{/is_active}}
+                            {{^is_active}}
+                            <span class="wub-badge-expired">Inactive / Expired</span>
+                            {{/is_active}}
+                        </td>
+                        <td>{{formatted_expiry}}</td>
+                        <td>{{granter_name}}</td>
+                        <td>{{waiver.reason}}</td>
+                        <td>
+                            <a href="{{search_action}}?q={{student_username}}" class="btn btn-sm btn-outline-primary">
+                                Manage
+                            </a>
+                        </td>
+                    </tr>
+                    {{/recent_waivers}}
+                    {{^recent_waivers}}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No waiver records recorded yet.
+                        </td>
+                    </tr>
+                    {{/recent_waivers}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

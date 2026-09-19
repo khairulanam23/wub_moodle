@@ -1,0 +1,214 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_bulk_enrolment/unenrolment_page
+
+    Bulk Unenrolment Workspace.
+}}
+<div class="local-bulk-enrolment-unenrol container-fluid p-0">
+
+    {{#notice}}
+    <div class="alert alert-{{notice_type}} alert-dismissible fade show mb-4" role="alert">
+        <i class="fa fa-info-circle mr-2"></i>{{notice_message}}
+    </div>
+    {{/notice}}
+
+    <!-- Top Banner Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="card-title text-danger mb-1">
+                            <i class="fa fa-user-minus mr-2"></i>{{#str}}unenrol_heading, local_bulk_enrolment{{/str}}
+                        </h4>
+                        <p class="card-text text-muted small mb-0">
+                            Safely unenrol student accounts from specific courses in bulk. Strictly course-scoped; user accounts and unrelated course enrolments are preserved.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{{export_template_url}}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fa fa-download mr-1"></i>{{#str}}download_template_unenrol, local_bulk_enrolment{{/str}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Form -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-left-danger h-100">
+                <div class="card-header bg-white font-weight-bold py-3">
+                    <i class="fa fa-sliders-h mr-2 text-danger"></i>Target Course & Student List
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{action_url}}" enctype="multipart/form-data">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        <input type="hidden" name="tab" value="unenrol">
+                        <input type="hidden" name="action" value="preview">
+
+                        <div class="form-group">
+                            <label for="course_id" class="font-weight-bold text-dark">Target Course:</label>
+                            <select name="course_id" id="course_id" class="form-control custom-select" required>
+                                <option value="">-- Choose Course --</option>
+                                {{#courses}}
+                                <option value="{{id}}" {{#selected}}selected{{/selected}}>{{fullname}} ({{shortname}})</option>
+                                {{/courses}}
+                            </select>
+                            <small class="form-text text-muted">Select the course to unenrol students from.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="student_identifiers" class="font-weight-bold text-dark">Student Identifiers (One per line or comma-separated):</label>
+                            <textarea name="student_identifiers" id="student_identifiers" class="form-control font-monospace" rows="6" placeholder="0326735386&#10;0326735387&#10;student@student.wub.edu.bd">{{student_identifiers}}</textarea>
+                            <small class="form-text text-muted">Accepts numeric student IDs, usernames, or institutional emails.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="csv_file" class="font-weight-bold text-dark">Or Upload CSV File:</label>
+                            <input type="file" name="csv_file" id="csv_file" class="form-control-file" accept=".csv,text/csv">
+                        </div>
+
+                        <div class="text-right mt-4">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa fa-search mr-1"></i> Preview Unenrolments
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white font-weight-bold py-3 text-secondary">
+                    <i class="fa fa-shield-alt mr-2"></i>Unenrolment Safety & Scope
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning mb-3">
+                        <i class="fa fa-exclamation-triangle mr-2"></i><strong>Safety Notice:</strong>
+                        Unenrolment removes student course access, submissions, and course completion records associated with the course's manual enrolment instance.
+                    </div>
+                    <ul class="text-muted small pl-3 mb-0">
+                        <li class="mb-2"><strong>Account Preservation:</strong> Student accounts in Moodle (<code>mdl_user</code>) are <em>never</em> deleted or suspended.</li>
+                        <li class="mb-2"><strong>Course Scoping:</strong> Only the specified course is modified. Enrolments in other courses remain untouched.</li>
+                        <li class="mb-2"><strong>Role Isolation:</strong> Unenrolment strictly removes the course enrolment. Teacher or administrator roles are never altered.</li>
+                        <li class="mb-2"><strong>Permission Check:</strong> Requires course-level capability <code>enrol/manual:unenrol</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Results / Confirmation -->
+    {{#has_preview}}
+    <div class="row mt-2">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white font-weight-bold py-3 d-flex justify-content-between align-items-center">
+                    <span><i class="fa fa-list-check mr-2 text-primary"></i>Unenrolment Validation Preview: {{course_name}}</span>
+                    <span class="badge badge-info px-3 py-2">
+                        Total: {{preview_total}} | Unenrolable: {{preview_unenrolable}} | Not Enrolled: {{preview_not_enrolled}}
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <form method="post" action="{{action_url}}">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        <input type="hidden" name="tab" value="unenrol">
+                        <input type="hidden" name="action" value="execute">
+                        <input type="hidden" name="course_id" value="{{course_id}}">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th width="40">SL</th>
+                                        <th>Student Identifier</th>
+                                        <th>Resolved User</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Validation Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#preview_rows}}
+                                    <tr class="{{#allowed}}table-warning{{/allowed}}">
+                                        <td>{{sl}}</td>
+                                        <td><code>{{identifier}}</code></td>
+                                        <td>
+                                            {{#user}}
+                                            <strong>{{firstname}} {{lastname}}</strong> ({{username}})
+                                            <input type="hidden" name="user_ids[]" value="{{id}}">
+                                            {{/user}}
+                                            {{^user}}
+                                            <span class="text-muted">Unresolved</span>
+                                            {{/user}}
+                                        </td>
+                                        <td>{{#user}}{{email}}{{/user}}</td>
+                                        <td>
+                                            {{#allowed}}
+                                            <span class="badge badge-danger px-2 py-1"><i class="fa fa-user-times mr-1"></i>Unenrolable</span>
+                                            {{/allowed}}
+                                            {{^allowed}}
+                                            <span class="badge badge-secondary px-2 py-1">{{status}}</span>
+                                            {{/allowed}}
+                                        </td>
+                                        <td class="small text-muted">{{message}}</td>
+                                    </tr>
+                                    {{/preview_rows}}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{#can_execute}}
+                        <div class="p-3 bg-light text-right border-top">
+                            <button type="submit" class="btn btn-danger font-weight-bold px-4" onclick="return confirm('Are you sure you want to execute bulk unenrolment for {{preview_unenrolable}} student(s)?');">
+                                <i class="fa fa-trash-alt mr-1"></i> {{#str}}unenrol_btn, local_bulk_enrolment{{/str}}
+                            </button>
+                        </div>
+                        {{/can_execute}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/has_preview}}
+
+    <!-- Execution Report -->
+    {{#has_report}}
+    <div class="row mt-2">
+        <div class="col-12">
+            <div class="card shadow-sm border-left-success">
+                <div class="card-header bg-white font-weight-bold py-3 text-success">
+                    <i class="fa fa-check-circle mr-2"></i>Bulk Unenrolment Execution Report
+                </div>
+                <div class="card-body">
+                    <p class="lead mb-2">
+                        Operation complete. Successfully unenrolled <strong>{{report_unenrolled}}</strong> student(s) from course <strong>{{course_name}}</strong>.
+                    </p>
+                    <a href="{{action_url}}?tab=unenrol" class="btn btn-outline-primary btn-sm mt-2">
+                        <i class="fa fa-arrow-left mr-1"></i> Return to Unenrolment Workspace
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/has_report}}
+
+</div>

@@ -1,0 +1,83 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_bulk_enrolment/preview_matrix
+
+    Validation preview matrix table.
+}}
+<div class="preview-matrix-wrapper">
+    <!-- Statistics KPI Bar -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="p-2 border rounded bg-light text-center">
+                <span class="d-block text-muted small">Total Operations</span>
+                <span class="h5 font-weight-bold mb-0 text-dark">{{summary.total}}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-2 border rounded bg-light text-center">
+                <span class="d-block text-muted small">Ready to Enrol</span>
+                <span class="h5 font-weight-bold mb-0 text-success">{{summary.enrollable}}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-2 border rounded bg-light text-center">
+                <span class="d-block text-muted small">Already Enrolled</span>
+                <span class="h5 font-weight-bold mb-0 text-info">{{summary.already_enrolled}}</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-2 border rounded bg-light text-center">
+                <span class="d-block text-muted small">Warnings / Blocked</span>
+                <span class="h5 font-weight-bold mb-0 {{#summary.issues}}text-danger{{/summary.issues}}{{^summary.issues}}text-muted{{/summary.issues}}">{{summary.issues}}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Matrix Table -->
+    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+        <table class="table table-sm table-hover table-bordered mb-0">
+            <thead class="thead-light sticky-top">
+                <tr>
+                    <th scope="col" style="width: 25%;">Target Course</th>
+                    <th scope="col" style="width: 25%;">Student Name</th>
+                    <th scope="col" style="width: 20%;">Student Username / ID</th>
+                    <th scope="col" style="width: 15%;">Validation State</th>
+                    <th scope="col" style="width: 15%;">Detail / Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#rows}}
+                <tr class="{{#is_enrollable}}table-light{{/is_enrollable}}{{^is_enrollable}}table-warning{{/is_enrollable}}">
+                    <td class="small font-weight-bold">{{coursename}}</td>
+                    <td class="small">{{fullname}}</td>
+                    <td class="small text-muted">{{username}}{{#idnumber}} ({{idnumber}}){{/idnumber}}</td>
+                    <td>
+                        <span class="badge {{badge_class}} px-2 py-1">{{status_label}}</span>
+                    </td>
+                    <td class="small text-muted">{{message}}</td>
+                </tr>
+                {{/rows}}
+                {{^rows}}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">No operations to evaluate.</td>
+                </tr>
+                {{/rows}}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,148 @@
+<div class="container-fluid py-3" id="wub-diagnostics-view">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <div>
+            <h2 class="h3 font-weight-bold text-dark mb-1">{{#str}}diagnostics_title, local_wub_auth{{/str}}</h2>
+            <p class="text-muted mb-0">System health, UMS connection status, and real-time validation diagnostic tools.</p>
+        </div>
+        <div>
+            <a href="{{waivers_url}}" class="btn btn-outline-primary btn-sm mr-2">
+                <i class="fa fa-hand-holding-dollar mr-1"></i> Waivers
+            </a>
+            <a href="{{settings_url}}" class="btn btn-outline-secondary btn-sm">
+                <i class="fa fa-cog mr-1"></i> Settings
+            </a>
+        </div>
+    </div>
+
+    {{#notice_message}}
+    <div class="alert alert-{{notice_type}} alert-dismissible fade show" role="alert">
+        {{notice_message}}
+    </div>
+    {{/notice_message}}
+
+    <!-- Status Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-lg p-3 bg-white" style="border-left: 4px solid {{#ums_connected}}#28a745{{/ums_connected}}{{^ums_connected}}#dc3545{{/ums_connected}} !important;">
+                <div class="text-muted small font-weight-bold text-uppercase">{{#str}}diagnostics_card_ums, local_wub_auth{{/str}}</div>
+                <div class="h5 font-weight-bold mt-2 mb-1">
+                    {{#ums_connected}}
+                    <span class="text-success"><i class="fa fa-check-circle mr-1"></i> Active</span>
+                    {{/ums_connected}}
+                    {{^ums_connected}}
+                    <span class="text-danger"><i class="fa fa-times-circle mr-1"></i> Offline</span>
+                    {{/ums_connected}}
+                </div>
+                <div class="small text-muted">{{ums_endpoint}}</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-lg p-3 bg-white" style="border-left: 4px solid #0f6cbf !important;">
+                <div class="text-muted small font-weight-bold text-uppercase">{{#str}}diagnostics_card_cache, local_wub_auth{{/str}}</div>
+                <div class="h5 font-weight-bold mt-2 mb-1 text-primary">
+                    <i class="fa fa-database mr-1"></i> MUC Ready
+                </div>
+                <div class="small text-muted">TTL: 10m dues / 30m policy</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-lg p-3 bg-white" style="border-left: 4px solid #f0ad4e !important;">
+                <div class="text-muted small font-weight-bold text-uppercase">{{#str}}diagnostics_card_waivers, local_wub_auth{{/str}}</div>
+                <div class="h5 font-weight-bold mt-2 mb-1 text-dark">
+                    <i class="fa fa-file-signature mr-1 text-warning"></i> {{active_waivers_count}} Active
+                </div>
+                <div class="small text-muted">{{total_waivers_count}} total recorded</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm rounded-lg p-3 bg-white" style="border-left: 4px solid #6f42c1 !important;">
+                <div class="text-muted small font-weight-bold text-uppercase">{{#str}}diagnostics_card_policy, local_wub_auth{{/str}}</div>
+                <div class="h5 font-weight-bold mt-2 mb-1 text-dark">
+                    <i class="fa fa-shield-halved mr-1 text-purple"></i> v{{policy_version}}
+                </div>
+                <div class="small text-muted">{{policy_accept_count}} acceptances on file</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnostic Action Panels -->
+    <div class="row">
+        <!-- Live Connection Probe & Cache Actions -->
+        <div class="col-lg-6 mb-4">
+            <div class="wub-admin-panel h-100">
+                <h4 class="h5 font-weight-bold mb-3">
+                    <i class="fa fa-network-wired text-primary mr-1"></i> Connection & Cache Actions
+                </h4>
+                <p class="text-muted small mb-3">
+                    Probe live connectivity to WUB UMS and purge cached financial clearances.
+                </p>
+
+                <div class="d-flex gap-2 flex-wrap mb-3">
+                    <form action="{{form_action}}" method="post" class="mr-2 mb-2">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}" />
+                        <input type="hidden" name="action" value="probe_ums" />
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fa fa-plug mr-1"></i> {{#str}}diagnostics_probe_ums, local_wub_auth{{/str}}
+                        </button>
+                    </form>
+
+                    <form action="{{form_action}}" method="post" class="mb-2">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}" />
+                        <input type="hidden" name="action" value="purge_cache" />
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fa fa-trash-can mr-1"></i> {{#str}}diagnostics_purge_cache_btn, local_wub_auth{{/str}}
+                        </button>
+                    </form>
+                </div>
+
+                {{#probe_result}}
+                <div class="alert alert-{{probe_type}} mt-3" role="alert">
+                    {{probe_message}}
+                </div>
+                {{/probe_result}}
+            </div>
+        </div>
+
+        <!-- Identity Resolver Test Tool -->
+        <div class="col-lg-6 mb-4">
+            <div class="wub-admin-panel h-100">
+                <h4 class="h5 font-weight-bold mb-3">
+                    <i class="fa fa-id-card text-primary mr-1"></i> {{#str}}diagnostics_test_identity, local_wub_auth{{/str}}
+                </h4>
+                <p class="text-muted small mb-3">
+                    Verify deterministic resolution across Moodle username, email, ID number, and external UMS.
+                </p>
+
+                <form action="{{form_action}}" method="get" class="mb-3">
+                    <div class="input-group">
+                        <input type="text"
+                               name="test_id"
+                               class="form-control"
+                               placeholder="e.g. 0326745530 or student email"
+                               value="{{test_id_input}}"
+                               required />
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Test</button>
+                        </div>
+                    </div>
+                </form>
+
+                {{#test_id_result}}
+                <div class="card bg-light border-0 p-3 mt-2 rounded">
+                    <div class="font-weight-bold text-dark">Status: <span class="badge badge-info">{{status}}</span></div>
+                    {{#found}}
+                    <div class="small mt-1"><strong>User:</strong> {{user_name}} (ID: {{user_id}}, {{user_username}})</div>
+                    <div class="small"><strong>Match Strategy:</strong> {{match_type}}</div>
+                    {{/found}}
+                    {{#err_msg}}
+                    <div class="small text-danger mt-1">{{err_msg}}</div>
+                    {{/err_msg}}
+                </div>
+                {{/test_id_result}}
+            </div>
+        </div>
+    </div>
+</div>

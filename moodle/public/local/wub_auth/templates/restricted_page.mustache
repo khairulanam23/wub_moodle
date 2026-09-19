@@ -1,0 +1,64 @@
+<div class="wub-restricted-container" id="wub-restricted-view">
+    <div class="wub-restricted-card">
+        <div class="wub-restricted-header">
+            <i class="fa fa-triangle-exclamation fa-3x mb-2 text-white"></i>
+            <h2>{{#str}}restricted_heading, local_wub_auth{{/str}}</h2>
+            <p class="mb-0 text-white-50">{{user_fullname}} ({{user_identifier}})</p>
+        </div>
+
+        <div class="p-4">
+            <p class="lead text-dark mb-3">
+                {{#str}}restricted_lead, local_wub_auth{{/str}}
+            </p>
+
+            <div class="wub-due-kpi-grid">
+                <div class="wub-due-kpi-card" style="border-left: 4px solid #d9534f;">
+                    <div class="label">{{#str}}restricted_due_amount, local_wub_auth{{/str}}</div>
+                    <div class="amount">{{net_due}} BDT</div>
+                </div>
+
+                {{#raw_due}}
+                <div class="wub-due-kpi-card">
+                    <div class="label">{{#str}}restricted_raw_due, local_wub_auth{{/str}}</div>
+                    <div class="amount text-muted" style="font-size: 1.25rem;">{{raw_due}} BDT</div>
+                </div>
+                {{/raw_due}}
+
+                {{#monthly_installment}}
+                <div class="wub-due-kpi-card">
+                    <div class="label">{{#str}}restricted_installment, local_wub_auth{{/str}}</div>
+                    <div class="amount text-muted" style="font-size: 1.25rem;">{{monthly_installment}} BDT</div>
+                </div>
+                {{/monthly_installment}}
+
+                <div class="wub-due-kpi-card">
+                    <div class="label">{{#str}}restricted_threshold, local_wub_auth{{/str}}</div>
+                    <div class="amount text-muted" style="font-size: 1.25rem;">{{threshold}} BDT</div>
+                </div>
+            </div>
+
+            <div class="card bg-light border-0 p-3 mb-4 rounded-lg">
+                <h5 class="h6 font-weight-bold text-dark mb-2">
+                    <i class="fa fa-circle-info text-primary mr-1"></i> {{#str}}restricted_steps_title, local_wub_auth{{/str}}
+                </h5>
+                <ul class="mb-2 pl-3 text-muted" style="font-size: 0.9rem; line-height: 1.6;">
+                    <li>{{#str}}restricted_step1, local_wub_auth{{/str}}</li>
+                    <li>{{#str}}restricted_step2, local_wub_auth{{/str}}</li>
+                    <li>{{#str}}restricted_step3, local_wub_auth{{/str}}</li>
+                </ul>
+                <div class="small font-weight-bold text-dark">
+                    <i class="fa fa-phone mr-1"></i> {{#str}}restricted_accounts_contact, local_wub_auth{{/str}}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <a href="{{logout_url}}" class="btn btn-outline-danger px-4">
+                    <i class="fa fa-right-from-bracket mr-1"></i> {{#str}}restricted_btn_logout, local_wub_auth{{/str}}
+                </a>
+                <a href="{{refresh_url}}" class="btn btn-primary px-4 font-weight-bold">
+                    <i class="fa fa-rotate mr-1"></i> {{#str}}restricted_btn_refresh, local_wub_auth{{/str}}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,87 @@
+<div class="wub-admin-split-page" id="wub-admin-login-view">
+    <div class="wub-admin-left-col">
+        <div class="wub-admin-form-container">
+            <!-- Brand Logo -->
+            <div class="wub-admin-logo-wrap">
+                <img src="{{admin_logo_url}}" alt="elearning.org.bd - World University of Bangladesh" class="wub-admin-brand-logo" />
+            </div>
+
+            <!-- Page Title -->
+            <h1 class="wub-admin-title">Login to <span class="wub-admin-title-highlight">elearning.org.bd</span></h1>
+
+            {{#has_error}}
+            <div class="wub-alert wub-alert-danger mb-3" role="alert">
+                <i class="fa fa-triangle-exclamation fa-lg mt-1 text-danger"></i>
+                <div>
+                    <strong>Authentication Notice:</strong><br>
+                    {{error_message}}
+                </div>
+            </div>
+            {{/has_error}}
+
+            <!-- Authentication Form -->
+            <form action="{{form_action}}" method="post" id="wub-admin-login-form" novalidate>
+                <input type="hidden" name="sesskey" value="{{sesskey}}" />
+                <input type="hidden" name="logintoken" value="{{logintoken}}" />
+                <input type="hidden" name="role" value="{{role}}" />
+                {{#returnurl}}
+                <input type="hidden" name="returnurl" value="{{returnurl}}" />
+                {{/returnurl}}
+
+                <!-- Stacked Joined Input Container -->
+                <div class="wub-admin-input-card">
+                    <div class="wub-admin-field-row">
+                        <label for="admin_username" class="wub-admin-field-label">Username</label>
+                        <input type="text"
+                               name="username"
+                               id="admin_username"
+                               class="wub-admin-field-input"
+                               value="{{username}}"
+                               placeholder="Username"
+                               autocomplete="username"
+                               required
+                               autofocus />
+                    </div>
+
+                    <div class="wub-admin-field-divider"></div>
+
+                    <div class="wub-admin-field-row">
+                        <label for="admin_password" class="wub-admin-field-label">Password</label>
+                        <input type="password"
+                               name="password"
+                               id="admin_password"
+                               class="wub-admin-field-input"
+                               placeholder="Password"
+                               autocomplete="current-password"
+                               required />
+                    </div>
+                </div>
+
+                <!-- Remember me and Forgot password -->
+                <div class="wub-admin-options-row">
+                    <label class="wub-admin-checkbox-label" for="admin_rememberusername">
+                        <input type="checkbox"
+                               name="rememberusername"
+                               id="admin_rememberusername"
+                               value="1"
+                               {{#remember_username}}checked{{/remember_username}} />
+                        <span>Remember me</span>
+                    </label>
+
+                    <a href="{{landing_url}}" class="wub-admin-forgot-link">Forgot Password</a>
+                </div>
+
+                <!-- Action Button -->
+                <div class="wub-admin-btn-wrap">
+                    <button type="submit" class="wub-admin-submit-btn" id="wub-admin-btn-signin">
+                        Log in
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Hero Section -->
+    <div class="wub-admin-right-col" style="background-image: url('{{admin_hero_url}}');" role="img" aria-label="World University of Bangladesh Campus and Students">
+    </div>
+</div>

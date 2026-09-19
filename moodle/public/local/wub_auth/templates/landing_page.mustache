@@ -1,0 +1,52 @@
+<div class="wub-landing-container" style="background-image: url('{{bg_img_url}}');">
+    <div class="wub-landing-content-wrap">
+        <div class="wub-landing-card" id="wub-landing-modal">
+            <div class="wub-landing-left">
+                <img src="{{tower_img_url}}" alt="World University of Bangladesh" class="wub-tower-img" loading="eager">
+            </div>
+
+            <div class="wub-landing-right">
+                <h1 class="wub-landing-title">{{#str}}landing_welcome, local_wub_auth{{/str}}</h1>
+                <p class="wub-landing-subtitle">{{#str}}landing_instruction, local_wub_auth{{/str}}</p>
+
+                <div class="wub-role-grid">
+                    <div class="wub-role-row">
+                        <a href="{{student_url}}" class="wub-role-btn wub-btn-half" id="btn-role-student">
+                            {{#str}}landing_role_student, local_wub_auth{{/str}}
+                        </a>
+                        <a href="{{teacher_url}}" class="wub-role-btn wub-btn-half" id="btn-role-teacher">
+                            {{#str}}landing_role_teacher, local_wub_auth{{/str}}
+                        </a>
+                    </div>
+                    <a href="{{admin_url}}" class="wub-role-btn wub-btn-full" id="btn-role-admin">
+                        {{#str}}landing_role_admin, local_wub_auth{{/str}}
+                    </a>
+                </div>
+
+                <div class="wub-landing-divider"></div>
+
+                <p class="wub-catalog-subtitle">{{#str}}landing_catalog_instruction, local_wub_auth{{/str}}</p>
+
+                <a href="{{catalog_url}}" class="wub-role-btn wub-btn-full wub-catalog-btn" id="btn-course-catalog">
+                    {{#str}}landing_catalog_btn, local_wub_auth{{/str}}
+                </a>
+
+                <div class="wub-sublinks">
+                    <a href="{{contact_url}}" class="wub-sublink" target="_blank" rel="noopener">
+                        {{#str}}landing_contact_us, local_wub_auth{{/str}}
+                    </a>
+                    <span class="wub-sublink-sep">|</span>
+                    <a href="{{guides_url}}" class="wub-sublink">
+                        {{#str}}landing_how_to_guides, local_wub_auth{{/str}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="wub-landing-footer">
+        <div class="wub-footer-inner">
+            {{{footer_html}}}
+        </div>
+    </footer>
+</div>

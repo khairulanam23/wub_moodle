@@ -1,0 +1,972 @@
+/**
+ * Scoped styles for local_wub_auth
+ *
+ * Uses WUB primary-shade tokens (--wub-p-*) matching Academi and WUB brand.
+ * Fully responsive, accessible, high contrast (WCAG AA).
+ */
+
+:root {
+    --wub-auth-primary: #0f6cbf;
+    --wub-auth-primary-dark: #0a4d8a;
+    --wub-auth-primary-darker: #073a63;
+    --wub-auth-primary-light: #e7f1fb;
+    --wub-auth-primary-subtle: #f3f8fd;
+    --wub-auth-text-dark: #1f2d3d;
+    --wub-auth-text-muted: #5a6a7e;
+    --wub-auth-border: #c6def3;
+    --wub-auth-danger: #d9534f;
+    --wub-auth-danger-subtle: #fdf2f2;
+    --wub-auth-success: #28a745;
+    --wub-auth-success-subtle: #f0f9f2;
+    --wub-auth-warning: #f0ad4e;
+    --wub-auth-card-bg: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Login Page Shell & Card
+   -------------------------------------------------------------------------- */
+.wub-login-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.wub-login-card {
+    background: var(--wub-auth-card-bg);
+    border: 1px solid var(--wub-auth-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 108, 191, 0.08);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.wub-login-header {
+    background: linear-gradient(135deg, var(--wub-auth-primary-dark) 0%, var(--wub-auth-primary) 100%);
+    color: #ffffff;
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.wub-login-header .wub-crest-logo {
+    max-width: 80px;
+    height: auto;
+    margin-bottom: 0.75rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.wub-login-header h2 {
+    color: #ffffff;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0 0 0.35rem 0;
+    line-height: 1.3;
+}
+
+.wub-login-header p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.wub-login-body {
+    padding: 2rem 1.75rem;
+}
+
+/* Role Selector Tabs */
+.wub-role-tabs {
+    display: flex;
+    background: var(--wub-auth-primary-subtle);
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--wub-auth-border);
+}
+
+.wub-role-tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--wub-auth-text-muted);
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.wub-role-tab:hover {
+    color: var(--wub-auth-primary);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.wub-role-tab.active {
+    background: #ffffff;
+    color: var(--wub-auth-primary-dark);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Form Controls */
+.wub-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.wub-form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--wub-auth-text-dark);
+    margin-bottom: 0.4rem;
+}
+
+.wub-input-wrapper {
+    position: relative;
+}
+
+.wub-input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--wub-auth-text-muted);
+    pointer-events: none;
+}
+
+.wub-form-control {
+    width: 100%;
+    height: 44px;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+    font-size: 0.95rem;
+    color: var(--wub-auth-text-dark);
+    background: #ffffff;
+    border: 1.5px solid #d0dbe5;
+    border-radius: 8px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wub-form-control:focus {
+    border-color: var(--wub-auth-primary);
+    box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.15);
+    outline: none;
+}
+
+/* Submit Button */
+.wub-btn-submit {
+    width: 100%;
+    height: 44px;
+    background: var(--wub-auth-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.wub-btn-submit:hover {
+    background: var(--wub-auth-primary-dark);
+}
+
+.wub-btn-submit:active {
+    transform: scale(0.99);
+}
+
+/* Notice & Alerts */
+.wub-alert {
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.wub-alert-danger {
+    background: var(--wub-auth-danger-subtle);
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.wub-alert-warning {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    color: #856404;
+}
+
+.wub-alert-info {
+    background: var(--wub-auth-primary-subtle);
+    border: 1px solid var(--wub-auth-border);
+    color: var(--wub-auth-primary-dark);
+}
+
+.wub-login-footer {
+    padding: 1.25rem 1.75rem;
+    background: #fafbfd;
+    border-top: 1px solid #edf2f7;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--wub-auth-text-muted);
+}
+
+.wub-login-footer a {
+    color: var(--wub-auth-primary);
+    text-decoration: none;
+}
+
+.wub-login-footer a:hover {
+    text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Policy Review Page
+   -------------------------------------------------------------------------- */
+.wub-policy-container {
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.wub-policy-card {
+    background: #ffffff;
+    border: 1px solid var(--wub-auth-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    padding: 2rem;
+}
+
+.wub-policy-category {
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.wub-policy-cat-header {
+    background: var(--wub-auth-primary-subtle);
+    padding: 0.85rem 1.25rem;
+    font-weight: 700;
+    color: var(--wub-auth-primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.wub-policy-item {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.wub-policy-item:last-child {
+    border-bottom: none;
+}
+
+.wub-policy-item h5 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--wub-auth-text-dark);
+    margin-bottom: 0.35rem;
+}
+
+.wub-policy-item p {
+    font-size: 0.88rem;
+    color: #475569;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.wub-policy-agree-box {
+    background: #f8fafc;
+    border: 2px dashed var(--wub-auth-border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   Financial Restriction Page
+   -------------------------------------------------------------------------- */
+.wub-restricted-container {
+    max-width: 680px;
+    margin: 2.5rem auto;
+    padding: 0 1rem;
+}
+
+.wub-restricted-card {
+    background: #ffffff;
+    border: 1px solid #f5c6cb;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(217, 83, 79, 0.08);
+    overflow: hidden;
+}
+
+.wub-restricted-header {
+    background: #d9534f;
+    color: #ffffff;
+    padding: 1.75rem;
+    text-align: center;
+}
+
+.wub-restricted-header h2 {
+    color: #ffffff;
+    font-size: 1.4rem;
+    margin: 0.5rem 0 0 0;
+}
+
+.wub-due-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.wub-due-kpi-card {
+    background: #fafbfc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.wub-due-kpi-card .label {
+    font-size: 0.8rem;
+    color: var(--wub-auth-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.wub-due-kpi-card .amount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #d9534f;
+    margin-top: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Waivers & Diagnostics Management Tables
+   -------------------------------------------------------------------------- */
+.wub-admin-panel {
+    background: #ffffff;
+    border: 1px solid var(--wub-auth-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.wub-badge-active {
+    background: var(--wub-auth-success-subtle);
+    color: var(--wub-auth-success);
+    border: 1px solid #c3e6cb;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.wub-badge-expired {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.wub-badge-revoked {
+    background: var(--wub-auth-danger-subtle);
+    color: var(--wub-auth-danger);
+    border: 1px solid #f5c6cb;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .wub-login-container {
+        margin: 1rem auto;
+    }
+    .wub-login-body {
+        padding: 1.5rem 1rem;
+    }
+    .wub-login-header {
+        padding: 1.5rem 1rem;
+    }
+    .wub-policy-card, .wub-restricted-card {
+        padding: 1.25rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   WUB Institutional Landing Page (Exact Visual Reference Pattern)
+   -------------------------------------------------------------------------- */
+.wub-landing-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1050;
+}
+
+.wub-landing-content-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 2rem 1rem;
+}
+
+.wub-landing-card {
+    background: #ffffff;
+    display: flex;
+    flex-direction: row;
+    max-width: 660px;
+    width: 100%;
+    border: 1px solid #b8c4d0;
+    border-radius: 4px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    margin: auto;
+}
+
+.wub-landing-left {
+    width: 250px;
+    min-width: 250px;
+    display: flex;
+    align-items: stretch;
+    background: #112233;
+}
+
+.wub-tower-img {
+    width: 100%;
+    height: 100%;
+    min-height: 380px;
+    object-fit: cover;
+    display: block;
+}
+
+.wub-landing-right {
+    flex: 1;
+    padding: 2rem 1.75rem 1.5rem 1.75rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.wub-landing-title {
+    color: #24336a;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 0.75px;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.wub-landing-subtitle {
+    color: #486581;
+    font-size: 0.83rem;
+    line-height: 1.45;
+    margin: 0 0 1.25rem 0;
+}
+
+.wub-role-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+}
+
+.wub-role-row {
+    display: flex;
+    gap: 0.65rem;
+    width: 100%;
+}
+
+.wub-role-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #24336a;
+    color: #ffffff !important;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-decoration: none !important;
+    border: 1px solid #1c2854;
+    padding: 0.55rem 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(36, 51, 106, 0.2);
+}
+
+.wub-role-btn:hover,
+.wub-role-btn:focus {
+    background: #19244d;
+    box-shadow: 0 4px 10px rgba(25, 36, 77, 0.35);
+    transform: translateY(-1px);
+    color: #ffffff !important;
+}
+
+.wub-btn-half {
+    flex: 1;
+}
+
+.wub-btn-full {
+    width: 100%;
+}
+
+.wub-landing-divider {
+    height: 1px;
+    background: #dbe2ea;
+    margin: 0.65rem 0 0.85rem 0;
+    border: 0;
+}
+
+.wub-catalog-subtitle {
+    color: #486581;
+    font-size: 0.8rem;
+    margin: 0 0 0.65rem 0;
+}
+
+.wub-catalog-btn {
+    margin-bottom: 0.85rem;
+}
+
+.wub-sublinks {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wub-sublink {
+    color: #24336a;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.wub-sublink:hover,
+.wub-sublink:focus {
+    color: #0f6cbf;
+    text-decoration: underline;
+}
+
+.wub-sublink-sep {
+    color: #9fb3c8;
+}
+
+.wub-landing-footer {
+    width: 100%;
+    background: rgba(5, 10, 20, 0.94);
+    color: #cbd5e1;
+    padding: 0.65rem 1rem;
+    font-size: 0.78rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wub-landing-footer a {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.wub-landing-footer a:hover {
+    text-decoration: underline;
+    color: #7dd3fc;
+}
+
+/* Landing Page Mobile Adaptation */
+@media (max-width: 640px) {
+    .wub-landing-card {
+        flex-direction: column;
+        max-width: 360px;
+        margin: 1rem auto;
+    }
+    .wub-landing-left {
+        width: 100%;
+        height: 160px;
+        min-height: 160px;
+        min-width: unset;
+    }
+    .wub-tower-img {
+        min-height: 160px;
+        height: 160px;
+        width: 100%;
+        object-position: center 30%;
+    }
+    .wub-landing-right {
+        padding: 1.25rem 1rem 1rem 1rem;
+    }
+    .wub-landing-title {
+        font-size: 1.25rem;
+    }
+    .wub-landing-footer {
+        font-size: 0.72rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Guides Page
+   -------------------------------------------------------------------------- */
+.wub-guides-container {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.wub-guides-card {
+    background: #ffffff;
+    border: 1px solid var(--wub-auth-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 108, 191, 0.08);
+    overflow: hidden;
+}
+
+.wub-guides-header {
+    background: linear-gradient(135deg, var(--wub-auth-primary-dark) 0%, var(--wub-auth-primary) 100%);
+    color: #ffffff;
+    padding: 2rem;
+    text-align: center;
+}
+
+.wub-guides-header h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0 0.25rem 0;
+}
+
+.wub-guides-header p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.95rem;
+}
+
+/* --------------------------------------------------------------------------
+   Admin Login - 2-Column Split Body Layout (Matches Reference Image)
+   Scoped strictly to .wub-admin-split-page so Student and Teacher logins
+   remain 100% untouched.
+   -------------------------------------------------------------------------- */
+body.wub-admin-login-layout #region-main-box.login-layout-right-content,
+body.wub-admin-login-layout .login-container,
+body.wub-admin-login-layout .login-layout-right {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.wub-admin-login-layout #page-content {
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.wub-admin-split-page {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    min-height: calc(100vh - 140px);
+    background: #ffffff;
+    overflow: hidden;
+}
+
+/* Left Column: Form Section */
+.wub-admin-left-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+    width: 50%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    box-sizing: border-box;
+}
+
+.wub-admin-form-container {
+    width: 100%;
+    max-width: 526px;
+    box-sizing: border-box;
+}
+
+/* Top Brand Logo */
+.wub-admin-logo-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.wub-admin-brand-logo {
+    max-width: 360px;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Title */
+.wub-admin-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 0 0 14px 0;
+    text-align: left;
+    line-height: 1.3;
+}
+
+.wub-admin-title-highlight {
+    font-weight: 700;
+    color: #0c375e;
+}
+
+/* Joined / Stacked Input Box */
+.wub-admin-input-card {
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+    background: #ffffff;
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wub-admin-input-card:focus-within {
+    border-color: #0c375e;
+    box-shadow: 0 0 0 1px #0c375e;
+}
+
+.wub-admin-field-row {
+    padding: 10px 18px 8px 18px;
+    background: #ffffff;
+}
+
+.wub-admin-field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #9ca3af;
+    margin: 0 0 2px 0;
+    text-transform: none;
+}
+
+.wub-admin-field-input {
+    width: 100%;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    font-size: 16px;
+    color: #374151;
+    padding: 4px 0 !important;
+    line-height: 1.4;
+    box-shadow: none !important;
+}
+
+.wub-admin-field-input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.wub-admin-field-input::placeholder {
+    color: #6b7280;
+    font-size: 15px;
+    opacity: 1;
+}
+
+.wub-admin-field-divider {
+    height: 1px;
+    background: #eeeeee;
+    width: 100%;
+}
+
+/* Options Row: Remember Me + Forgot Password */
+.wub-admin-options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 38px;
+    width: 100%;
+}
+
+.wub-admin-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #718096;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.wub-admin-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #0c375e;
+    cursor: pointer;
+    margin: 0;
+}
+
+.wub-admin-forgot-link {
+    font-size: 13px;
+    color: #718096;
+    text-decoration: underline;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+}
+
+.wub-admin-forgot-link:hover {
+    color: #0c375e;
+}
+
+/* Submit Button with ~16px horizontal inset */
+.wub-admin-btn-wrap {
+    padding: 0 16px;
+}
+
+.wub-admin-submit-btn {
+    width: 100%;
+    height: 42px;
+    background: #0c375e;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    display: block;
+    text-align: center;
+}
+
+.wub-admin-submit-btn:hover {
+    background: #082440;
+}
+
+.wub-admin-submit-btn:focus {
+    outline: 2px solid #0f6cbf;
+    outline-offset: 2px;
+}
+
+/* Right Column: Hero Photograph */
+.wub-admin-right-col {
+    flex: 0 0 50%;
+    max-width: 50%;
+    width: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 700px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+    .wub-admin-left-col {
+        padding: 40px 24px;
+    }
+    .wub-admin-form-container {
+        max-width: 440px;
+    }
+    .wub-admin-brand-logo {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .wub-admin-split-page {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .wub-admin-right-col {
+        display: none;
+    }
+    .wub-admin-left-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+        width: 100%;
+        padding: 40px 24px;
+        min-height: 520px;
+    }
+    .wub-admin-form-container {
+        max-width: 440px;
+        margin: 0 auto;
+    }
+    .wub-admin-btn-wrap {
+        padding: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .wub-admin-left-col {
+        padding: 28px 16px;
+    }
+    .wub-admin-brand-logo {
+        max-width: 250px;
+    }
+    .wub-admin-title {
+        font-size: 1.15rem;
+    }
+    .wub-admin-options-row {
+        font-size: 12px;
+        margin-bottom: 28px;
+    }
+    .wub-admin-checkbox-label {
+        font-size: 12px;
+    }
+    .wub-admin-forgot-link {
+        font-size: 12px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Navbar Item Visibility on Student & Teacher Login Pages
+   Hides custommenu items (Course Catalog, Course Management, User Accounts,
+   Bulk Enrolment) exclusively on Student and Teacher login pages.
+   Desktop & mobile responsive.
+   -------------------------------------------------------------------------- */
+body.wub-auth-hide-nav-items .header-main .primary-navigation,
+body.wub-auth-role-student .header-main .primary-navigation,
+body.wub-auth-role-teacher .header-main .primary-navigation {
+    display: none !important;
+}
+
+body.wub-auth-hide-nav-items .header-main a[href*="/course/index.php"],
+body.wub-auth-hide-nav-items .header-main a[href*="/course/management.php"],
+body.wub-auth-hide-nav-items .header-main a[href*="/admin/user.php"],
+body.wub-auth-hide-nav-items .header-main a[href*="/local/bulk_enrolment/"],
+body.wub-auth-role-student .header-main a[href*="/course/index.php"],
+body.wub-auth-role-student .header-main a[href*="/course/management.php"],
+body.wub-auth-role-student .header-main a[href*="/admin/user.php"],
+body.wub-auth-role-student .header-main a[href*="/local/bulk_enrolment/"],
+body.wub-auth-role-teacher .header-main a[href*="/course/index.php"],
+body.wub-auth-role-teacher .header-main a[href*="/course/management.php"],
+body.wub-auth-role-teacher .header-main a[href*="/admin/user.php"],
+body.wub-auth-role-teacher .header-main a[href*="/local/bulk_enrolment/"] {
+    display: none !important;
+}
+

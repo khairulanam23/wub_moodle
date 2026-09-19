@@ -1,0 +1,74 @@
+<div class="wub-policy-container" id="wub-policy-view">
+    <div class="wub-policy-card">
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+            <div>
+                <span class="badge badge-primary px-3 py-2" style="font-size: 0.85rem;">
+                    {{role_badge_label}}
+                </span>
+            </div>
+            <div class="text-muted" style="font-size: 0.85rem;">
+                {{policy_validity_text}}
+            </div>
+        </div>
+
+        <h2 class="h3 font-weight-bold text-dark mb-2">
+            {{#str}}policy_header, local_wub_auth{{/str}}
+        </h2>
+        <p class="text-muted mb-4">
+            {{#str}}policy_subtitle, local_wub_auth{{/str}}
+        </p>
+
+        {{#has_error}}
+        <div class="wub-alert wub-alert-danger" role="alert">
+            <i class="fa fa-triangle-exclamation"></i>
+            <div>{{error_message}}</div>
+        </div>
+        {{/has_error}}
+
+        <!-- 20 Policies in 4 Categories -->
+        <div class="wub-policy-categories">
+            {{#categories}}
+            <div class="wub-policy-category">
+                <div class="wub-policy-cat-header">
+                    <i class="fa {{icon}} text-primary"></i>
+                    <span>{{title}}</span>
+                </div>
+                <div class="wub-policy-cat-body">
+                    {{#policies}}
+                    <div class="wub-policy-item">
+                        <h5>{{title}}</h5>
+                        <p>{{content}}</p>
+                    </div>
+                    {{/policies}}
+                </div>
+            </div>
+            {{/categories}}
+        </div>
+
+        <form action="{{form_action}}" method="post" id="wub-policy-form">
+            <input type="hidden" name="sesskey" value="{{sesskey}}" />
+            <input type="hidden" name="role" value="{{role}}" />
+            {{#returnurl}}
+            <input type="hidden" name="returnurl" value="{{returnurl}}" />
+            {{/returnurl}}
+
+            <div class="wub-policy-agree-box">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="policy_agree" name="agree" value="1" required />
+                    <label class="custom-control-label font-weight-bold text-dark" for="policy_agree">
+                        {{#str}}policy_agree_checkbox, local_wub_auth{{/str}}
+                    </label>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <a href="{{cancel_url}}" class="btn btn-outline-secondary px-4 py-2">
+                    <i class="fa fa-times mr-1"></i> {{#str}}policy_btn_decline, local_wub_auth{{/str}}
+                </a>
+                <button type="submit" class="btn btn-primary px-5 py-2 font-weight-bold" id="wub-policy-accept-btn">
+                    <i class="fa fa-check mr-1"></i> {{#str}}policy_btn_accept, local_wub_auth{{/str}}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
