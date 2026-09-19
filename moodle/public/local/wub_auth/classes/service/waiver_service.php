@@ -60,8 +60,54 @@ class waiver_service {
             return waiver_record::from_record($record);
         }
 
+        // Self-heal from legacy user preference if present.
+        $legacypref = get_user_preferences(self::PREFERENCE_KEY, null, $userid);
+        if (!empty($legacypref)) {
+            $expirytimestamp = is_numeric($legacypref) ? (int)$legacypref : strtotime($legacypref . ' 23:59:59');
+            if ($expirytimestamp && $now <= $expirytimestamp) {
+                try {
+                    $newrec = new stdClass();
+                    $newrec->userid = $userid;
+                    $newrec->status = 1;
+                    $newrec->timestart = $now;
+                    $newrec->timeend = $expirytimestamp;
+                    $newrec->grantedby = 2; // Administrative fallback.
+                    $newrec->reason = 'Self-healed from legacy user preference wub_permission';
+                    $newrec->timecreated = $now;
+                    $newrec->timemodified = $now;
+                    $newrec->id = $DB->insert_record('wub_auth_waivers', $newrec);
+                    return waiver_record::from_record($newrec);
+                } catch (\Throwable $e) {
+                    $fallbackrec = (object)[
+                        'id' => 0,
+                        'userid' => $userid,
+                        'status' => 1,
+                        'timestart' => $now,
+                        'timeend' => $expirytimestamp,
+                        'grantedby' => 2,
+                        'reason' => 'Legacy user preference',
+                        'timecreated' => $now,
+                        'timemodified' => $now,
+                    ];
+                    return waiver_record::from_record($fallbackrec);
+                }
+            }
+        }
+
         return null;
     }
+
+    /**
+     * Check if a student has an active, valid financial waiver.
+     *
+     * @param int $userid
+     * @return bool
+     */
+    public function has_valid_waiver(int $userid): bool {
+        $waiver = $this->get_active_waiver($userid);
+        return ($waiver !== null && $waiver->is_valid());
+    }
+
 
     /**
      * Grant or update a special permission waiver for a student.

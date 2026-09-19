@@ -412,6 +412,36 @@ class financial_clearance_service {
             );
         }
 
+        // Step 3b: Check department exemption if not already evaluated
+        $exemptdepartments = $this->get_exempt_departments();
+        $deptid = $context['department_id'];
+        $deptname = $context['department_name'];
+        if (!empty($exemptdepartments) && ($deptid !== null || $deptname !== null)) {
+            $matchesdept = false;
+            foreach ($exemptdepartments as $ed) {
+                if (($deptid !== null && strcasecmp($deptid, $ed) === 0) ||
+                    ($deptname !== null && strcasecmp($deptname, $ed) === 0)) {
+                    $matchesdept = true;
+                    break;
+                }
+            }
+            if ($matchesdept) {
+                $deptcutoffraw = (string)$this->apiclient->get_config('exempt_department_date_cutoff', '');
+                if ($deptcutoffraw === '') {
+                    $deptcutoffraw = (string)$this->apiclient->get_config('exempt_date_cutoff', self::DEFAULT_EXEMPT_DATE_CUTOFF);
+                }
+                $deptcutoffts = $this->parse_exemption_cutoff_timestamp($deptcutoffraw);
+                if ($this->is_exemption_active($deptcutoffts)) {
+                    $label = $deptname ?: ($deptid ?: 'Department');
+                    return clearance_result::department_exempt(
+                        $label,
+                        $deptcutoffts,
+                        "Department '$label' is temporarily exempt from payment restriction until " . userdate($deptcutoffts) . "."
+                    );
+                }
+            }
+        }
+
         // Step 4: Normalize — due cannot be negative
         $finaldue = max(0.0, $adjusteddue);
 

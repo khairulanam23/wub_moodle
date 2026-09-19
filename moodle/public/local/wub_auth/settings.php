@@ -255,4 +255,13 @@ if ($hassiteconfig) {
         300,
         PARAM_INT
     ));
+
+    // Administrative External Page: Student Financial Waivers & Special Permissions.
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_wub_auth_waivers',
+        get_string('waivers_title', 'local_wub_auth'),
+        new moodle_url('/local/wub_auth/waivers.php'),
+        'local/wub_auth:managewaivers'
+    ));
 }
+

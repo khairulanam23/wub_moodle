@@ -25,7 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_wub_auth';
-$plugin->version   = 2026091500;
+$plugin->version   = 2026091900;
 $plugin->requires  = 2024042200; // Moodle 4.4+ / 5.2+ compatible.
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = 'v1.0.0 (Institutional Authentication & Access Control)';
+$plugin->release   = 'v1.2.0 (Consolidated WUB Institutional Logic Migration)';
+

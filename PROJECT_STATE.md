@@ -503,10 +503,35 @@ The infrastructure consists of four cooperating Docker services:
   * Examination Scheduling: Created and published 9 examination milestones in ExamController (3 assessments x 3 sections) with realistic proctoring configuration (Midterm Oct 22 90m, Practical Nov 26 90m, Final Dec 24 180m).
   * Comprehensive Verification: Verified Moodle course view and participants, strict teacher section isolation (Kazi sees A & B, isolated from C; Ahsan sees C, isolated from A & B), real student eligibility (3 published exams visible per student), and re-run idempotency (zero duplicate users, enrolments, groups, sections, courses, or exams).
 
+* 2026-09-19: Completed WUB Moodle Legacy Migration in One Controlled Implementation Pass:
+  * Reference Architecture:
+    * Preserved legacy source branch `legacy/wub-moodle-original` (commit `b8ee2f238ce1f64393060a4d69175535bf983365`, safety tag `legacy-before-new-moodle`) untouched and recoverable.
+    * New target remains Moodle 5.2.2+ (Build: 20260911), PHP 8.4 FPM, MariaDB 11.8, and Nginx 1.28.
+    * Zero Moodle core modifications and zero legacy core contamination.
+  * Migrated & Consolidated Functionality:
+    * `local/wub_auth` & `local/wub_login`: Consolidated into `local_wub_auth` v1.2.0 (`version 2026091900`). Handles WUB student and teacher authentication, deterministic identity resolution (numeric student IDs, usernames, institutional emails, registration IDs), UMS fallback authentication with automatic password synchronization, persona authorization, session management, and audit logging.
+    * `local/wub_auth_penalty`: Centralized into `\local_wub_auth\service\financial_clearance_service` as authoritative system of record. Enforces exact decision order: (1) restriction disabled &rarr; allow, (2) privileged/bypass capability &rarr; allow, (3) active individual waiver &rarr; allow, (4) active program exemption &rarr; allow, (5) active department exemption &rarr; allow, (6) net due &le; 100 BDT &rarr; allow, (7) otherwise block. Preserves all 9 program exemption IDs (`324, 351, 359, 360, 363, 352, 361, 362, 313`), annual `MM-DD` cutoff (`09-10`), explicit `YYYY-MM-DD` cutoff, and Moodle-wide post-login interceptor (`local_wub_auth_after_require_login`).
+    * `local/wub_special_permission`: Migrated into `local_wub_auth` (`waiver_service`, `waivers.php`, `mdl_wub_auth_waivers`). Database-backed student financial access waivers with expiry date and audit trail, admin search and management UI, self-grant prevention, automatic clearance cache invalidation, and self-healing from legacy user preference `wub_permission`.
+    * `local/wub_policy`: Migrated into `local_wub_auth` (`policy_service`, `policy.php`, `mdl_wub_auth_policy_accept`). 20 university policy clauses structured in 4 categories, 30-day device cookie persistence (`wub_policy_device`), database audit records, versioning, configurable expiry, and pre-login to authenticated user binding.
+    * `local/wub_landing`: Migrated into `local_wub_auth/landing.php` + `templates/landing_page.mustache`. Institutional landing page matching WUB campus photo, centered white card, role selectors (Student, Faculty, Administration), course catalog link, and support links.
+    * `local/mass_enroll` & `local/wub_ums`: Migrated into `local/bulk_enrolment` and `local/wub_auth`. Full August-era two-sided workflow (Program selection, Batch selection, Roster review, Courses targeting, Pre-enrolment validation matrix, Chunked execution with transaction rollback, Group assignments, Duplicate prevention, CSV import/export, Unenrolment). All 5 UMS REST endpoints supported via clean API client with Digest Auth, dynamic key placement, exponential backoff, and MUC caching.
+    * `local/header` & `local/footer`: Replaced by supported Academi theme configuration (`footnote`, `footerlogo`, `phoneno`, `emailid`, `address`, `copyright_footer`), core navigation items (`$CFG->custommenuitems`), and responsive CSS (`academi-customcss.css`). Obsolete standalone plugins retired with no core hacks.
+    * `theme/academi`: New Moodle 5.2.2+ Academi theme maintained as authoritative. Customizations applied via supported theme settings and `academi-customcss.css`.
+    * `local/examcontroller`: Maintained and hardened with HMAC-SHA256 authenticated API boundary, deterministic role resolution, section isolation, and strict enforcement of financial clearance (payment restriction returns HTTP 403, no local password bypass).
+  * Retired Legacy Plugins:
+    * `local_header`, `local_footer`, `local_mass_enroll`, `local_wub_login`, `local_wub_policy`, `local_wub_special_permission`, `local_wub_auth_penalty`, `local_wub_ums`, `local_wub_landing` are formally retired; their business logic is 100% consolidated into modern Moodle 5.2 plugins and native configuration.
+  * Validation Evidence:
+    * Focused acceptance test suite (`scratch/validate_legacy_migration.php`) executed in live Docker environment: **62/62 passed, 0 failed**.
+    * HTTP smoke tests across all web endpoints: `/` (303), `landing.php` (200), `login.php` (200), `bulk_enrolment` (303), `waivers.php` (303), `examcontroller/api` (401).
+    * Zero duplicate accounts, zero duplicate groups, zero fake production records.
+  * Documentation:
+    * Created `LEGACY_MIGRATION_MAP.md` documenting every legacy component, destination, status, and preserved business logic.
+
 ---
 
 ## Next Steps
-* Course 230 setup and examination synchronization fully verified and operational.
+* Production deployment and operational monitoring of Moodle 5.2.2+ environment.
+
 
 
 ---
