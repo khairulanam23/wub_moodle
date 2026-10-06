@@ -83,6 +83,9 @@ class enrolment_dispatcher {
         if ($courseid <= 1 || !$DB->record_exists('course', ['id' => $courseid])) {
             throw new moodle_exception('error_invalid_course', 'local_bulk_enrolment');
         }
+        if ($timestart > 0 && $timeend > 0 && $timestart >= $timeend) {
+            throw new moodle_exception('enroltimeendinvalid', 'enrol');
+        }
         $clean = array_values(array_unique(array_filter(array_map('intval', $userids), fn($id) => $id > 0)));
         if (count($clean) > self::MAX_CHUNK) {
             throw new moodle_exception('error_chunk_too_large', 'local_bulk_enrolment', '', self::MAX_CHUNK);

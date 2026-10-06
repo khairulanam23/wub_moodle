@@ -453,7 +453,7 @@ class financial_clearance_service {
                 $installment,
                 $threshold,
                 $progStr,
-                get_string('error_login_due_restriction', 'local_wub_auth')
+                get_string('error_login_financial_clearance', 'local_wub_auth')
             );
         }
 

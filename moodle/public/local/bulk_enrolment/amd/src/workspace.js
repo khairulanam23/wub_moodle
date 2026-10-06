@@ -528,10 +528,62 @@ define([
     };
 
     /**
+     * Parse datetime-local value (YYYY-MM-DDTHH:mm) to unix timestamp in seconds.
+     * Returns 0 if empty or unparseable.
+     *
+     * @param {string} val
+     * @returns {number}
+     */
+    var parseDateTime = function(val) {
+        if (!val || typeof val !== 'string' || !val.trim()) {
+            return 0;
+        }
+        var d = new Date(val);
+        var t = d.getTime();
+        return isNaN(t) ? 0 : Math.floor(t / 1000);
+    };
+
+    /**
+     * Validate start and end dates.
+     * Returns true if valid, false if invalid range.
+     *
+     * @returns {boolean}
+     */
+    var validateDates = function() {
+        var startVal = $('#be-timestart').val();
+        var endVal = $('#be-timeend').val();
+        var timestart = parseDateTime(startVal);
+        var timeend = parseDateTime(endVal);
+
+        var hasError = false;
+        var errorMsg = '';
+
+        if (timestart > 0 && timeend > 0 && timestart >= timeend) {
+            hasError = true;
+            errorMsg = 'Enrolment end date must be after the enrolment start date.';
+        }
+
+        $('#be-timestart, #be-timeend').toggleClass('is-invalid', hasError);
+        if (hasError) {
+            $('#be-date-error-row').removeClass('d-none');
+            $('#be-date-error-msg').text(errorMsg);
+        } else {
+            $('#be-date-error-row').addClass('d-none');
+            $('#be-date-error-msg').text('');
+        }
+
+        return !hasError;
+    };
+
+    /**
      * Enable/disable the verify button.
      */
     var updateVerifyState = function() {
-        var ok = size(state.selectedStudents) > 0 && selectedCourses().length > 0 && !state.executing;
+        var datesValid = validateDates();
+        var ok = size(state.selectedStudents) > 0 &&
+            selectedCourses().length > 0 &&
+            !state.executing &&
+            datesValid;
         $('#be-verify').prop('disabled', !ok);
         $('#be-course-count').text(selectedCourses().length + ' selected');
         updatePipelineStepper();
@@ -640,6 +692,10 @@ define([
         if (!state.matrix || state.matrix.summary.ready === 0) {
             return;
         }
+        if (!validateDates()) {
+            notice('danger', 'Enrolment end date must be after the enrolment start date.', 'INVALID_DATES');
+            return;
+        }
         var courses = {};
         var students = {};
         state.matrix.rows.forEach(function(r) {
@@ -675,10 +731,14 @@ define([
         }
         var g = groupOptions();
         var role = parseInt($('#be-role').val(), 10) || 0;
-        var days = parseInt($('#be-duration').val(), 10) || 0;
-        var now = Math.floor(Date.now() / 1000);
-        var timestart = days > 0 ? now : 0;
-        var timeend = days > 0 ? now + days * 86400 : 0;
+        var timestart = parseDateTime($('#be-timestart').val());
+        var timeend = parseDateTime($('#be-timeend').val());
+
+        if (timestart > 0 && timeend > 0 && timestart >= timeend) {
+            notice('danger', 'Enrolment end date must be after the enrolment start date.', 'INVALID_DATES');
+            return;
+        }
+
         var reactivate = $('#be-reactivate').prop('checked');
 
         state.executing = true;
@@ -913,6 +973,9 @@ define([
             $('#be-group-hint').text(mode === 'batch' ? 'Each student is added to a course group named exactly like their UMS batch (e.g. "74F").' : '');
         });
         $('#be-verify').on('click', verify);
+        $ws.on('input change', '#be-timestart, #be-timeend', function() {
+            updateVerifyState();
+        });
         $('#be-matrix-filter').on('change', filterMatrix);
         $('#be-execute').on('click', confirmAndExecute);
         $('#be-results-download').on('click', downloadResults);

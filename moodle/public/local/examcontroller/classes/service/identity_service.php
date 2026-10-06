@@ -300,7 +300,7 @@ class identity_service {
                 JOIN {context} ctx ON ctx.instanceid = c.id AND ctx.contextlevel = 50
                 JOIN {role_assignments} ra ON ra.contextid = ctx.id
                 JOIN {role} r ON r.id = ra.roleid AND r.shortname IN ('editingteacher', 'teacher')
-                WHERE ra.userid = :uid AND c.id > 1 AND c.startdate > 0
+                WHERE ra.userid = :uid AND c.id > 1 AND c.visible = 1
                 ORDER BY c.id ASC
             ", ['uid' => $user->id]);
 
@@ -339,16 +339,71 @@ class identity_service {
                         ORDER BY g.name ASC
                     ", ['cid' => $c->id, 'uid' => $user->id]);
 
-                    foreach ($groups as $g) {
-                        $sectionList[] = [
-                            'moodleGroupId' => (int)$g->id,
-                            'moodleCourseId' => (int)$c->id,
-                            'courseCode' => (string)$c->shortname,
-                            'courseName' => (string)$c->fullname,
-                            'sectionName' => (string)$g->name,
-                            'semester' => 'Fall 2026',
-                            'role' => 'COURSE_TEACHER',
-                        ];
+                    if (!empty($groups)) {
+                        foreach ($groups as $g) {
+                            $sectionList[] = [
+                                'moodleGroupId' => (int)$g->id,
+                                'moodleCourseId' => (int)$c->id,
+                                'courseCode' => (string)$c->shortname,
+                                'courseName' => (string)$c->fullname,
+                                'sectionName' => (string)$g->name,
+                                'semester' => 'Fall 2026',
+                                'role' => 'COURSE_TEACHER',
+                            ];
+                        }
+                    } else {
+                        // Check if course has explicit groups
+                        $allCourseGroups = $DB->get_records('groups', ['courseid' => $c->id], 'name ASC');
+                        if (!empty($allCourseGroups)) {
+                            foreach ($allCourseGroups as $g) {
+                                $sectionList[] = [
+                                    'moodleGroupId' => (int)$g->id,
+                                    'moodleCourseId' => (int)$c->id,
+                                    'courseCode' => (string)$c->shortname,
+                                    'courseName' => (string)$c->fullname,
+                                    'sectionName' => (string)$g->name,
+                                    'semester' => 'Fall 2026',
+                                    'role' => 'COURSE_TEACHER',
+                                ];
+                            }
+                        } else {
+                            // Check fallback sections from enrolled students (mdl_user.institution)
+                            $fallbackSections = $DB->get_records_sql("
+                                SELECT DISTINCT TRIM(u.institution) as section_name
+                                FROM {user} u
+                                JOIN {role_assignments} ra ON ra.userid = u.id
+                                JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = 50
+                                JOIN {role} r ON r.id = ra.roleid AND r.shortname = 'student'
+                                JOIN {enrol} e ON e.courseid = :cid
+                                JOIN {user_enrolments} ue ON ue.enrolid = e.id AND ue.userid = u.id AND ue.status = 0
+                                WHERE u.deleted = 0 AND u.institution IS NOT NULL AND TRIM(u.institution) != ''
+                            ", ['cid' => $c->id]);
+
+                            foreach ($fallbackSections as $fs) {
+                                $sectionList[] = [
+                                    'moodleGroupId' => \local_examcontroller\service\academic_service::get_pseudo_group_id((int)$c->id, (string)$fs->section_name),
+                                    'moodleCourseId' => (int)$c->id,
+                                    'courseCode' => (string)$c->shortname,
+                                    'courseName' => (string)$c->fullname,
+                                    'sectionName' => (string)$fs->section_name,
+                                    'semester' => 'Fall 2026',
+                                    'role' => 'COURSE_TEACHER',
+                                ];
+                            }
+
+                            if (empty($fallbackSections)) {
+                                $sectionList[] = [
+                                    'moodleGroupId' => null,
+                                    'isDefaultCohort' => true,
+                                    'moodleCourseId' => (int)$c->id,
+                                    'courseCode' => (string)$c->shortname,
+                                    'courseName' => (string)$c->fullname,
+                                    'sectionName' => 'Default Cohort',
+                                    'semester' => 'Fall 2026',
+                                    'role' => 'COURSE_TEACHER',
+                                ];
+                            }
+                        }
                     }
                 }
             }
@@ -367,7 +422,7 @@ class identity_service {
             JOIN {context} ctx ON ctx.instanceid = c.id AND ctx.contextlevel = 50
             JOIN {role_assignments} ra ON ra.contextid = ctx.id
             JOIN {role} r ON r.id = ra.roleid AND r.shortname = 'student'
-            WHERE ra.userid = :uid AND c.id > 1 AND c.startdate > 0
+            WHERE ra.userid = :uid AND c.id > 1 AND c.visible = 1
             ORDER BY c.id ASC
         ", ['uid' => $user->id]);
 
@@ -391,13 +446,36 @@ class identity_service {
                 ORDER BY g.name ASC
             ", ['cid' => $c->id, 'uid' => $user->id]);
 
-            foreach ($groups as $g) {
+            if (!empty($groups)) {
+                foreach ($groups as $g) {
+                    $sectionList[] = [
+                        'moodleGroupId' => (int)$g->id,
+                        'moodleCourseId' => (int)$c->id,
+                        'courseCode' => (string)$c->shortname,
+                        'courseName' => (string)$c->fullname,
+                        'sectionName' => (string)$g->name,
+                        'semester' => 'Fall 2026',
+                    ];
+                }
+            } else if (!empty($user->institution)) {
+                $batchName = trim($user->institution);
+                $pseudoGid = \local_examcontroller\service\academic_service::get_pseudo_group_id((int)$c->id, $batchName);
                 $sectionList[] = [
-                    'moodleGroupId' => (int)$g->id,
+                    'moodleGroupId' => $pseudoGid,
                     'moodleCourseId' => (int)$c->id,
                     'courseCode' => (string)$c->shortname,
                     'courseName' => (string)$c->fullname,
-                    'sectionName' => (string)$g->name,
+                    'sectionName' => $batchName,
+                    'semester' => 'Fall 2026',
+                ];
+            } else {
+                $sectionList[] = [
+                    'moodleGroupId' => null,
+                    'isDefaultCohort' => true,
+                    'moodleCourseId' => (int)$c->id,
+                    'courseCode' => (string)$c->shortname,
+                    'courseName' => (string)$c->fullname,
+                    'sectionName' => 'Default Cohort',
                     'semester' => 'Fall 2026',
                 ];
             }

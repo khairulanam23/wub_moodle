@@ -1,0 +1,588 @@
+/**
+ * Stylesheet for WUB Bulk Enrolment local plugin (local_bulk_enrolment).
+ *
+ * Scoped under .be-workspace and .local-bulk-enrolment-* to prevent style bleed.
+ *
+ * @package    local_bulk_enrolment
+ * @copyright  2026 World University of Bangladesh
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* ==========================================================================
+   1. Workspace Shell & Section Layout
+   ========================================================================== */
+
+.be-workspace {
+    --be-primary: #0f6cbf;
+    --be-primary-light: #e8f3fc;
+    --be-primary-border: #b8daf6;
+    --be-success: #198754;
+    --be-success-light: #e8f7ee;
+    --be-warning: #f59f00;
+    --be-warning-light: #fff8e6;
+    --be-danger: #dc3545;
+    --be-danger-light: #fde8e8;
+    --be-gray-50: #f8fafc;
+    --be-gray-100: #f1f5f9;
+    --be-gray-200: #e2e8f0;
+    --be-gray-300: #cbd5e1;
+    --be-gray-600: #64748b;
+    --be-gray-800: #1e293b;
+    --be-radius-sm: 6px;
+    --be-radius-md: 8px;
+    --be-radius-lg: 12px;
+    --be-shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    --be-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+
+    color: var(--be-gray-800);
+}
+
+.be-workspace .be-card-panel {
+    border: 1px solid var(--be-gray-200);
+    border-radius: var(--be-radius-lg);
+    box-shadow: var(--be-shadow-card);
+    background-color: #fff;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.be-workspace .be-card-panel:hover {
+    border-color: var(--be-gray-300);
+}
+
+.be-workspace .be-card-panel > .card-header {
+    border-top-left-radius: calc(var(--be-radius-lg) - 1px);
+    border-top-right-radius: calc(var(--be-radius-lg) - 1px);
+    background: #fff;
+    border-bottom: 1px solid var(--be-gray-200);
+}
+
+/* ==========================================================================
+   2. Symmetrical Top Split (Moodle Left & UMS Right)
+   ========================================================================== */
+
+/* Align card headers */
+.be-split-header {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+/* Align filter zones above lists */
+.be-filter-zone {
+    margin-bottom: 0.5rem;
+}
+
+.be-zone-hint {
+    font-size: 0.8rem;
+    line-height: 1.35;
+    color: var(--be-gray-600);
+    min-height: 1.35rem;
+    display: flex;
+    align-items: center;
+}
+
+.be-batch-zone-header {
+    flex-shrink: 0;
+}
+
+/* Desktop Symmetry: Fixed balanced heights and matching bottom boundary */
+@media (min-width: 992px) {
+    .be-top-split-card {
+        height: 565px;
+        min-height: 565px;
+        max-height: 565px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .be-split-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        overflow: hidden;
+    }
+
+    .be-filter-zone {
+        min-height: 64px;
+        flex-shrink: 0;
+    }
+
+    /* Moodle course list: fills entire remaining height to card bottom */
+    #be-course-list {
+        flex: 1 1 auto;
+        height: 420px;
+        min-height: 420px;
+        max-height: 420px;
+    }
+
+    /* UMS program list: predictable, balanced upper list */
+    #be-program-list {
+        flex: 0 0 180px;
+        height: 180px;
+        min-height: 180px;
+        max-height: 180px;
+    }
+
+    /* UMS batch list: predictable, balanced lower list */
+    #be-batch-list {
+        flex: 1 1 auto;
+        height: 178px;
+        min-height: 178px;
+        max-height: 178px;
+    }
+}
+
+/* Small Screens: Stack naturally without forced whitespace */
+@media (max-width: 991.98px) {
+    .be-top-split-card {
+        height: auto;
+        min-height: auto;
+        max-height: none;
+        margin-bottom: 1rem;
+    }
+
+    .be-filter-zone {
+        min-height: auto;
+    }
+
+    #be-course-list {
+        height: auto;
+        min-height: 180px;
+        max-height: 320px;
+    }
+
+    #be-program-list {
+        height: auto;
+        min-height: 140px;
+        max-height: 220px;
+    }
+
+    #be-batch-list {
+        height: auto;
+        min-height: 140px;
+        max-height: 220px;
+    }
+}
+
+/* Empty / Loading States within Lists (Centered & Spacious) */
+#be-batch-list[data-state="idle"],
+#be-batch-list[data-state="loading"],
+#be-program-list[data-state="loading"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: var(--be-gray-50);
+}
+
+#be-batch-list[data-state="idle"] > div,
+#be-batch-list[data-state="loading"] > div,
+#be-program-list[data-state="loading"] > div {
+    padding: 1.5rem;
+    color: var(--be-gray-600);
+}
+
+/* ==========================================================================
+   3. Workflow Pipeline Stepper
+   ========================================================================== */
+
+.be-pipeline-bar {
+    display: flex;
+    align-items: stretch;
+    background-color: #fff;
+    border: 1px solid var(--be-gray-200);
+    border-radius: var(--be-radius-lg);
+    box-shadow: var(--be-shadow-card);
+    padding: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    gap: 0.25rem;
+}
+
+.be-pipeline-step {
+    flex: 1 1 0;
+    min-width: 170px;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--be-radius-md);
+    background: transparent;
+    transition: all 0.2s ease-in-out;
+    opacity: 0.65;
+}
+
+.be-pipeline-step.active {
+    background-color: var(--be-primary-light);
+    border: 1px solid var(--be-primary-border);
+    opacity: 1;
+}
+
+.be-step-badge {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    background-color: var(--be-gray-200);
+    color: var(--be-gray-600);
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.be-pipeline-step.active .be-step-badge {
+    background-color: var(--be-primary);
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.2);
+}
+
+.be-step-meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+}
+
+.be-step-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--be-gray-800);
+}
+
+.be-pipeline-step.active .be-step-label {
+    color: var(--be-primary);
+}
+
+.be-step-sub {
+    font-size: 0.72rem;
+    color: var(--be-gray-600);
+}
+
+.be-pipeline-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--be-gray-300);
+    font-size: 0.9rem;
+    padding: 0 0.25rem;
+}
+
+.be-step-pill {
+    background-color: var(--be-primary-light);
+    color: var(--be-primary);
+    border: 1px solid var(--be-primary-border);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--be-radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* ==========================================================================
+   4. Scrollable List Containers (Programs, Batches, Courses)
+   ========================================================================== */
+
+.be-scroll-list {
+    background-color: #fff;
+    border: 1px solid var(--be-gray-200);
+    border-radius: var(--be-radius-md);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--be-gray-300) transparent;
+}
+
+.be-scroll-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.be-scroll-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.be-scroll-list::-webkit-scrollbar-thumb {
+    background-color: var(--be-gray-300);
+    border-radius: 3px;
+}
+
+/* List Item Formatting */
+.be-item {
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    user-select: none;
+    font-size: 0.875rem;
+}
+
+.be-item:hover {
+    background-color: var(--be-gray-50);
+}
+
+.be-item input[type="checkbox"] {
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.be-item-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Batch Grouping Head */
+.be-batch-group-head {
+    background-color: var(--be-gray-50);
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--be-gray-800);
+}
+
+.be-batch-item {
+    font-size: 0.82rem;
+}
+
+/* Code Pills */
+.be-code-pill {
+    display: inline-block;
+    background-color: var(--be-gray-100);
+    color: var(--be-gray-800);
+    border: 1px solid var(--be-gray-200);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.76rem;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    line-height: 1.25;
+}
+
+/* ==========================================================================
+   5. Student Roster Full-Width Section & Table
+   ========================================================================== */
+
+.be-roster-container {
+    background-color: #fff;
+    min-height: 200px;
+}
+
+.be-roster-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--be-gray-300) transparent;
+    border: 1px solid var(--be-gray-200);
+    border-radius: var(--be-radius-md);
+}
+
+.be-roster-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.be-roster-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--be-gray-300);
+    border-radius: 3px;
+}
+
+.be-roster-table {
+    font-size: 0.875rem;
+}
+
+.be-roster-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background-color: var(--be-gray-50) !important;
+    border-bottom: 2px solid var(--be-gray-200) !important;
+    color: var(--be-gray-600);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    box-shadow: inset 0 -1px 0 var(--be-gray-200);
+}
+
+.be-col-check {
+    width: 44px;
+    min-width: 44px;
+}
+
+.be-roster-row {
+    transition: background-color 0.15s ease;
+}
+
+.be-roster-row:hover {
+    background-color: var(--be-gray-50) !important;
+}
+
+.be-roster-row.be-row-unselectable {
+    opacity: 0.65;
+    background-color: #fafbfc;
+}
+
+.be-student-name {
+    font-size: 0.92rem;
+    color: var(--be-gray-800);
+}
+
+/* Course History Sub-list */
+.be-course-list {
+    font-size: 0.8rem;
+    max-height: 180px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    background-color: var(--be-gray-50);
+}
+
+/* ==========================================================================
+   6. Enrolment Options Panel
+   ========================================================================== */
+
+.be-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.be-options-fieldset {
+    background-color: var(--be-gray-50);
+    border: 1px solid var(--be-gray-200);
+    border-radius: var(--be-radius-md);
+    padding: 1rem;
+}
+
+.be-options-fieldset legend {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--be-gray-600);
+    margin-bottom: 0.5rem;
+    float: none;
+    width: auto;
+    padding: 0 0.25rem;
+}
+
+/* Verification Button Centered Container */
+.be-verify-action-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 0;
+    margin: 1rem 0;
+    background: linear-gradient(180deg, transparent 0%, var(--be-gray-50) 50%, transparent 100%);
+    border-radius: var(--be-radius-lg);
+}
+
+.be-verify-btn {
+    min-width: 320px;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    border-radius: 50px;
+    padding: 0.85rem 2.5rem;
+    box-shadow: 0 4px 14px 0 rgba(15, 108, 191, 0.35);
+    transition: all 0.2s ease-in-out;
+}
+
+.be-verify-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(15, 108, 191, 0.45);
+}
+
+.be-verify-btn:disabled {
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ==========================================================================
+   7. Verification Matrix & Results Tables
+   ========================================================================== */
+
+.be-matrix-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--be-gray-300) transparent;
+}
+
+.be-matrix-scroll table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background-color: var(--be-gray-50) !important;
+    border-bottom: 2px solid var(--be-gray-200) !important;
+    color: var(--be-gray-600);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    box-shadow: inset 0 -1px 0 var(--be-gray-200);
+}
+
+/* KPI Summary Cards */
+.be-stats-grid {
+    margin-bottom: 1rem;
+}
+
+.be-stat-card {
+    background: #fff;
+    border: 1px solid var(--be-gray-200);
+    border-radius: var(--be-radius-md);
+    box-shadow: var(--be-shadow-card);
+    padding: 0.75rem 0.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.be-stat-card:hover {
+    box-shadow: var(--be-shadow-hover);
+    transform: translateY(-1px);
+}
+
+.be-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--be-gray-300);
+}
+
+.be-stat-card.be-stat-ready::before {
+    background-color: var(--be-success);
+}
+
+.be-stat-card.be-stat-enrolled::before {
+    background-color: var(--be-primary);
+}
+
+.be-stat-card.be-stat-issues::before {
+    background-color: var(--be-danger);
+}
+
+/* Progress bar */
+.be-workspace #be-progress {
+    background-color: var(--be-gray-200);
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.be-workspace #be-progress .progress-bar {
+    background: linear-gradient(90deg, #198754, #20c997);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* Empty states */
+.be-empty-state {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--be-gray-600);
+}

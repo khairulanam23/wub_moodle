@@ -41,6 +41,7 @@ $PAGE->set_url(new moodle_url('/local/wub_auth/landing.php'));
 $PAGE->set_pagelayout('embedded');
 $PAGE->set_title(get_string('landing_title', 'local_wub_auth'));
 $PAGE->set_heading(get_string('landing_welcome', 'local_wub_auth'));
+$PAGE->add_body_class('wub-auth-landing-page');
 
 // Preserve any returnurl parameter so the user returns to their requested resource post-login.
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
@@ -49,12 +50,28 @@ if (!empty($returnurl)) {
     $extraparams['returnurl'] = $returnurl;
 }
 
-$bgimgurl = (new moodle_url('/local/wub_auth/pix/wub_campus_bg.jpg'))->out(false);
-$towerimgurl = (new moodle_url('/local/wub_auth/pix/card_tower.jpg'))->out(false);
+$slides = [
+    [
+        'url' => (new moodle_url('/local/wub_auth/pix/landing_wubCampus.jpg'))->out(false),
+        'title' => 'WUB Campus',
+        'is_active' => true,
+    ],
+    [
+        'url' => (new moodle_url('/local/wub_auth/pix/landing_student.jpg'))->out(false),
+        'title' => 'WUB Academic Life',
+        'is_active' => false,
+    ],
+    [
+        'url' => (new moodle_url('/local/wub_auth/pix/landing_architect.jpg'))->out(false),
+        'title' => 'WUB Architecture',
+        'is_active' => false,
+    ],
+];
 
 $templatedata = [
-    'bg_img_url' => $bgimgurl,
-    'tower_img_url' => $towerimgurl,
+    'logo_url' => (new moodle_url('/local/wub_auth/pix/wub-logo-main.png'))->out(false),
+    'slides' => $slides,
+    'first_slide_url' => $slides[0]['url'],
     'student_url' => (new moodle_url('/local/wub_auth/policy.php', array_merge(['role' => 'student'], $extraparams)))->out(false),
     'teacher_url' => (new moodle_url('/local/wub_auth/policy.php', array_merge(['role' => 'teacher'], $extraparams)))->out(false),
     'admin_url' => (new moodle_url('/local/wub_auth/policy.php', array_merge(['role' => 'admin'], $extraparams)))->out(false),

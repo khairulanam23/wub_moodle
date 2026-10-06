@@ -31,8 +31,15 @@ $authservice = new \local_wub_auth\service\authentication_service();
 $sessionservice = new \local_wub_auth\service\session_service();
 $policyservice = new \local_wub_auth\service\policy_service();
 
-$role = optional_param('role', 'student', PARAM_ALPHA);
-$role = $policyservice->normalize_role($role);
+$roleparam = optional_param('role', 'student', PARAM_ALPHA);
+$cleanrole = strtolower(trim($roleparam));
+if ($cleanrole === 'administration' || $cleanrole === 'administrator') {
+    $role = 'admin';
+} else if ($cleanrole === 'faculty' || $cleanrole === 'instructor') {
+    $role = 'teacher';
+} else {
+    $role = $policyservice->normalize_role($roleparam);
+}
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 // If already authenticated (and not guest), redirect to destination or postlogin
@@ -40,6 +47,10 @@ if (isloggedin() && !isguestuser()) {
     $targeturl = $sessionservice->get_safe_redirect_url($returnurl, '/my/');
     redirect($targeturl);
 }
+
+// Clean up any lingering restriction session data so subsequent logins are not affected.
+unset($SESSION->wub_restricted_clearance);
+unset($SESSION->wub_restricted_user);
 
 $error = null;
 $username = optional_param('username', '', PARAM_RAW);
@@ -77,14 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $target = $sessionservice->get_safe_redirect_url($returnurl, '/my/');
         redirect($target);
     } else if ($auth->is_restricted()) {
-        $SESSION->wub_restricted_clearance = $auth->get_clearance()->to_array();
-        $SESSION->wub_restricted_user = (object)[
-            'id' => $auth->get_user()->id,
-            'fullname' => fullname($auth->get_user()),
-            'username' => $auth->get_user()->username,
-            'idnumber' => $auth->get_user()->idnumber,
-        ];
-        redirect(new moodle_url('/local/wub_auth/restricted.php'));
+        unset($SESSION->wub_restricted_clearance);
+        unset($SESSION->wub_restricted_user);
+        $clearance = $auth->get_clearance();
+        if ($clearance && $clearance->get_restriction_type() === \local_wub_auth\model\clearance_result::RESTRICTION_UMS_UNAVAILABLE) {
+            $error = get_string('error_ums_unavailable', 'local_wub_auth');
+        } else {
+            $error = get_string('error_login_financial_clearance', 'local_wub_auth');
+        }
     } else {
         $error = $auth->get_message();
     }
@@ -106,42 +117,68 @@ if ($rememberusername === -1) {
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/wub_auth/login.php', array_filter(['role' => $role, 'returnurl' => $returnurl])));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout('embedded');
 $PAGE->set_title(get_string('login_title', 'local_wub_auth'));
 $PAGE->set_heading(get_string('login_title', 'local_wub_auth'));
 
+$PAGE->add_body_class('wub-auth-login-layout');
 $PAGE->add_body_class('wub-admin-login-layout');
+$PAGE->add_body_class('wub-auth-role-' . $role);
 
-if ($role === 'student' || $role === 'teacher') {
-    $PAGE->add_body_class('wub-auth-hide-nav-items');
-    $PAGE->add_body_class('wub-auth-role-' . $role);
+// Role presentation details
+if ($role === 'admin') {
+    $roletitle = 'Administration Login';
+    $roleeyebrow = 'ADMINISTRATION PORTAL';
+    $rolesubtitle = 'Sign in to access academic operations and institutional tools.';
+    $usernamelabel = 'Administrator Username or Email';
+    $usernameplaceholder = 'admin or institutional email';
+} else if ($role === 'teacher') {
+    $roletitle = 'Teacher Login';
+    $roleeyebrow = 'FACULTY & TEACHER PORTAL';
+    $rolesubtitle = 'Sign in to manage courses, grade assignments, and connect with students.';
+    $usernamelabel = 'Faculty ID, Email, or Username';
+    $usernameplaceholder = 'faculty@wub.edu.bd or username';
+} else {
+    $roletitle = 'Student Login';
+    $roleeyebrow = 'STUDENT PORTAL';
+    $rolesubtitle = 'Sign in to continue to your WUB digital learning portal.';
+    $usernamelabel = 'Student ID or Institutional Email';
+    $usernameplaceholder = '0326745530 or student email';
 }
 
-// Logo URL (reuse Academi or core theme logo)
-$logourl = new moodle_url('/local/wub_auth/pix/wub-logo.png');
-$footerlogourl = '/pluginfile.php/1/theme_academi/footerlogo/1789361697/wub-logo.png';
+// Official logo and hero image asset (pix/logging_wub.jpg)
+$logourl = (new moodle_url('/local/wub_auth/pix/wub-logo-main-global.png'))->out(false);
+$herourl = (new moodle_url('/local/wub_auth/pix/logging_wub.jpg'))->out(false);
 
 $templatedata = [
-    'logo_url' => $footerlogourl,
+    'logo_url' => $logourl,
     'landing_url' => (new moodle_url('/local/wub_auth/landing.php'))->out(false),
     'login_url' => (new moodle_url('/local/wub_auth/login.php'))->out(false),
     'form_action' => (new moodle_url('/local/wub_auth/login.php'))->out(false),
     'sesskey' => sesskey(),
     'logintoken' => \core\session\manager::get_login_token(),
     'role' => $role,
+    'role_title' => $roletitle,
+    'role_eyebrow' => $roleeyebrow,
+    'role_subtitle' => $rolesubtitle,
     'role_badge_label' => ($role === 'admin') ? 'Administration Portal' : (($role === 'teacher') ? 'Faculty Portal' : 'Student Portal'),
     'returnurl' => $returnurl,
     'username' => s($username),
-    'username_label' => ($role === 'student') ? 'Student ID or Institutional Email' : (($role === 'teacher') ? 'Faculty ID, Email, or Username' : 'Administrator Username or Email'),
-    'username_placeholder' => ($role === 'student') ? '0326745530 or student email' : (($role === 'teacher') ? 'faculty@wub.edu.bd or username' : 'admin or institutional email'),
+    'username_label' => $usernamelabel,
+    'username_placeholder' => $usernameplaceholder,
     'remember_username' => (bool)$rememberusername,
+    'is_student' => ($role === 'student'),
+    'is_teacher' => ($role === 'teacher'),
+    'is_admin' => ($role === 'admin'),
     'is_student_tab' => ($role === 'student'),
     'is_teacher_tab' => ($role === 'teacher'),
     'is_admin_tab' => ($role === 'admin'),
-    'admin_hero_url' => (new moodle_url('/local/wub_auth/pix/admin_login_hero.png'))->out(false),
-    'admin_logo_url' => (new moodle_url('/local/wub_auth/pix/admin_cis_logo.png'))->out(false),
+    'hero_image_url' => $herourl,
+    'admin_hero_url' => $herourl,
+    'admin_logo_url' => $logourl,
     'has_error' => !empty($error),
     'error_message' => $error,
+    'footer_html' => get_string('landing_footer_text', 'local_wub_auth'),
 ];
 
 echo $OUTPUT->header();

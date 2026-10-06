@@ -64,7 +64,7 @@ The infrastructure consists of four cooperating Docker services:
 ---
 
 ## Current Configuration
-* **Site URL**: `http://localhost:8080`
+* **Site URL**: `http://192.168.7.240:8080`
 * **External Port**: `8080` (mapped to container port `80`)
 * **Database Name**: `moodle`
 * **Database User**: `moodle`
@@ -73,7 +73,7 @@ The infrastructure consists of four cooperating Docker services:
 * **Moodle `$CFG->dbtype`**: `mariadb`
 * **Site Full Name**: `World University of Bangladesh Moodle`
 * **Site Short Name**: `WUB Moodle`
-* **Admin Username**: `khairul_anam24` (site admin account; credentials stored in `.env` — note `.env` `MOODLE_ADMIN_USER` currently reads `khairul_anam`, which does not match the live username)
+* **Admin Username**: `cisSuperAdmin1` (site admin account; credentials configured in `.env`)
 * **Active Theme**: `academi` (v2026042900 / v5.2), preset `enlightlite`, `theme_academi/primarycolor` = `#0f6cbf`
 * **Force login**: `forcelogin=1`, guest login button disabled
 * **Directory Permissions**: `$CFG->directorypermissions = 02775;`
@@ -525,12 +525,218 @@ The infrastructure consists of four cooperating Docker services:
     * HTTP smoke tests across all web endpoints: `/` (303), `landing.php` (200), `login.php` (200), `bulk_enrolment` (303), `waivers.php` (303), `examcontroller/api` (401).
     * Zero duplicate accounts, zero duplicate groups, zero fake production records.
   * Documentation:
-    * Created `LEGACY_MIGRATION_MAP.md` documenting every legacy component, destination, status, and preserved business logic.
+* 2026-09-24: Implemented Role-Based Navbar / Dashboard Navigation Customization:
+  * Objectives & Requirements:
+    * Tailor primary navbar links dynamically based on user role and system capabilities:
+      * **Admin**: Dashboard (`/my/`), Site administration (`/admin/search.php`), Course Management (`/course/management.php`), User Accounts (`/admin/user.php`), Bulk Enrolment (`/local/bulk_enrolment/`).
+      * **Teacher**: Dashboard (`/my/`), My Courses (`/my/courses.php`).
+      * **Student**: Dashboard (`/my/`), My Courses (`/my/courses.php`).
+    * Zero CSS-only hiding hacks; enforce capability and role isolation strictly on the server-side navigation node level.
+    * Admin-only management items strictly invisible to teachers and students.
+    * Zero Moodle core modifications, zero theme modifications, and zero dummy/mock users or data.
+  * Technical Implementation:
+    * Registered native Moodle primary navigation hook callback in `local_wub_auth/db/hooks.php` hooking `\core\hook\navigation\primary_extend::class` to `[\local_wub_auth\hook\navigation_hook::class, 'extend_primary_navigation']` with priority 1000.
+    * Implemented `\local_wub_auth\hook\navigation_hook::extend_primary_navigation()`:
+      * Gated on `!isloggedin() || isguestuser()`.
+      * Cleared default primary nodes via `$primaryview->get_children_key_list()` and `$item->remove()`.
+      * Evaluated `$isadmin = is_siteadmin($USER) || has_capability('moodle/site:config', context_system::instance())`.
+      * If admin: added nodes `myhome`, `siteadminnode`, `coursemanagement`, `useraccounts`, and `bulkenrolment`.
+      * If non-admin (teachers & students): added nodes `myhome` and `mycourses`.
+    * Cleared legacy unpermissioned static `$CFG->custommenuitems` setting and configured `$CFG->enablemycourses = 1` so that `/my/courses.php` functions natively without redirecting.
+    * Added localization strings `nav_coursemanagement`, `nav_useraccounts`, and `nav_bulkenrolment` in `local_wub_auth/lang/en/local_wub_auth.php`.
+  * Comprehensive E2E Verification (`scratch/test_http_navbar_e2e.py`):
+    * **Admin (`khairul_anam24`)**: Verified all 5 items present with exact target URLs; verified `My courses` prohibited and absent.
+    * **Teacher (`jannatul.naeem`)**: Verified exactly 2 items present (Dashboard and My courses); verified all 4 admin items strictly prohibited and absent; verified `/my/courses.php` returns HTTP 200.
+    * **Student (`0326745569`)**: Verified exactly 2 items present (Dashboard and My courses); verified all 4 admin items strictly prohibited and absent; verified `/my/courses.php` returns HTTP 200.
+    * All live HTTP E2E checks passed 100%.
+
+* 2026-09-24: Implemented Logs Participant Autocomplete, Dropdown Sizing & Resolved User Accounts Regression:
+  * **User Accounts Regression Root Cause & Fix (`/admin/user.php`)**:
+    * Diagnosed root cause: In Moodle 5.2, `/admin/user.php` uses `\core_admin\reportbuilder\local\systemreports\users`. System report filter values are stored per-user in `mdl_reportbuilder_user_filter`. Record `id=5` for admin user 2 (`khairul_anam24`) contained a persistent filter condition for `fullname: "phantom"` and non-existent role `"-124567"`, causing the SQL query to return 0 records ("No users found" with active filter badge).
+    * Executed `\core_reportbuilder\local\helpers\user_filter_manager::reset(1, 2)` to reset the admin's report filter state cleanly without schema edits or data loss.
+    * Live verification: `/admin/user.php` returns HTTP 200 (495KB), displaying real users (e.g. `A F M Abdur Rauf`), pagination (30 users/page across 12 pages), user search, and management action links (Edit / Delete). Zero dummy data created.
+  * **Logs Participant Searchable Autocomplete (`/report/log/index.php?id=0`)**:
+    * Implemented `theme_academi\output\report_log_renderer` extending `\report_log_renderer` in `moodle/public/theme/academi/classes/output/report_log_renderer.php` (zero Moodle core modifications).
+    * Wrapped participant selector in container `.logfilter-user-wrapper` to preserve filter row ordering between Course and Date.
+    * Integrated Moodle's native AMD module `core/form-autocomplete` with `core_user/form_user_selector` calling webservice `core_user_search_identity`:
+      * Empty input (`user=0` or `user=`) displays placeholder `Type participant name or username...` and filters all participants.
+      * Typing `jannatul` searches the live database and returns real matching users (e.g. `Jannatul Naeem`, `Jannatul Afrin Nimme`, student accounts).
+      * Selecting a user applies the participant's Moodle user ID (e.g. `user=152`).
+      * Clicking `×` on the badge clears the user selection and returns to all participants.
+  * **Dropdown Sizing & Alignment (`theme-custom/academi-customcss.css`)**:
+    * Added section `12b` for `.logselecform` and applied via `./theme-custom/apply-customcss.sh`:
+      * Course (`#menuid`): `min-width: 220px; max-width: 300px;` with ellipsis (down from 536px bloated width).
+      * Participant (`.logfilter-user-wrapper`): `min-width: 220px; max-width: 320px;` with styled badges and suggestions popup.
+      * Date (`#menudate`): `min-width: 170px; max-width: 240px;`.
+      * Activities (`#menumodid`): `min-width: 150px; max-width: 200px;` (fixed clipping from 105px).
+      * Actions (`#menumodaction`): `min-width: 140px; max-width: 180px;` (fixed clipping from 104px).
+      * Sources (`#menuorigin`): `min-width: 150px; max-width: 210px;` (fixed clipping from 109px).
+      * Events (`#menuedulevel`): `min-width: 140px; max-width: 180px;` (fixed clipping from 109px).
+      * Responsive rules for mobile (`@media (max-width: 767px)`): full-width wrapping with zero horizontal overflow.
+  * **Comprehensive Verification**:
+    * Verified via automated headless Chrome CDP test (`scratch/inspect_logs_page.js`): search, selection of Jannatul Naeem (152), form submission, table filtering, clearing via badge `×`, and returning to all participants.
+    * Verified non-interference between `/admin/user.php` and `/report/log/index.php`.
+
+* 2026-09-29: Resolved Moodle Theme Grader Report Layout Defect (`theme-custom/academi-customcss.css`):
+  * **Defects Resolved**:
+    1. Fixed `tr.lastrow` ("Overall average") getting pinned mid-table over student rows and category headers; anchored cleanly to table bottom with `position: static !important;`.
+    2. Corrected sticky heading offset to `top: 61px !important;` to dock flush beneath Academi's fixed header.
+    3. Confined grader table horizontal overflow within `.gradeparent` (`overflow-x: auto !important; max-width: 100% !important;`), eliminating document-level blowout (`scrollWidth == clientWidth`).
+    4. Repositioned drawer toggle on grader report to document flow (`position: static; display: inline-block;`), eliminating content overlap.
+    5. Added bottom clearance (`padding-bottom: 90px !important;`) on `#page.drawers.hasstickyfooter` to prevent sticky footer overlap on bottom student rows.
+  * Applied via `./theme-custom/apply-customcss.sh` with zero Moodle core modifications and verified across viewports (1400x900, 1024x768, 768x1024) on Course 785 and Course 230.
+
+* 2026-09-29: Completed End-of-Semester Simulation for Test Course 785 (`WUB_TEST_SEM_2026`):
+  * **Course**: `WUB eLearning Test Semester 2026 (Software Architecture & Quality Assurance)` (ID: 785).
+  * **Sections & Structure**:
+    * Section 0: Syllabus & Course Assessment Policy Page.
+    * Section 1: Module 1 (Architectural Foundations) + Assignment 1.
+    * Section 2: Module 2 (QA & Verification) + Quiz 1.
+    * Section 3: Module 3 (Evaluations) + Assignment 2 + Quiz 2 (Midterm Examination).
+    * Section 4: Module 4 (Enterprise Integration, Security & Final Assessment) + Module 4 Lecture Notes Page + Final Examination Quiz.
+  * **Grading Categories & Weights**:
+    * Continuous Assessment - Assignments (30%): Assignment 1 (50%), Assignment 2 (50%).
+    * Quizzes & Knowledge Checks (20%): Quiz 1 (100%).
+    * Examinations (50%): Midterm Examination (40% of category = 20% course), Final Examination (60% of category = 30% course).
+  * **Student Outcomes Simulated Deterministically**:
+    * `test_student_1` (Alice Student): Consistently strong (A1: 88, A2: 92, Q1: 90, Midterm: 85, Final Exam: 92). Final Course Total: **89.60% (A+)**.
+    * `test_student_2` (Bob Student): Average passing (A1: 74, A2: 70, Q1: 65, Midterm: 72, Final Exam: 68). Final Course Total: **69.40% (B+)**.
+    * `test_student_3` (Charlie Student): Inconsistent / failing (A1: 80, A2: Missing, Q1: 75, Midterm: Missed, Final Exam: 40 [Incomplete attempt]). Final Course Total: **39.00% (F - Fail)**.
+  * Fully verified using native Moodle quiz grading and `grade_regrade_final_grades(785)`. All existing user identities, course enrolments, and previous fixture data preserved.
+27. **Moodle ↔ ExamController Direct-Enrolment Synchronization (Phase A)**:
+   * **Problem Solved**: Moodle courses utilizing direct manual enrolments without Moodle Groups (such as test semester course 785) previously returned 0 sections and 0 student enrolments from the `local_examcontroller` API due to strict `{groups}` and `u.institution != ''` filters, causing ExamController to drop sections and students.
+   * **Moodle Endpoint Updates**:
+     * Updated [`academic_service.php`](file:///home/phant0m/Phantom/moodle/moodle/public/local/examcontroller/classes/service/academic_service.php): `get_sections()` and `get_student_enrolments()` now include an authoritative direct-enrolment course cohort step for active courses with enrolled students but no groups (`moodleGroupId: null`, `isDefaultCohort: true`, `sectionName: 'Default Cohort'`).
+     * Updated [`identity_service.php`](file:///home/phant0m/Phantom/moodle/moodle/public/local/examcontroller/classes/service/identity_service.php): `get_user_academic_context()` now generates the `Default Cohort` section claim for direct-enrolled teachers and students upon login.
+   * **ExamController Architecture Updates**:
+     * Added migration `2026_09_30_000002_add_default_cohort_support_to_sections_and_mappings.php`:
+       * Added `is_default` boolean index on `sections` table.
+       * Altered `section_mappings` to make `moodle_group_id` nullable for non-group default cohort mappings (`relationship_type = 'DEFAULT_COHORT'`).
+     * Updated [`Section.php`](file:///home/phant0m/Phantom/exam-controller-app/services/temporary-backend/app/Models/Section.php) model with `is_default` in fillable and casts.
+     * Updated [`MoodleAcademicSyncService.php`](file:///home/phant0m/Phantom/exam-controller-app/services/temporary-backend/app/Services/Moodle/MoodleAcademicSyncService.php):
+       * `syncSections()`: maps default cohorts using `relationship_type = 'DEFAULT_COHORT'` without fake group IDs.
+       * `syncTeacherAssignments()`: prioritizes stable `moodle_user_id` and assigns course-wide teachers to all sections, auto-provisioning default cohort if course has no sections.
+       * `syncStudentEnrolments()`: prioritizes stable `moodle_user_id` and binds students to default cohort.
+       * `resolveOrCreateSectionForEnrolment()`: self-heals default cohort resolution for login and enrolment synchronization.
+   * **Live Verification**:
+     * Successfully synchronized Course 785 into ExamController: created Section `248` (`Default Cohort`, `is_default = true`), mapped in `section_mappings` (`id = 228`, `relationship_type = 'DEFAULT_COHORT'`), assigned teacher `test_teacher_1` (`1492`), and enrolled all 3 students (`test_student_1`, `test_student_2`, `test_student_3`).
+     * Repeated sync verified 100% idempotent with zero duplicate sections, mappings, or enrolments.
+     * All 3 automated test assertions in `PhaseADirectEnrolmentSyncTest` passing cleanly.
+
+28. **Moodle Gradebook Delete API (`local_examcontroller`)**:
+   * **Problem Solved**: ExamController requires deletion of owned manual grade items when exams are deleted to maintain gradebook hygiene, calling `POST /local/examcontroller/api/v1/index.php/gradebook/delete`. Previously Moodle returned HTTP 404 (`ENDPOINT_NOT_FOUND`) as the endpoint was not exposed in the plugin.
+   * **Files Modified**:
+     * [`api/v1/index.php`](file:///home/phant0m/Phantom/moodle/moodle/public/local/examcontroller/api/v1/index.php): Added path normalization (`index.php/` stripping) and dispatch route for `POST gradebook/delete` / `gradebook/delete-item`.
+     * [`classes/service/gradebook_service.php`](file:///home/phant0m/Phantom/moodle/moodle/public/local/examcontroller/classes/service/gradebook_service.php): Implemented `delete_grade_item(array $payload): array`.
+   * **Endpoint Contract**:
+     * **URL**: `POST /local/examcontroller/api/v1/index.php?endpoint=gradebook/delete` (or `POST .../index.php/gradebook/delete`)
+     * **Authentication**: HMAC-SHA256 request signature (`X-WUB-Key-Id`, `X-WUB-Timestamp`, `X-WUB-Nonce`, `X-WUB-Signature`).
+     * **Payload**: `{"courseId": 785, "gradeItemId": 798, "idNumber": "examcontroller_exam_...", "examControllerExamId": "..."}`
+     * **Success Response (200)**: `{"success": true, "deleted": true, "message": "...", "data": {"gradeItemId": ..., "courseId": ..., "idNumber": "..."}}`
+     * **Already Absent / Idempotent (200)**: `{"success": true, "deleted": false, "reason": "already_absent", "message": "..."}`
+     * **Client Errors (400, 404, 422)**: Structured error JSON with standard `error_code` and `message`.
+   * **Safety & Invariants**:
+     * Course existence and course isolation strictly validated (`$gradeItem->courseid === $courseId`).
+     * Native activity protection: `itemtype` must be `'manual'`. Deletion of native activities (quiz, assign, forum, etc.) and category/course totals is strictly forbidden (HTTP 422 `NATIVE_ACTIVITY_PROTECTION`).
+     * Namespace protection: `idnumber` must start with `'examcontroller_'` (HTTP 422 `FOREIGN_MANUAL_ITEM_PROTECTION`). Foreign manual items are completely immune.
+     * Moodle Core API: Deletion uses authoritative Moodle `grade_item::delete('local_examcontroller')` and triggers `grade_regrade_final_grades($courseId)` course aggregation recalculation.
+   * **Verification**:
+     * Comprehensive 12-test battery (`test_gradebook_delete_hotfix.py`): 12 / 12 tests passing.
+     * Live cleanup of historical stale item 798 performed and verified in Moodle DB. Repeated deletion confirmed idempotent.
+
+29. **Policy Image Removal, Course Catalog View Controls & Localhost Resolution (2026-10-05)**:
+   * **Policy Image Removal (`/local/wub_auth/policy.php`)**:
+     * Removed the decorative campus showcase image (`logging_wub.jpg`) and its associated wrapper (`.wub-policy-visual-pane`, `.wub-policy-visual-card`, `.wub-policy-visual-overlay`, `.wub-visual-badge`, `.wub-visual-title`, `.wub-visual-desc`) from `policy_page.mustache` and `policy.php`.
+     * Refactored policy layout in `local/wub_auth/styles.css` from an asymmetrical 2-column grid into a clean, centered, single-column container (`max-width: 860px; margin: 0 auto;`).
+     * Completely preserved all 20 institutional policy clauses across 4 categories, role-specific badge headers, validity pills, agree confirmation checkbox, decline/accept actions, and institutional footer.
+     * Cleaned up obsolete visual card media queries for 1024px, 768px, and 640px breakpoints.
+   * **Course Catalog View-Switch Controls & Icons (`/course/index.php`)**:
+     * Replaced indistinct icons in `course_catalog.mustache` with immediately recognizable, high-contrast SVG vector icons:
+       * **Grid View**: Crisp 4-square card grid (`20x20px`, `fill="currentColor"`).
+       * **List View**: Recognizable row cards layout (`20x20px`, thumbnail indicator + text row bars, `fill="currentColor"`).
+     * Added full accessibility support: explicit `role="group"`, `aria-label="Catalog view mode"`, descriptive `title` & `aria-label` attributes (`"Grid view"` / `"List view"`), and dynamic `aria-pressed` synchronization in `setViewMode` JavaScript.
+     * Enhanced styling in `theme-custom/academi-customcss.css`:
+       * Modern segmented pill container (`background: #f1f5f9; padding: 3px; border-radius: 10px; border: 1px solid #e2e8f0;`).
+       * Active state visually distinct with vibrant primary blue (`background: #0d6efd !important; color: #ffffff !important; box-shadow: 0 2px 6px rgba(13, 110, 253, 0.35);`).
+       * Inactive state high-contrast slate-600 (`#475569`) with subtle hover highlight (`background: #ffffff; color: #0f172a;`).
+       * Keyboard accessibility with `focus-visible` outline (`2px solid #0d6efd; outline-offset: 2px;`).
+       * Standard minimum touch/tap area (`38x38px`, container 44px).
+       * Tested across desktop (1400px, 1024px) and mobile responsive viewports (768px, 390px) with zero horizontal overflow.
+   * **Remaining Localhost URL Resolution (`192.168.7.240`)**:
+     * Identified runtime references to `http://localhost:8080` in live Moodle database:
+       * Core configuration: `alternateloginurl` had `http://localhost:8080/local/wub_auth/landing.php` (causing external LAN clients visiting `/login/index.php` to redirect to localhost).
+       * Plugin configuration: `auth_shibboleth/auth_instructions` had `http://localhost:8080/auth/shibboleth/index.php`.
+       * MNet host: `mdl_mnet_host` row 1 had `wwwroot = http://localhost:8080` and `ip_address = 127.0.0.1`.
+       * Database text references in standard tables (e.g. `mdl_notifications` with 7,173 rows, `mdl_adminpresets`).
+     * Executed Moodle native CLI tools:
+       * `public/admin/tool/replace/cli/replace.php --search="http://localhost:8080" --replace="http://192.168.7.240:8080" --shorten --non-interactive`.
+       * `admin/cli/cfg.php --name=alternateloginurl --set=http://192.168.7.240:8080/local/wub_auth/landing.php`.
+       * `admin/cli/cfg.php --component=auth_shibboleth --name=auth_instructions --set="..."`.
+       * Updated `mdl_mnet_host` ip_address to `192.168.7.240` and wwwroot to `http://192.168.7.240:8080`.
+     * Purged all Moodle caches.
+   * **Files Modified**:
+     * `moodle/public/local/wub_auth/policy.php`
+     * `moodle/public/local/wub_auth/templates/policy_page.mustache`
+     * `moodle/public/local/wub_auth/styles.css`
+     * `moodle/public/theme/academi/templates/course_catalog.mustache`
+     * `theme-custom/academi-customcss.css`
+     * `PROJECT_STATE.md`
+   * **Validation Performed**:
+     * Headless Chrome CDP automated validation (`scratch/verify_three_fixes.js`):
+       * Policy page verified: zero decorative images rendered, only official header logo present; all 4 categories and 20 policy clauses intact; form controls functional; zero horizontal overflow.
+       * Course Catalog verified: grid & list buttons present; active and inactive states verified; view toggling between grid and list working bidirectionally; `localStorage` persistence verified; `aria-pressed` toggling verified; 390px mobile responsiveness verified.
+       * Zero console errors.
+     * Network curl test verified `/login/index.php` returns HTTP 303 redirect directly to `http://192.168.7.240:8080/local/wub_auth/landing.php`.
+     * Comprehensive SQL scan verified 0 operational rows contain `localhost:8080` or `127.0.0.1`.
+   * **Unresolved Issues**: None.
+
+30. **Public Landing Page UI Refinement & Glassmorphism Role Panel (2026-10-05)**:
+   * **Landing Page Scoped Visual Consistency Refinement (`/local/wub_auth/landing.php`)**:
+     * Implemented strict CSS page isolation using `.wub-public-landing-page` on root container and `$PAGE->add_body_class("wub-auth-landing-page")`. Zero shared styles or generic selectors modified globally.
+     * **White Logo Container Removal & Direct Hero Integration**:
+       * Removed the bright white card/container from behind the logo; official institutional logo (`wub-logo-main.png`) is now displayed directly within hero content.
+       * Applied crisp multi-layer white drop-shadow contour (`filter: drop-shadow(0 0 1.5px #ffffff) drop-shadow(0 0 3px rgba(255, 255, 255, 0.90)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));`) to ensure deep blue letters are 100% legible without any background box.
+       * Positioned directly above "A CONNECTED ACADEMIC JOURNEY", perfectly sharing the left alignment edge with the eyebrow, heading, and body lead text.
+     * **Hero Layout & Grid Alignment**:
+       * Rebuilt `.wub-hero-content-inner` with desktop grid `grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.92fr); align-items: center; justify-content: space-between;`.
+       * Moved the left content group upward so visual centers of left narrative and right role panel are balanced.
+       * Tightened vertical rhythm (logo -> 1.25rem -> eyebrow -> 0.85rem -> headline -> 1.25rem -> lead paragraph).
+       * Removed the arbitrary cyan line next to the left eyebrow for a cleaner academic lockup.
+       * Unified design language across both eyebrows ("A CONNECTED ACADEMIC JOURNEY" and "WELCOME TO WUB E-LEARNING") with tracked uppercase typography in soft light blue (`#93c5fd`).
+     * **True Primary Glass Role Panel & Normalized Cards**:
+       * Converted `.wub-floating-card` into a genuinely translucent primary glass panel: `background: rgba(15, 108, 191, 0.28); backdrop-filter: blur(20px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.20); border-top: 1px solid rgba(255, 255, 255, 0.35); box-shadow: 0 20px 48px -10px rgba(0, 15, 40, 0.35); border-radius: 20px;`.
+       * Reduced panel visual weight to max-width 460px and balanced padding so "Learn with Confidence" remains the primary focal point.
+       * Background campus photograph is softly visible through the translucent glass.
+       * Role cards use distinct translucent surface: `background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 13px;` with subtle hover lift `translateY(-1px)` and highlight `rgba(255, 255, 255, 0.16)`.
+       * Normalized all 4 role icon circles (Student, Teacher, Admin, Course Catalog) to identical 46px circular translucent glass badges (`background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.25); color: #ffffff;`). Course Catalog now has equal visual importance.
+     * **Hero Overlay & Compact Atmospheric Footer**:
+       * Refined directional overlay into smooth gradient (`linear-gradient(90deg, rgba(6, 18, 36, 0.88) 0%, rgba(6, 18, 36, 0.68) 40%, rgba(6, 18, 36, 0.38) 72%, rgba(6, 18, 36, 0.22) 100%)`) and centered slide background position (`center 32%`).
+       * Transformed footer into a compact dark-navy glass bar (`background: rgba(6, 16, 32, 0.94); backdrop-filter: blur(12px); border-top: 1px solid rgba(255, 255, 255, 0.10); min-height: 42px; padding: 10px 0; font-size: 13px;`) that seamlessly continues the hero atmosphere while preserving 100% of attribution and links.
+   * **Files Modified**:
+     * `moodle/public/local/wub_auth/landing.php`
+     * `moodle/public/local/wub_auth/templates/landing_page.mustache`
+     * `moodle/public/local/wub_auth/styles.css`
+     * `PROJECT_STATE.md`
+   * **Comprehensive Validation Performed**:
+     * Headless Chrome CDP verification suite (`scratch/verify_landing_redesign.js`):
+       * Desktop (1400x900): Hero flush at top (`top: 0`), logo integrated directly without white card, left-aligned, balanced grid, primary glass panel translucent, role cards normalized, footer compact at 42px, zero horizontal overflow.
+       * Laptop (1280x800): Perfect grid balance, hero visible through glass panel, zero overflow.
+       * Tablet (1024x768): Proportional scaling, zero overflow.
+       * Mobile (390x844): Natural vertical stacking, logo scales to 38px height, role cards comfortably tappable, zero overflow (`scrollWidth === clientWidth === 390`).
+       * Console errors: 0 across all pages.
+     * Non-landing page regression verification:
+       * Policy page (`/local/wub_auth/policy.php?role=student`): Header present (`headerHeight: 76px`), WUB logo inside header, standard footer intact, zero decorative images.
+       * Login page (`/local/wub_auth/login.php?role=student`): Header present, WUB logo inside header, white login card intact, standard footer intact.
+       * Course Catalog (`/course/index.php`): Header, view-switch controls (grid/list), course cards, standard theme footer intact.
+       * Standard login route (`/login/index.php`): Redirects cleanly to landing page.
+   * **Unresolved Issues**: None.
 
 ---
 
 ## Next Steps
-* Production deployment and operational monitoring of Moodle 5.2.2+ environment.
+* Phase B Complete: Outbound grade sync, manual item resolution, and grade item deletion lifecycle fully operational and verified.
+* Super Admin credentials synchronized across active platform authentication stores.
+
 
 
 

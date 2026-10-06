@@ -1,0 +1,371 @@
+{{!
+    @template theme_academi/course_catalog
+
+    Modern Course Catalog template matching reference 4-column card grid specification.
+    Uses only authoritative Moodle course and category data.
+}}
+<div class="wub-catalog-container">
+    {{#has_actionbar}}
+    <div class="wub-catalog-admin-bar">
+        {{{actionbar}}}
+    </div>
+    {{/has_actionbar}}
+
+    <!-- Top Horizontal Category / Filter Chips Row -->
+    {{#has_chips}}
+    <div class="wub-catalog-chips-wrapper">
+        <div class="wub-catalog-chips-scroll" id="wubCatalogChips" role="tablist" aria-label="Course Categories">
+            {{#chips}}
+            <a href="{{url}}"
+               class="wub-catalog-chip {{#is_active}}is-active{{/is_active}}"
+               data-category-id="{{id}}"
+               role="tab"
+               aria-selected="{{#is_active}}true{{/is_active}}{{^is_active}}false{{/is_active}}">
+                {{#icon}}<i class="fa {{icon}}" aria-hidden="true"></i>{{/icon}}
+                <span>{{name}}</span>
+            </a>
+            {{/chips}}
+        </div>
+        <button type="button" class="wub-catalog-scroll-btn" id="wubScrollRightBtn" aria-label="Scroll categories right" title="Scroll right">
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        </button>
+    </div>
+    {{/has_chips}}
+
+    <!-- Catalog Controls: Showing X courses | Sort | Grid/List toggle -->
+    <div class="wub-catalog-controls">
+        <div class="wub-catalog-count" id="wubCatalogCountWrapper">
+            Showing <strong id="wubCatalogCount">{{courses_count}}</strong> courses
+        </div>
+
+        <div class="wub-catalog-actions">
+            <!-- Sort dropdown -->
+            <div class="wub-catalog-sort-box">
+                <label for="wubCatalogSort" class="wub-catalog-sort-label">Sort by:</label>
+                <select id="wubCatalogSort" class="wub-catalog-sort-select" aria-label="Sort courses">
+                    <option value="popular">Most Popular</option>
+                    <option value="name_asc">Course Name (A-Z)</option>
+                    <option value="name_desc">Course Name (Z-A)</option>
+                    <option value="code_asc">Course Code</option>
+                    <option value="newest">Newest</option>
+                </select>
+                <i class="fa fa-chevron-down wub-catalog-sort-arrow" aria-hidden="true"></i>
+            </div>
+
+            <!-- View Mode Toggles: Grid / List -->
+            <div class="wub-catalog-view-toggle" role="group" aria-label="Catalog view mode">
+                <button type="button" class="wub-catalog-view-btn is-active" id="wubViewGridBtn" title="Grid view" aria-label="Grid view" aria-pressed="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false">
+                        <rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/>
+                        <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/>
+                        <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/>
+                        <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>
+                    </svg>
+                </button>
+                <button type="button" class="wub-catalog-view-btn" id="wubViewListBtn" title="List view" aria-label="List view" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false">
+                        <rect x="3" y="4" width="4.5" height="4" rx="1"/>
+                        <rect x="10" y="4" width="11" height="4" rx="1"/>
+                        <rect x="3" y="10" width="4.5" height="4" rx="1"/>
+                        <rect x="10" y="10" width="11" height="4" rx="1"/>
+                        <rect x="3" y="16" width="4.5" height="4" rx="1"/>
+                        <rect x="10" y="16" width="11" height="4" rx="1"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Grid / List -->
+    {{#has_courses}}
+    <div class="wub-catalog-grid" id="wubCatalogCourses">
+        {{#courses}}
+        <article class="wub-catalog-card"
+                 data-id="{{id}}"
+                 data-category="{{category_id}}"
+                 data-parent-category="{{parent_category_id}}"
+                 data-code="{{code}}"
+                 data-title="{{title}}"
+                 data-enrolled="{{enrolled_count}}">
+            <!-- Top Image Container -->
+            <div class="wub-catalog-card-image">
+                <a href="{{view_url}}" tabindex="-1" aria-hidden="true">
+                    <img src="{{image_url}}" alt="{{{title}}}" loading="lazy">
+                </a>
+                {{#category_name}}
+                <span class="wub-catalog-card-badge" title="{{{category_name}}}">
+                    <i class="fa {{category_icon}}" aria-hidden="true"></i>
+                    <span>{{{category_name}}}</span>
+                </span>
+                {{/category_name}}
+                <button type="button" class="wub-catalog-card-fav" title="Save to wishlist" aria-label="Save to wishlist">
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <!-- Card Body Content -->
+            <div class="wub-catalog-card-body">
+                {{#code}}
+                <div class="wub-catalog-card-code">{{code}}</div>
+                {{/code}}
+
+                <h3 class="wub-catalog-card-title">
+                    <a href="{{view_url}}" title="{{{title}}}">{{{title}}}</a>
+                </h3>
+
+                {{#has_teacher}}
+                <div class="wub-catalog-instructor">
+                    <img src="{{teacher_avatar}}" alt="{{teacher_name}}" class="wub-catalog-instructor-avatar" loading="lazy">
+                    <div class="wub-catalog-instructor-info">
+                        <span class="wub-catalog-instructor-name">{{teacher_name}}</span>
+                        {{#department_text}}
+                        <span class="wub-catalog-instructor-dept">{{{department_text}}}</span>
+                        {{/department_text}}
+                    </div>
+                </div>
+                {{/has_teacher}}
+                {{^has_teacher}}
+                {{#department_text}}
+                <div class="wub-catalog-instructor wub-catalog-dept-only">
+                    <div class="wub-catalog-dept-icon"><i class="fa fa-university" aria-hidden="true"></i></div>
+                    <div class="wub-catalog-instructor-info">
+                        <span class="wub-catalog-instructor-dept">{{{department_text}}}</span>
+                    </div>
+                </div>
+                {{/department_text}}
+                {{/has_teacher}}
+
+                <!-- Metadata row (Duration / Credits / Enrolled) -->
+                {{#has_any_meta}}
+                <div class="wub-catalog-meta">
+                    {{#has_duration}}
+                    <span class="wub-catalog-meta-item" title="Course duration">
+                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                        <span>{{duration_text}}</span>
+                    </span>
+                    {{/has_duration}}
+                    {{#has_credits}}
+                    <span class="wub-catalog-meta-item" title="Credits">
+                        <i class="fa fa-book" aria-hidden="true"></i>
+                        <span>{{credits_text}}</span>
+                    </span>
+                    {{/has_credits}}
+                    {{#has_enrolled}}
+                    <span class="wub-catalog-meta-item" title="Enrolled students">
+                        <i class="fa fa-users" aria-hidden="true"></i>
+                        <span>{{enrolled_text}}</span>
+                    </span>
+                    {{/has_enrolled}}
+                </div>
+                {{/has_any_meta}}
+
+                <!-- Progress bar (only if real progress exists for enrolled user) -->
+                {{#has_progress}}
+                <div class="wub-catalog-progress">
+                    <div class="wub-catalog-progress-bar-wrap">
+                        <div class="wub-catalog-progress-track">
+                            <div class="wub-catalog-progress-fill" style="width: {{progress_percentage}}%;"></div>
+                        </div>
+                        <span class="wub-catalog-progress-text">{{progress_percentage}}%</span>
+                    </div>
+                </div>
+                {{/has_progress}}
+
+                <!-- Action Button at bottom -->
+                <div class="wub-catalog-card-action">
+                    {{#is_enrolled}}
+                    <a href="{{view_url}}" class="wub-catalog-btn wub-catalog-btn-continue">
+                        <span>Continue Learning</span>
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                    {{/is_enrolled}}
+                    {{^is_enrolled}}
+                    <a href="{{action_url}}" class="wub-catalog-btn wub-catalog-btn-enroll">
+                        <span>Enroll Now</span>
+                    </a>
+                    {{/is_enrolled}}
+                </div>
+            </div>
+        </article>
+        {{/courses}}
+    </div>
+    {{/has_courses}}
+
+    {{^has_courses}}
+    <div class="wub-catalog-empty">
+        <div class="wub-catalog-empty-icon"><i class="fa fa-folder-open-o" aria-hidden="true"></i></div>
+        <h3>No courses available in this category</h3>
+        <p>There are currently no courses published under {{current_category_name}}.</p>
+        <a href="{{all_courses_url}}" class="btn btn-primary mt-2">View All Courses</a>
+    </div>
+    {{/has_courses}}
+</div>
+
+<script>
+(function () {
+    function initWubCatalog() {
+        const chipsContainer = document.getElementById('wubCatalogChips');
+    const scrollBtn = document.getElementById('wubScrollRightBtn');
+    const sortSelect = document.getElementById('wubCatalogSort');
+    const gridBtn = document.getElementById('wubViewGridBtn');
+    const listBtn = document.getElementById('wubViewListBtn');
+    const coursesGrid = document.getElementById('wubCatalogCourses');
+    const countEl = document.getElementById('wubCatalogCount');
+
+    // Horizontal Scroll Arrow
+    if (scrollBtn && chipsContainer) {
+        scrollBtn.addEventListener('click', function () {
+            chipsContainer.scrollBy({ left: 240, behavior: 'smooth' });
+        });
+    }
+
+    // Dynamic Category Chip Filtering
+    const chips = document.querySelectorAll('.wub-catalog-chip');
+    if (chips.length > 0 && coursesGrid) {
+        chips.forEach(function (chip) {
+            chip.addEventListener('click', function (e) {
+                // Allow middle-click, ctrl-click, cmd-click to open naturally in new tab
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.which === 2) {
+                    return;
+                }
+                e.preventDefault();
+
+                const catId = this.getAttribute('data-category-id');
+                const href = this.getAttribute('href');
+
+                // Update active state on chips
+                chips.forEach(function (c) {
+                    c.classList.remove('is-active');
+                    c.setAttribute('aria-selected', 'false');
+                });
+                this.classList.add('is-active');
+                this.setAttribute('aria-selected', 'true');
+
+                // Filter cards matching category or parent category
+                const cards = Array.from(coursesGrid.querySelectorAll('.wub-catalog-card'));
+                let visibleCount = 0;
+                cards.forEach(function (card) {
+                    const cardCat = card.getAttribute('data-category');
+                    const cardParent = card.getAttribute('data-parent-category');
+
+                    if (catId === '0' || cardCat === catId || cardParent === catId) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Update count in UI
+                if (countEl) {
+                    countEl.textContent = visibleCount;
+                }
+
+                // Update browser URL without reload
+                if (window.history && window.history.pushState && href) {
+                    window.history.pushState({ categoryId: catId }, '', href);
+                }
+            });
+        });
+    }
+
+    // Grid / List View Toggle
+    if (gridBtn && listBtn && coursesGrid) {
+        const savedView = localStorage.getItem('wub_catalog_view');
+        if (savedView === 'list') {
+            setViewMode('list');
+        }
+
+        gridBtn.addEventListener('click', function () {
+            setViewMode('grid');
+        });
+
+        listBtn.addEventListener('click', function () {
+            setViewMode('list');
+        });
+
+        function setViewMode(mode) {
+            if (mode === 'list') {
+                coursesGrid.classList.remove('wub-catalog-grid');
+                coursesGrid.classList.add('wub-catalog-list');
+                listBtn.classList.add('is-active');
+                listBtn.setAttribute('aria-pressed', 'true');
+                gridBtn.classList.remove('is-active');
+                gridBtn.setAttribute('aria-pressed', 'false');
+                localStorage.setItem('wub_catalog_view', 'list');
+            } else {
+                coursesGrid.classList.remove('wub-catalog-list');
+                coursesGrid.classList.add('wub-catalog-grid');
+                gridBtn.classList.add('is-active');
+                gridBtn.setAttribute('aria-pressed', 'true');
+                listBtn.classList.remove('is-active');
+                listBtn.setAttribute('aria-pressed', 'false');
+                localStorage.setItem('wub_catalog_view', 'grid');
+            }
+        }
+    }
+
+    // Wishlist Toggle
+    document.querySelectorAll('.wub-catalog-card-fav').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.toggle('is-fav');
+            const icon = this.querySelector('i');
+            if (icon) {
+                if (this.classList.contains('is-fav')) {
+                    icon.classList.remove('fa-heart-o');
+                    icon.classList.add('fa-heart');
+                } else {
+                    icon.classList.remove('fa-heart');
+                    icon.classList.add('fa-heart-o');
+                }
+            }
+        });
+    });
+
+    // Sorting
+    if (sortSelect && coursesGrid) {
+        sortSelect.addEventListener('change', function () {
+            const val = this.value;
+            const cards = Array.from(coursesGrid.querySelectorAll('.wub-catalog-card'));
+
+            cards.sort(function (a, b) {
+                if (val === 'popular') {
+                    const enrolledA = parseInt(a.getAttribute('data-enrolled') || '0', 10);
+                    const enrolledB = parseInt(b.getAttribute('data-enrolled') || '0', 10);
+                    return enrolledB - enrolledA;
+                } else if (val === 'name_asc') {
+                    const titleA = (a.getAttribute('data-title') || '').toLowerCase();
+                    const titleB = (b.getAttribute('data-title') || '').toLowerCase();
+                    return titleA.localeCompare(titleB);
+                } else if (val === 'name_desc') {
+                    const titleA = (a.getAttribute('data-title') || '').toLowerCase();
+                    const titleB = (b.getAttribute('data-title') || '').toLowerCase();
+                    return titleB.localeCompare(titleA);
+                } else if (val === 'code_asc') {
+                    const codeA = (a.getAttribute('data-code') || '').toLowerCase();
+                    const codeB = (b.getAttribute('data-code') || '').toLowerCase();
+                    return codeA.localeCompare(codeB);
+                } else if (val === 'newest') {
+                    const idA = parseInt(a.getAttribute('data-id') || '0', 10);
+                    const idB = parseInt(b.getAttribute('data-id') || '0', 10);
+                    return idB - idA;
+                }
+                return 0;
+            });
+
+            cards.forEach(function (card) {
+                coursesGrid.appendChild(card);
+            });
+        });
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWubCatalog);
+} else {
+    initWubCatalog();
+}
+})();
+</script>

@@ -557,6 +557,14 @@ textarea.form-control {
 .form-switch .form-check-input {
     width: 2.25rem;
 }
+/* Ensure Edit mode toggle slider in navbar renders correctly across all pages */
+#header .editmode-switch-form .form-switch .form-check-input {
+    width: 36px !important;
+    height: 18px !important;
+    margin-left: -2.5em !important;
+    border-radius: 2em !important;
+    background-size: contain !important;
+}
 .form-text,
 .form-control-feedback,
 .mform .form-text,
@@ -1180,7 +1188,7 @@ hr {
 }
 
 /* 10. Form Controls & Buttons */
-#page-local-bulk_enrolment-index .form-check-input,
+#page-local-bulk_enrolment-index #region-main .form-check:not(.form-switch) .form-check-input,
 #page-local-bulk_enrolment-index .be-program-checkbox,
 #page-local-bulk_enrolment-index .be-batch-checkbox,
 #page-local-bulk_enrolment-index .be-course-checkbox,
@@ -1258,8 +1266,9 @@ hr {
 }
 
 /* Specific comfortable min-widths for filter dropdowns */
-#page-local-bulk_enrolment-index #be-duration {
-    min-width: 110px;
+#page-local-bulk_enrolment-index #be-timestart,
+#page-local-bulk_enrolment-index #be-timeend {
+    min-width: 140px;
 }
 #page-local-bulk_enrolment-index #be-role {
     min-width: 160px;
@@ -1434,6 +1443,470 @@ hr {
     font-weight: 600;
 }
 
+/* 12b. Site Administration -> Reports -> Logs filter controls --------------- */
+.logselecform {
+    margin-bottom: 1.5rem;
+}
+.logselecform .logfilter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+/* Ensure the original select for user autocomplete is 100% hidden and never takes space */
+.logselecform select#menuuser,
+.logselecform .logfilter-user-wrapper select#menuuser,
+.logselecform .logfilter-user-wrapper select.menuuser,
+.logselecform .form-autocomplete-original-select {
+    display: none !important;
+    position: absolute !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+}
+/* Standard select dropdowns in the filter row */
+.logselecform select.form-select,
+.logselecform select.select {
+    height: 42px;
+    min-height: 42px;
+    line-height: 1.5;
+    font-size: 0.875rem;
+    padding: 0.45rem 2rem 0.45rem 0.65rem !important;
+    box-sizing: border-box !important;
+    border: 1px solid var(--wub-border-strong);
+    border-radius: var(--wub-radius-sm);
+    background-color: var(--wub-surface);
+    color: var(--wub-text);
+}
+/* Course dropdown */
+.logselecform select#menuid {
+    width: auto;
+    min-width: 220px;
+    max-width: 240px;
+    flex: 0 0 auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Participant Autocomplete Wrapper */
+.logselecform .logfilter-user-wrapper {
+    display: inline-block !important;
+    position: relative !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+    height: 42px !important;
+    flex: 0 0 220px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-selection {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}
+/* Hide empty selection to avoid ghost spacing */
+.logselecform .logfilter-user-wrapper .form-autocomplete-selection:empty,
+.logselecform .logfilter-user-wrapper .form-autocomplete-selection:not(:has([role="option"])) {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-selection:has([role="option"]) {
+    display: inline-flex !important;
+    align-items: center;
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    max-width: calc(100% - 28px);
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-selection .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--wub-p-100) !important;
+    color: var(--wub-p-900) !important;
+    border: 1px solid var(--wub-p-300);
+    border-radius: var(--wub-radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    overflow: hidden;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-selection .badge:hover {
+    background-color: var(--wub-p-200) !important;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-input {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-input input {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 42px !important;
+    height: 42px !important;
+    margin: 0 !important;
+    padding: 0.45rem 1.8rem 0.45rem 0.65rem !important; /* Space for downarrow on right */
+    font-size: 0.875rem !important;
+    border: 1px solid var(--wub-border-strong) !important;
+    border-radius: var(--wub-radius-sm) !important;
+    background-color: var(--wub-surface) !important;
+    color: var(--wub-text) !important;
+    box-sizing: border-box !important;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-input input:focus {
+    border-color: var(--wub-p-500) !important;
+    box-shadow: 0 0 0 3px rgba(15, 108, 191, 0.15) !important;
+    outline: none !important;
+}
+/* Downarrow indicator for participant autocomplete */
+.logselecform .logfilter-user-wrapper .form-autocomplete-downarrow,
+.logselecform .logfilter-user-wrapper .form-autocomplete-input .form-autocomplete-downarrow {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 9px !important;
+    color: var(--wub-text-muted, #64748b) !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    z-index: 2 !important;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1050;
+    min-width: 260px;
+    max-width: 380px;
+    max-height: 280px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid var(--wub-border-strong);
+    border-radius: var(--wub-radius-sm);
+    box-shadow: var(--wub-shadow);
+    padding: 0.25rem 0;
+    margin-top: 2px;
+    list-style: none;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-suggestions li {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--wub-border);
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-suggestions li:last-child {
+    border-bottom: none;
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-suggestions li:hover,
+.logselecform .logfilter-user-wrapper .form-autocomplete-suggestions li[aria-selected="true"] {
+    background-color: var(--wub-p-50);
+    color: var(--wub-p-900);
+}
+.logselecform .logfilter-user-wrapper .form-autocomplete-suggestions small {
+    display: block;
+    color: var(--wub-text-muted);
+    font-size: 0.8rem;
+}
+/* Date dropdown */
+.logselecform select#menudate {
+    width: auto;
+    min-width: 155px;
+    max-width: 175px;
+    flex: 0 0 auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Activities dropdown */
+.logselecform select#menumodid {
+    width: auto;
+    min-width: 130px;
+    max-width: 150px;
+    flex: 0 0 auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Actions dropdown */
+.logselecform select#menumodaction {
+    width: auto;
+    min-width: 120px;
+    max-width: 140px;
+    flex: 0 0 auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Sources (Origin) dropdown */
+.logselecform select#menuorigin {
+    width: auto;
+    min-width: 120px;
+    max-width: 140px;
+    flex: 0 0 auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Events (Edulevel) dropdown */
+.logselecform select#menuedulevel {
+    width: auto;
+    min-width: 115px;
+    max-width: 135px;
+    flex: 0 0 auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Help icon alignment */
+.logselecform .logfilter-row a.help-popover {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    margin-left: -0.25rem;
+}
+/* Submit button */
+.logselecform input[type="submit"] {
+    min-height: 42px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+}
+/* Responsive adjustments for mobile/tablet */
+@media (max-width: 767px) {
+    .logselecform select#menuid,
+    .logselecform .logfilter-user-wrapper,
+    .logselecform select#menudate,
+    .logselecform select#menumodid,
+    .logselecform select#menumodaction,
+    .logselecform select#menuorigin,
+    .logselecform select#menuedulevel {
+        min-width: 100%;
+        max-width: 100%;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+    .logselecform .logfilter-user-wrapper .form-autocomplete-input {
+        min-width: 100%;
+    }
+    .logselecform .logfilter-user-wrapper .form-autocomplete-suggestions {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+/* 12c. Course Management page: Bottom Course Details polish ----------------- */
+#page-course-management #course-detail {
+    margin-top: 1.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+#page-course-management #course-detail .course-detail.card {
+    border: 1px solid var(--wub-border, #d8e2ec);
+    border-radius: var(--wub-radius-md, 8px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    background-color: var(--wub-surface, #ffffff);
+    overflow: hidden;
+}
+
+#page-course-management #course-detail .card-header {
+    background-color: var(--wub-surface-subtle, #f8fafc);
+    border-bottom: 1px solid var(--wub-border, #e2e8f0);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#page-course-management #course-detail #course-detail-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--wub-text, #1e293b);
+    margin: 0;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#page-course-management #course-detail #course-detail-title::before {
+    content: "\f02d";
+    font-family: "FontAwesome";
+    font-size: 1rem;
+    color: var(--wub-p-600, #0f6cbf);
+    font-weight: normal;
+}
+
+#page-course-management #course-detail .card-body {
+    padding: 1.25rem;
+}
+
+/* Dedicated, clearly separated action toolbar */
+#page-course-management #course-detail .course-detail-listing-actions {
+    background-color: var(--wub-p-50, #f0f7fd);
+    border: 1px solid var(--wub-p-200, #bae0fd);
+    border-radius: var(--wub-radius-sm, 6px);
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+#page-course-management #course-detail .course-detail-listing-actions .btn {
+    margin: 0 !important;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    transition: all 0.15s ease-in-out;
+}
+
+#page-course-management #course-detail .course-detail-listing-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Detail Pairs: clean spacing, subtle separator and hover */
+#page-course-management #course-detail .detail-pair {
+    padding: 0.65rem 0.85rem;
+    margin-left: 0;
+    margin-right: 0;
+    border-bottom: 1px solid var(--wub-border-subtle, #f1f5f9);
+    align-items: baseline;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+#page-course-management #course-detail .detail-pair:hover {
+    background-color: var(--wub-surface-subtle, #f8fafc);
+}
+
+#page-course-management #course-detail .detail-pair:last-child {
+    border-bottom: none;
+}
+
+/* Labels */
+#page-course-management #course-detail .detail-pair .pair-key {
+    color: var(--wub-text-muted, #475569);
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+    padding-right: 1.25rem;
+}
+
+/* Values */
+#page-course-management #course-detail .detail-pair .pair-value {
+    color: var(--wub-text, #1e293b);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+#page-course-management #course-detail .detail-pair .pair-value > .d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+/* Category Link */
+#page-course-management #course-detail .detail-pair.category .pair-value a {
+    color: var(--wub-p-700, #0369a1);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+#page-course-management #course-detail .detail-pair.category .pair-value a:hover {
+    color: var(--wub-p-900, #0c4a6e);
+    text-decoration: underline;
+}
+
+#page-course-management #course-detail .detail-pair.category .pair-value a::before {
+    content: "\f07b";
+    font-family: "FontAwesome";
+    font-size: 0.8rem;
+    margin-right: 0.35rem;
+    color: #64748b;
+    font-weight: normal;
+}
+
+/* Full name emphasis */
+#page-course-management #course-detail .detail-pair.fullname .pair-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--wub-text, #1e293b);
+}
+
+/* Shortname & ID number as neat code pills */
+#page-course-management #course-detail .detail-pair.shortname .pair-value .d-flex,
+#page-course-management #course-detail .detail-pair.idnumber .pair-value .d-flex {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background-color: var(--wub-p-100, #e0effe);
+    color: var(--wub-p-900, #0c4a6e);
+    border: 1px solid var(--wub-p-200, #bae0fd);
+    border-radius: 4px;
+    padding: 0.15rem 0.5rem;
+    display: inline-block !important;
+    width: fit-content;
+}
+
+/* Multi-line Metadata (Role Assignments, Enrolment Methods, etc.) */
+#page-course-management #course-detail .detail-pair.roleassignments .pair-value,
+#page-course-management #course-detail .detail-pair.enrolmentmethods .pair-value {
+    line-height: 1.65;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    #page-course-management #course-detail {
+        margin-top: 1rem;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #page-course-management #course-detail .detail-pair {
+        padding: 0.5rem 0.25rem;
+    }
+
+    #page-course-management #course-detail .detail-pair .pair-key {
+        margin-bottom: 0.25rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #64748b;
+    }
+}
+
 /* 13. Login page ------------------------------------------------------------ */
 .path-login #page .login-layout-right {
     position: relative;
@@ -1482,6 +1955,72 @@ hr {
     width: 100%;
     padding: 0.7rem 1rem;
     font-size: 1.0625rem;
+}
+
+/* 13b. WUB Auth Admin Login Layout - Hero image full vertical stretch to footer */
+body.wub-admin-login-layout #page {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+}
+body.wub-admin-login-layout #page-content {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+body.wub-admin-login-layout #region-main {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+}
+body.wub-admin-login-layout #region-main-box.login-layout-right-content,
+body.wub-admin-login-layout .login-container,
+body.wub-admin-login-layout .login-layout-right {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+body.wub-admin-login-layout .login-container > div[role="main"] {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+}
+body.wub-admin-login-layout .wub-admin-split-page {
+    display: flex !important;
+    flex-direction: row !important;
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 100% !important;
+    align-items: stretch !important;
+}
+body.wub-admin-login-layout .wub-admin-left-col {
+    align-self: stretch !important;
+}
+body.wub-admin-login-layout .wub-admin-right-col {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    width: 50% !important;
+    align-self: stretch !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-position: center !important;
+    min-height: 0 !important;
+}
+@media (max-width: 768px) {
+    body.wub-admin-login-layout .wub-admin-right-col {
+        display: none !important;
+    }
+    body.wub-admin-login-layout .wub-admin-split-page {
+        flex-direction: column !important;
+    }
 }
 .path-login .login-container .login-identityproviders .btn,
 .path-login .login-container .login-form-forgotpassword a {
@@ -1734,3 +2273,716 @@ hr {
 #footer .footer-bottom a:active {
     color: #e3effa;
 }
+
+/* 17. Grader Report Layout Fixes (.path-grade-report-grader) --------------- */
+
+/* 17.1 Contain wide grader table inside gradeparent without overflowing the page */
+.path-grade-report-grader .gradeparent {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+    position: relative;
+}
+
+/* 17.2 Sticky heading top offset aligned to Academi fixed navbar (61px) */
+.path-grade-report-grader .gradeparent tr.heading {
+    position: sticky !important;
+    top: 61px !important;
+    z-index: 4 !important;
+}
+
+/* 17.3 Anchor Overall average (lastrow) to bottom of table; prevent middle-table pinning */
+.path-grade-report-grader .gradeparent tr.lastrow:not(.userrow),
+.path-grade-report-grader.hasstickyfooter .gradeparent tr.lastrow {
+    position: static !important;
+    bottom: auto !important;
+}
+
+/* 17.4 Prevent drawer toggle from overlapping course/grader content */
+.path-grade-report-grader .drawer-toggles {
+    position: relative !important;
+    margin-bottom: 0.5rem;
+}
+.path-grade-report-grader .drawer-toggles .drawer-left-toggle {
+    position: static !important;
+    display: inline-block;
+}
+.path-grade-report-grader .drawer-toggles .drawer-left-toggle .btn {
+    border-radius: 4px;
+}
+
+/* 17.5 Grader Report: In-flow pagination & page-size controls above footer */
+.path-grade-report-grader #sticky-footer,
+#page-grade-report-grader-index #sticky-footer {
+    position: static !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    box-shadow: none !important;
+    border-top: 1px solid var(--wub-border, #e2e8f0) !important;
+    background-color: transparent !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+    z-index: 1 !important;
+}
+
+.path-grade-report-grader #sticky-footer .sticky-footer-content-wrapper,
+#page-grade-report-grader-index #sticky-footer .sticky-footer-content-wrapper {
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.path-grade-report-grader #sticky-footer .sticky-footer-content,
+#page-grade-report-grader-index #sticky-footer .sticky-footer-content {
+    padding: 0.5rem 0 !important;
+}
+
+#page-grade-report-grader-index #page.drawers.hasstickyfooter,
+.path-grade-report-grader.hasstickyfooter #page.drawers {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* ==========================================================================
+   18. Modern Course Catalog Body (.wub-catalog-...)
+   Strictly targets /course/index.php (#page-course-index-category)
+   ========================================================================== */
+
+#page-course-index-category #page-content {
+    background: #f8fafc;
+}
+
+#page-course-index-category #page.drawers .main-inner {
+    max-width: 1400px !important;
+    width: 100% !important;
+}
+
+#page-course-index-category #region-main {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* Catalog Container */
+.wub-catalog-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem 0 3.5rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Category Filter Chips */
+.wub-catalog-chips-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+    position: relative;
+    width: 100%;
+}
+
+.wub-catalog-chips-scroll {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    padding: 4px 2px;
+    flex-grow: 1;
+}
+
+.wub-catalog-chips-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.wub-catalog-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #334155 !important;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.wub-catalog-chip:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a !important;
+    transform: translateY(-1px);
+}
+
+.wub-catalog-chip.is-active {
+    background: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(13, 110, 253, 0.28);
+}
+
+.wub-catalog-chip i {
+    font-size: 14px;
+    color: #0284c7;
+}
+
+.wub-catalog-chip.is-active i {
+    color: #ffffff !important;
+}
+
+.wub-catalog-scroll-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+    transition: all 0.2s ease;
+}
+
+.wub-catalog-scroll-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+
+/* Controls Bar */
+.wub-catalog-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+}
+
+.wub-catalog-count {
+    font-size: 15px;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.wub-catalog-count strong {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 17px;
+}
+
+.wub-catalog-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.wub-catalog-sort-box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 7px 14px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.wub-catalog-sort-label {
+    color: #64748b;
+    font-size: 13.5px;
+    margin: 0 6px 0 0;
+    cursor: pointer;
+}
+
+.wub-catalog-sort-select {
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    color: #0f172a;
+    outline: none;
+    cursor: pointer;
+    font-size: 13.5px;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 18px;
+}
+
+.wub-catalog-sort-arrow {
+    position: absolute;
+    right: 12px;
+    pointer-events: none;
+    font-size: 11px;
+    color: #64748b;
+}
+
+.wub-catalog-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    gap: 3px;
+}
+
+.wub-catalog-view-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    position: relative;
+    padding: 0;
+}
+
+.wub-catalog-view-btn:hover {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.wub-catalog-view-btn:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+.wub-catalog-view-btn.is-active {
+    background: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.35) !important;
+}
+
+.wub-catalog-view-btn.is-active:hover {
+    background: #0b5ed7 !important;
+    color: #ffffff !important;
+}
+
+.wub-catalog-view-btn svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    transition: transform 0.15s ease;
+}
+
+.wub-catalog-view-btn:hover svg {
+    transform: scale(1.05);
+}
+
+.wub-catalog-view-btn.is-active svg {
+    transform: none;
+}
+
+/* 4-Column Course Cards Grid */
+.wub-catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+@media (max-width: 1240px) {
+    .wub-catalog-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .wub-catalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .wub-catalog-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/* Course Card */
+.wub-catalog-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    height: 100%;
+}
+
+.wub-catalog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.09);
+    border-color: #cbd5e1;
+}
+
+/* Top Image Container */
+.wub-catalog-card-image {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: #f1f5f9;
+    overflow: hidden;
+}
+
+.wub-catalog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.wub-catalog-card:hover .wub-catalog-card-image img {
+    transform: scale(1.04);
+}
+
+/* Category Pill over image */
+.wub-catalog-card-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 4px 11px;
+    border-radius: 9999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #0284c7;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    max-width: 75%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wub-catalog-card-badge i {
+    font-size: 11px;
+}
+
+/* Wishlist Heart Button */
+.wub-catalog-card-fav {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    transition: all 0.2s ease;
+}
+
+.wub-catalog-card-fav:hover {
+    color: #ef4444;
+    background: #ffffff;
+    transform: scale(1.08);
+}
+
+.wub-catalog-card-fav.is-fav {
+    color: #ef4444;
+}
+
+/* Card Body Content */
+.wub-catalog-card-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.wub-catalog-card-code {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.wub-catalog-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+    margin: 0 0 12px 0;
+    min-height: 44px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.wub-catalog-card-title a {
+    color: inherit;
+    text-decoration: none !important;
+    transition: color 0.15s ease;
+}
+
+.wub-catalog-card-title a:hover {
+    color: #0284c7;
+}
+
+/* Instructor Section */
+.wub-catalog-instructor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.wub-catalog-instructor-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid #e2e8f0;
+}
+
+.wub-catalog-dept-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #0284c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.wub-catalog-instructor-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.wub-catalog-instructor-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+
+.wub-catalog-instructor-dept {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+/* Metadata Row */
+.wub-catalog-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12.5px;
+    color: #64748b;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.wub-catalog-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.wub-catalog-meta-item i {
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Progress Bar */
+.wub-catalog-progress {
+    margin-bottom: 14px;
+}
+
+.wub-catalog-progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wub-catalog-progress-track {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    flex: 1;
+}
+
+.wub-catalog-progress-fill {
+    height: 100%;
+    background: #0d6efd;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.wub-catalog-progress-text {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748b;
+    min-width: 28px;
+    text-align: right;
+}
+
+/* Action Buttons */
+.wub-catalog-card-action {
+    margin-top: auto;
+}
+
+.wub-catalog-btn {
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.wub-catalog-btn-enroll {
+    background: #ffffff;
+    color: #0d6efd;
+    border: 1.5px solid #0d6efd;
+}
+
+.wub-catalog-btn-enroll:hover {
+    background: #0d6efd;
+    color: #ffffff !important;
+}
+
+.wub-catalog-btn-continue {
+    background: #0d6efd;
+    color: #ffffff !important;
+    border: 1.5px solid #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.22);
+}
+
+.wub-catalog-btn-continue:hover {
+    background: #0b5ed7;
+    border-color: #0b5ed7;
+    color: #ffffff !important;
+}
+
+/* List View Layout */
+.wub-catalog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.wub-catalog-list .wub-catalog-card {
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 180px;
+}
+
+.wub-catalog-list .wub-catalog-card-image {
+    width: 280px;
+    height: auto;
+    min-height: 180px;
+    flex-shrink: 0;
+}
+
+.wub-catalog-list .wub-catalog-card-body {
+    padding: 18px 24px;
+}
+
+@media (max-width: 768px) {
+    .wub-catalog-list .wub-catalog-card {
+        flex-direction: column;
+    }
+    .wub-catalog-list .wub-catalog-card-image {
+        width: 100%;
+        height: 180px;
+    }
+}
+
+/* Empty State */
+.wub-catalog-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px dashed #cbd5e1;
+    margin: 1.5rem 0;
+}
+
+.wub-catalog-empty-icon {
+    font-size: 48px;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+.wub-catalog-empty h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.wub-catalog-empty p {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 1.25rem;
+}
+

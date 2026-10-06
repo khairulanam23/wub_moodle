@@ -17,8 +17,9 @@
 {{!
     @template local_bulk_enrolment/enrolment_page
 
-    UMS-driven bulk enrolment workspace. Programs/batches/students are loaded live via AJAX;
-    courses, categories and roles are real Moodle records rendered by index.php.
+    Redesigned Bulk Enrolment Workspace (Desktop: 50% Moodle / 50% UMS split,
+    followed by Full-Width Student Selection, Enrolment Options, Centered Verify,
+    and Verification/Results cards).
 
     Context variables required for this template:
     * sesskey
@@ -29,6 +30,7 @@
 }}
 <div id="be-workspace" class="be-workspace" data-sesskey="{{sesskey}}">
 
+    {{! Page Header }}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 pb-2 border-bottom">
         <div>
             <h4 class="mb-1 font-weight-bold d-flex align-items-center gap-2">
@@ -46,8 +48,8 @@
         <div class="be-pipeline-step active" id="be-step-roster">
             <span class="be-step-badge">1</span>
             <div class="be-step-meta">
-                <span class="be-step-label">Select Roster</span>
-                <span class="be-step-sub">Program &amp; Batch</span>
+                <span class="be-step-label">Select Source</span>
+                <span class="be-step-sub">Courses &amp; UMS Roster</span>
             </div>
         </div>
         <div class="be-pipeline-arrow" aria-hidden="true"><i class="fa fa-angle-right"></i></div>
@@ -55,15 +57,15 @@
             <span class="be-step-badge">2</span>
             <div class="be-step-meta">
                 <span class="be-step-label">Review Students</span>
-                <span class="be-step-sub">Moodle Account Match</span>
+                <span class="be-step-sub">Select Target Students</span>
             </div>
         </div>
         <div class="be-pipeline-arrow" aria-hidden="true"><i class="fa fa-angle-right"></i></div>
         <div class="be-pipeline-step" id="be-step-courses">
             <span class="be-step-badge">3</span>
             <div class="be-step-meta">
-                <span class="be-step-label">Target Courses</span>
-                <span class="be-step-sub">Role &amp; Group Options</span>
+                <span class="be-step-label">Configure Options</span>
+                <span class="be-step-sub">Roles, Dates &amp; Groups</span>
             </div>
         </div>
         <div class="be-pipeline-arrow" aria-hidden="true"><i class="fa fa-angle-right"></i></div>
@@ -71,53 +73,116 @@
             <span class="be-step-badge">4</span>
             <div class="be-step-meta">
                 <span class="be-step-label">Verify &amp; Enrol</span>
-                <span class="be-step-sub">Audit &amp; Chunk Execution</span>
+                <span class="be-step-sub">Pre-Audit &amp; Execution</span>
             </div>
         </div>
     </div>
 
     <div id="be-notices" aria-live="polite"></div>
 
-    <div class="row g-3">
-        {{! ---------------------------------------------------------------- LEFT: programs + batches }}
-        <div class="col-lg-4">
-            <div class="card shadow-sm h-100 be-card-panel">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+    {{! ---------------------------------------------------------------- TOP SPLIT: MOODLE (LEFT) + UMS (RIGHT) }}
+    <div class="row g-3 mb-4 be-top-split-row">
+
+        {{! LEFT: MOODLE COURSES }}
+        <div class="col-lg-6">
+            <div class="card shadow-sm be-card-panel be-top-split-card">
+                <div class="card-header be-split-header d-flex justify-content-between align-items-center py-2 px-3">
                     <span class="font-weight-bold d-flex align-items-center gap-2">
-                        <span class="badge be-step-pill">Step 1</span>
-                        <i class="fa fa-graduation-cap text-primary" aria-hidden="true"></i>{{#str}}ws_programs, local_bulk_enrolment{{/str}}
+                        <span class="badge be-step-pill">Moodle</span>
+                        <i class="fa fa-book text-primary" aria-hidden="true"></i>{{#str}}ws_courses, local_bulk_enrolment{{/str}}
                     </span>
-                    <span class="badge badge-light border font-weight-bold" id="be-program-count">0 {{#str}}ws_selected, local_bulk_enrolment{{/str}}</span>
+                    <span class="badge badge-light border font-weight-bold" id="be-course-count">0 {{#str}}ws_selected, local_bulk_enrolment{{/str}}</span>
                 </div>
-                <div class="card-body py-3 d-flex flex-column">
-                    <div class="input-group input-group-sm mb-2">
-                        <input type="search" class="form-control" id="be-program-search" placeholder="{{#str}}ws_programs_search, local_bulk_enrolment{{/str}}" aria-label="{{#str}}ws_programs_search, local_bulk_enrolment{{/str}}">
-                        <button class="btn btn-outline-secondary" type="button" id="be-program-select-visible">{{#str}}select_all, local_bulk_enrolment{{/str}}</button>
-                        <button class="btn btn-outline-secondary" type="button" id="be-program-clear">{{#str}}ws_clear, local_bulk_enrolment{{/str}}</button>
+                <div class="card-body p-3 d-flex flex-column be-split-body">
+                    <div class="be-filter-zone">
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-5">
+                                <label for="be-course-category" class="visually-hidden">{{#str}}select_category, local_bulk_enrolment{{/str}}</label>
+                                <select class="form-select form-select-sm" id="be-course-category" aria-label="{{#str}}select_category, local_bulk_enrolment{{/str}}">
+                                    <option value="">{{#str}}all_categories, local_bulk_enrolment{{/str}}</option>
+                                    {{#categories}}<option value="{{id}}">{{name}}</option>{{/categories}}
+                                </select>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="input-group input-group-sm">
+                                    <input type="search" class="form-control" id="be-course-search" placeholder="{{#str}}ws_courses_search, local_bulk_enrolment{{/str}}" aria-label="{{#str}}ws_courses_search, local_bulk_enrolment{{/str}}">
+                                    <button class="btn btn-outline-secondary" type="button" id="be-course-clear">{{#str}}ws_clear, local_bulk_enrolment{{/str}}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="small text-muted be-zone-hint">Filter and select target courses for bulk enrolment.</div>
                     </div>
-                    <div id="be-program-list" class="be-scroll-list border rounded mb-3" data-state="loading">
-                        <div class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>{{#str}}ws_loading, local_bulk_enrolment{{/str}}</div>
+                    <div id="be-course-list" class="be-scroll-list flex-grow-1">
+                        {{#courses}}
+                        <label class="be-item d-flex align-items-center gap-2 px-2 py-2 mb-0 border-bottom" data-name="{{fullname}}" data-shortname="{{shortname}}" data-category="{{category}}">
+                            <input type="checkbox" class="form-check-input be-course-checkbox mt-0" value="{{id}}" data-name="{{fullname}}">
+                            <span class="flex-grow-1 be-item-title"><span class="font-weight-medium text-dark">{{fullname}}</span> <span class="be-code-pill small ms-1 ml-1">{{shortname}}</span></span>
+                        </label>
+                        {{/courses}}
+                        {{^courses}}
+                        <div class="text-center text-muted py-4 small">{{#str}}ws_courses_none, local_bulk_enrolment{{/str}}</div>
+                        {{/courses}}
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2 mt-1 pt-2 border-top">
-                        <span class="font-weight-bold small text-uppercase text-muted d-flex align-items-center gap-2">
-                            <i class="fa fa-layer-group text-primary" aria-hidden="true"></i>{{#str}}ws_batches, local_bulk_enrolment{{/str}}
-                        </span>
+                </div>
+            </div>
+        </div>
+
+        {{! RIGHT: UMS PROGRAMS & BATCHES }}
+        <div class="col-lg-6">
+            <div class="card shadow-sm be-card-panel be-top-split-card">
+                <div class="card-header be-split-header d-flex justify-content-between align-items-center py-2 px-3">
+                    <span class="font-weight-bold d-flex align-items-center gap-2">
+                        <span class="badge be-step-pill">UMS</span>
+                        <i class="fa fa-graduation-cap text-primary" aria-hidden="true"></i>{{#str}}ws_programs, local_bulk_enrolment{{/str}} &amp; {{#str}}ws_batches, local_bulk_enrolment{{/str}}
+                    </span>
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="badge badge-light border font-weight-bold" id="be-program-count">0 {{#str}}ws_selected, local_bulk_enrolment{{/str}}</span>
                         <span class="badge badge-light border font-weight-bold" id="be-batch-count">0 {{#str}}ws_selected, local_bulk_enrolment{{/str}}</span>
                     </div>
-                    <div class="small text-muted mb-2">{{#str}}ws_batches_hint, local_bulk_enrolment{{/str}}</div>
-                    <div id="be-batch-list" class="be-scroll-list border rounded flex-grow-1" data-state="idle">
+                </div>
+                <div class="card-body p-3 d-flex flex-column be-split-body">
+                    {{! Program search bar }}
+                    <div class="be-filter-zone">
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="search" class="form-control" id="be-program-search" placeholder="{{#str}}ws_programs_search, local_bulk_enrolment{{/str}}" aria-label="{{#str}}ws_programs_search, local_bulk_enrolment{{/str}}">
+                            <button class="btn btn-outline-secondary" type="button" id="be-program-select-visible">{{#str}}select_all, local_bulk_enrolment{{/str}}</button>
+                            <button class="btn btn-outline-secondary" type="button" id="be-program-clear">{{#str}}ws_clear, local_bulk_enrolment{{/str}}</button>
+                        </div>
+                        <div class="small text-muted be-zone-hint">Select one or more academic programs to load batches.</div>
+                    </div>
+
+                    {{! Program scroll list }}
+                    <div id="be-program-list" class="be-scroll-list mb-2" data-state="loading">
+                        <div class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>{{#str}}ws_loading, local_bulk_enrolment{{/str}}</div>
+                    </div>
+
+                    {{! Batch section header }}
+                    <div class="be-batch-zone-header">
+                        <div class="d-flex justify-content-between align-items-center mb-1 pt-2 border-top">
+                            <span class="font-weight-bold small text-uppercase text-muted d-flex align-items-center gap-2">
+                                <i class="fa fa-layer-group text-primary" aria-hidden="true"></i>{{#str}}ws_batches, local_bulk_enrolment{{/str}}
+                            </span>
+                        </div>
+                        <div class="small text-muted mb-2 be-zone-hint">{{#str}}ws_batches_hint, local_bulk_enrolment{{/str}}</div>
+                    </div>
+
+                    {{! Batch scroll list }}
+                    <div id="be-batch-list" class="be-scroll-list flex-grow-1" data-state="idle">
                         <div class="text-center text-muted py-4 small">{{#str}}ws_roster_empty, local_bulk_enrolment{{/str}}</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{! ---------------------------------------------------------------- RIGHT: roster }}
-        <div class="col-lg-8">
-            <div class="card shadow-sm h-100 be-card-panel">
-                <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
+    </div>
+
+    {{! ---------------------------------------------------------------- MIDDLE: STUDENT SELECTION (FULL WIDTH) }}
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm be-card-panel">
+                <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
                     <span class="font-weight-bold d-flex align-items-center gap-2">
-                        <span class="badge be-step-pill">Step 2</span>
+                        <span class="badge be-step-pill">Students</span>
                         <i class="fa fa-user-graduate text-primary" aria-hidden="true"></i>{{#str}}ws_roster, local_bulk_enrolment{{/str}}
                     </span>
                     <div class="d-flex flex-wrap align-items-center gap-2">
@@ -129,14 +194,20 @@
                     </div>
                 </div>
                 <div class="card-body py-3 d-flex flex-column">
-                    <div class="row g-2 mb-2 align-items-center">
-                        <div class="col-md-5">
-                            <input type="search" class="form-control form-control-sm" id="be-roster-search" placeholder="{{#str}}ws_roster_search, local_bulk_enrolment{{/str}}" aria-label="{{#str}}ws_roster_search, local_bulk_enrolment{{/str}}">
+                    {{! Roster Toolbar / Filters }}
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-lg-5 col-md-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white"><i class="fa fa-search text-muted"></i></span>
+                                <input type="search" class="form-control" id="be-roster-search" placeholder="{{#str}}ws_roster_search, local_bulk_enrolment{{/str}}" aria-label="{{#str}}ws_roster_search, local_bulk_enrolment{{/str}}">
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <select class="form-select form-select-sm" id="be-roster-batch-filter" aria-label="{{#str}}ws_batches, local_bulk_enrolment{{/str}}"><option value="">{{#str}}ws_all_batches, local_bulk_enrolment{{/str}}</option></select>
+                        <div class="col-lg-3 col-md-6">
+                            <select class="form-select form-select-sm" id="be-roster-batch-filter" aria-label="{{#str}}ws_batches, local_bulk_enrolment{{/str}}">
+                                <option value="">{{#str}}ws_all_batches, local_bulk_enrolment{{/str}}</option>
+                            </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-lg-4 col-md-6">
                             <select class="form-select form-select-sm" id="be-roster-match-filter" aria-label="Moodle account filter">
                                 <option value="">{{#str}}ws_match_matched, local_bulk_enrolment{{/str}} + {{#str}}ws_match_not_found, local_bulk_enrolment{{/str}}</option>
                                 <option value="MATCHED">{{#str}}ws_match_matched, local_bulk_enrolment{{/str}}</option>
@@ -145,9 +216,13 @@
                             </select>
                         </div>
                     </div>
+
+                    {{! Full-Width Roster Table Container }}
                     <div id="be-roster" class="be-roster-container flex-grow-1" data-state="idle">
                         <div class="text-center text-muted py-5">{{#str}}ws_roster_empty, local_bulk_enrolment{{/str}}</div>
                     </div>
+
+                    {{! Roster Selection Controls & Pagination }}
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 pt-2 border-top">
                         <div class="btn-group btn-group-sm" role="group">
                             <button class="btn btn-outline-secondary" type="button" id="be-select-page">{{#str}}ws_select_page, local_bulk_enrolment{{/str}}</button>
@@ -162,132 +237,129 @@
         </div>
     </div>
 
-    <div class="row g-3 mt-1">
-        {{! ---------------------------------------------------------------- Moodle courses }}
-        <div class="col-lg-6">
-            <div class="card shadow-sm h-100 be-card-panel">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
-                    <span class="font-weight-bold d-flex align-items-center gap-2">
-                        <span class="badge be-step-pill">Step 3a</span>
-                        <i class="fa fa-book text-primary" aria-hidden="true"></i>{{#str}}ws_courses, local_bulk_enrolment{{/str}}
-                    </span>
-                    <span class="badge badge-light border font-weight-bold" id="be-course-count">0 {{#str}}ws_selected, local_bulk_enrolment{{/str}}</span>
-                </div>
-                <div class="card-body py-3 d-flex flex-column">
-                    <div class="row g-2 mb-2">
-                        <div class="col-md-5">
-                            <select class="form-select form-select-sm" id="be-course-category" aria-label="{{#str}}select_category, local_bulk_enrolment{{/str}}">
-                                <option value="">{{#str}}all_categories, local_bulk_enrolment{{/str}}</option>
-                                {{#categories}}<option value="{{id}}">{{name}}</option>{{/categories}}
-                            </select>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="input-group input-group-sm">
-                                <input type="search" class="form-control" id="be-course-search" placeholder="{{#str}}ws_courses_search, local_bulk_enrolment{{/str}}" aria-label="{{#str}}ws_courses_search, local_bulk_enrolment{{/str}}">
-                                <button class="btn btn-outline-secondary" type="button" id="be-course-clear">{{#str}}ws_clear, local_bulk_enrolment{{/str}}</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="be-course-list" class="be-scroll-list border rounded flex-grow-1">
-                        {{#courses}}
-                        <label class="be-item d-flex align-items-center gap-2 px-2 py-2 mb-0" data-name="{{fullname}}" data-shortname="{{shortname}}" data-category="{{category}}">
-                            <input type="checkbox" class="form-check-input be-course-checkbox mt-0" value="{{id}}" data-name="{{fullname}}">
-                            <span class="flex-grow-1 be-item-title"><span class="font-weight-medium text-dark">{{fullname}}</span> <span class="be-code-pill small ms-1">{{shortname}}</span></span>
-                        </label>
-                        {{/courses}}
-                        {{^courses}}
-                        <div class="text-center text-muted py-4 small">{{#str}}ws_courses_none, local_bulk_enrolment{{/str}}</div>
-                        {{/courses}}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{! ---------------------------------------------------------------- Options }}
-        <div class="col-lg-6">
-            <div class="card shadow-sm h-100 be-card-panel">
-                <div class="card-header bg-white py-2 font-weight-bold d-flex align-items-center gap-2">
-                    <span class="badge be-step-pill">Step 3b</span>
+    {{! ---------------------------------------------------------------- ENROLMENT OPTIONS }}
+    <div class="row g-3 mb-2">
+        <div class="col-12">
+            <div class="card shadow-sm be-card-panel">
+                <div class="card-header py-2 font-weight-bold d-flex align-items-center gap-2">
+                    <span class="badge be-step-pill">Options</span>
                     <i class="fa fa-sliders-h text-primary" aria-hidden="true"></i>{{#str}}ws_options, local_bulk_enrolment{{/str}}
                 </div>
-                <div class="card-body py-3 d-flex flex-column justify-content-between">
-                    <div>
-                        <div class="row g-2">
-                            <div class="col-md-6">
+                <div class="card-body py-3">
+                    <div class="be-options-grid">
+
+                        {{! Column 1: Role & Reactivation }}
+                        <div>
+                            <div class="mb-3">
                                 <label class="form-label small font-weight-bold text-dark" for="be-role">{{#str}}target_role, local_bulk_enrolment{{/str}}</label>
                                 <select class="form-select form-select-sm" id="be-role">
                                     <option value="0">{{#str}}default_student_role, local_bulk_enrolment{{/str}}</option>
                                     {{#assignable_roles}}<option value="{{id}}">{{name}}</option>{{/assignable_roles}}
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small font-weight-bold text-dark" for="be-duration">{{#str}}enrol_duration, local_bulk_enrolment{{/str}}</label>
-                                <select class="form-select form-select-sm" id="be-duration">
-                                    <option value="0">{{#str}}duration_unlimited, local_bulk_enrolment{{/str}}</option>
-                                    <option value="30">30 days</option>
-                                    <option value="90">90 days</option>
-                                    <option value="180">180 days</option>
-                                    <option value="365">365 days</option>
-                                </select>
+                            <div class="form-check mt-3 pt-2">
+                                <input class="form-check-input" type="checkbox" id="be-reactivate">
+                                <label class="form-check-label small text-dark font-weight-medium" for="be-reactivate">{{#str}}ws_reactivate, local_bulk_enrolment{{/str}}</label>
+                                <div class="text-muted small mt-1">If enabled, existing suspended enrolments for matching students will be reactivated automatically.</div>
                             </div>
                         </div>
-                        <fieldset class="mt-3 p-3 border rounded bg-light">
-                            <legend class="small font-weight-bold text-uppercase text-muted mb-2 float-none w-auto px-1">Group Allocation</legend>
-                            <div class="form-check mb-1"><input class="form-check-input" type="radio" name="be-group-mode" id="be-group-none" value="none" checked><label class="form-check-label small" for="be-group-none">{{#str}}ws_group_none, local_bulk_enrolment{{/str}}</label></div>
-                            <div class="form-check mb-1"><input class="form-check-input" type="radio" name="be-group-mode" id="be-group-batch" value="batch"><label class="form-check-label small" for="be-group-batch">{{#str}}ws_group_batch, local_bulk_enrolment{{/str}}</label></div>
-                            <div class="form-check mb-2"><input class="form-check-input" type="radio" name="be-group-mode" id="be-group-custom" value="custom"><label class="form-check-label small" for="be-group-custom">{{#str}}ws_group_custom, local_bulk_enrolment{{/str}}</label></div>
-                            <input type="text" class="form-control form-control-sm mb-2" id="be-group-name" placeholder="Group name" maxlength="254" disabled aria-label="{{#str}}ws_group_custom, local_bulk_enrolment{{/str}}">
-                            <div class="form-check"><input class="form-check-input" type="checkbox" id="be-group-create" disabled><label class="form-check-label small text-muted" for="be-group-create">{{#str}}ws_group_create, local_bulk_enrolment{{/str}}</label></div>
-                            <div class="form-text small text-info mt-1" id="be-group-hint"></div>
-                        </fieldset>
-                        <div class="form-check mt-3 pt-1">
-                            <input class="form-check-input" type="checkbox" id="be-reactivate">
-                            <label class="form-check-label small text-dark" for="be-reactivate">{{#str}}ws_reactivate, local_bulk_enrolment{{/str}}</label>
+
+                        {{! Column 2: Dates }}
+                        <div>
+                            <div class="row g-2">
+                                <div class="col-sm-6">
+                                    <label class="form-label small font-weight-bold text-dark" for="be-timestart">{{#str}}start_date, local_bulk_enrolment{{/str}}</label>
+                                    <input type="datetime-local" class="form-control form-control-sm" id="be-timestart" aria-describedby="be-date-help">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label small font-weight-bold text-dark" for="be-timeend">{{#str}}end_date, local_bulk_enrolment{{/str}}</label>
+                                    <input type="datetime-local" class="form-control form-control-sm" id="be-timeend" aria-describedby="be-date-help">
+                                </div>
+                                <div class="col-12">
+                                    <div class="text-muted small" id="be-date-help">{{#str}}date_help_unlimited, local_bulk_enrolment{{/str}}</div>
+                                </div>
+                                <div class="col-12 d-none" id="be-date-error-row">
+                                    <div class="invalid-feedback d-block mt-1" id="be-date-error-msg"></div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="d-grid mt-4">
-                        <button class="btn btn-primary btn-lg shadow-sm font-weight-bold py-2" type="button" id="be-verify" disabled>
-                            <i class="fa fa-check-double me-2" aria-hidden="true"></i>{{#str}}ws_verify, local_bulk_enrolment{{/str}}
-                        </button>
+
+                        {{! Column 3: Group Allocation }}
+                        <div>
+                            <fieldset class="be-options-fieldset">
+                                <legend>Group Allocation</legend>
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="radio" name="be-group-mode" id="be-group-none" value="none" checked>
+                                    <label class="form-check-label small" for="be-group-none">{{#str}}ws_group_none, local_bulk_enrolment{{/str}}</label>
+                                </div>
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="radio" name="be-group-mode" id="be-group-batch" value="batch">
+                                    <label class="form-check-label small" for="be-group-batch">{{#str}}ws_group_batch, local_bulk_enrolment{{/str}}</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="be-group-mode" id="be-group-custom" value="custom">
+                                    <label class="form-check-label small" for="be-group-custom">{{#str}}ws_group_custom, local_bulk_enrolment{{/str}}</label>
+                                </div>
+                                <input type="text" class="form-control form-control-sm mb-2" id="be-group-name" placeholder="Group name" maxlength="254" disabled aria-label="{{#str}}ws_group_custom, local_bulk_enrolment{{/str}}">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="be-group-create" disabled>
+                                    <label class="form-check-label small text-muted" for="be-group-create">{{#str}}ws_group_create, local_bulk_enrolment{{/str}}</label>
+                                </div>
+                                <div class="form-text small text-info mt-1" id="be-group-hint"></div>
+                            </fieldset>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{! ---------------------------------------------------------------- Verification matrix }}
+    {{! ---------------------------------------------------------------- CENTERED VERIFY BUTTON }}
+    <div class="be-verify-action-area">
+        <button class="btn btn-primary btn-lg font-weight-bold be-verify-btn d-inline-flex align-items-center justify-content-center gap-2" type="button" id="be-verify" disabled>
+            <i class="fa fa-check-double" aria-hidden="true"></i>
+            <span>{{#str}}ws_verify, local_bulk_enrolment{{/str}}</span>
+        </button>
+        <div class="small text-muted mt-2 text-center">
+            Select at least one student and one course to compute the pre-enrolment validation matrix.
+        </div>
+    </div>
+
+    {{! ---------------------------------------------------------------- VERIFICATION MATRIX CARD }}
     <div class="card shadow-sm mt-3 be-card-panel" id="be-matrix-card" hidden>
-        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 py-2 border-bottom">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
             <span class="font-weight-bold d-flex align-items-center gap-2">
-                <span class="badge be-step-pill">Step 4</span>
+                <span class="badge be-step-pill">Pre-Audit</span>
                 <i class="fa fa-clipboard-check text-primary" aria-hidden="true"></i>{{#str}}ws_verification, local_bulk_enrolment{{/str}}
             </span>
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <select class="form-select form-select-sm" id="be-matrix-filter" aria-label="Status filter"><option value="">All statuses</option></select>
                 <button class="btn btn-success btn-sm shadow-sm font-weight-bold px-3 py-1" type="button" id="be-execute" disabled>
-                    <i class="fa fa-user-plus me-1" aria-hidden="true"></i>{{#str}}ws_execute, local_bulk_enrolment{{/str}}
+                    <i class="fa fa-user-plus me-1 mr-1" aria-hidden="true"></i>{{#str}}ws_execute, local_bulk_enrolment{{/str}}
                 </button>
             </div>
         </div>
         <div class="card-body py-3" id="be-matrix"></div>
     </div>
 
-    {{! ---------------------------------------------------------------- Results }}
+    {{! ---------------------------------------------------------------- RESULTS CARD }}
     <div class="card shadow-sm mt-3 be-card-panel" id="be-results-card" hidden>
-        <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2 py-2 border-bottom">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
             <span class="font-weight-bold d-flex align-items-center gap-2">
-                <span class="badge be-step-pill">Done</span>
+                <span class="badge be-step-pill">Summary</span>
                 <i class="fa fa-flag-checkered text-success" aria-hidden="true"></i>{{#str}}ws_results, local_bulk_enrolment{{/str}}
             </span>
             <button class="btn btn-outline-secondary btn-sm shadow-sm" type="button" id="be-results-download" hidden>
-                <i class="fa fa-download me-1" aria-hidden="true"></i>{{#str}}download_results_xlsx, local_bulk_enrolment{{/str}}
+                <i class="fa fa-download me-1 mr-1" aria-hidden="true"></i>{{#str}}download_results_xlsx, local_bulk_enrolment{{/str}}
             </button>
         </div>
         <div class="card-body py-3">
-            <div class="progress mb-3 shadow-sm rounded-pill" id="be-progress" hidden style="height: 14px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success rounded-pill font-weight-bold small" role="progressbar" style="width: 0%; font-size: 10px;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            <div class="progress mb-3 shadow-sm rounded-pill" id="be-progress" hidden style="height: 16px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success rounded-pill font-weight-bold small" role="progressbar" style="width: 0%; font-size: 11px;" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
             </div>
             <div id="be-results"></div>
         </div>
     </div>
+
 </div>

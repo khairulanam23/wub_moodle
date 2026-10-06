@@ -488,4 +488,248 @@ class course_renderer extends \core_course_renderer {
 
         return $content;
     }
+
+    /**
+     * Renders modern Course Catalog matching reference 4-column card grid specification.
+     * Uses strictly authoritative Moodle course and category data with zero mock/fake values.
+     *
+     * Invoked from /course/index.php
+     *
+     * @param int|stdClass|\core_course_category $category
+     * @return string
+     */
+    public function course_category($category) {
+        global $CFG, $USER;
+
+        $usertop = \core_course_category::user_top();
+        if (empty($category)) {
+            $coursecat = $usertop;
+        } else if (is_object($category) && $category instanceof \core_course_category) {
+            $coursecat = $category;
+        } else {
+            $catid = is_object($category) ? $category->id : (int)$category;
+            $coursecat = \core_course_category::get($catid);
+        }
+
+        $this->page->set_title(get_string('fulllistofcourses'));
+
+        // Admin / manager action bar (only rendered if user has course creation or category management capabilities)
+        $actionbarhtml = '';
+        $context = $coursecat ? $coursecat->get_context() : \context_system::instance();
+        if (has_capability('moodle/category:manage', $context) || has_capability('moodle/course:create', $context)) {
+            $actionbar = new \core_course\output\category_action_bar($this->page, $coursecat);
+            $actionbarhtml = $this->render_from_template('core_course/category_actionbar', $actionbar->export_for_template($this));
+        }
+
+        // Real categories for horizontal chips
+        $allcategories = \core_course_category::get_all(['isvisible' => 1]);
+        $requestedcatid = optional_param('categoryid', 0, PARAM_INT);
+        $selectedcatid = $requestedcatid > 0 ? $requestedcatid : 0;
+
+        $chips = [];
+        // First pill: All Faculties
+        $chips[] = [
+            'id' => 0,
+            'name' => 'All Faculties',
+            'url' => (new \moodle_url('/course/index.php'))->out(false),
+            'is_active' => ($selectedcatid === 0),
+            'icon' => '',
+        ];
+
+        foreach ($allcategories as $cat) {
+            $catname = $cat->get_formatted_name();
+            $lower = strtolower($catname);
+            $icon = 'fa-graduation-cap';
+            if (str_contains($lower, 'computer') || str_contains($lower, 'cse') || str_contains($lower, 'software') || str_contains($lower, 'it')) {
+                $icon = 'fa-laptop';
+            } else if (str_contains($lower, 'engineer')) {
+                $icon = 'fa-cogs';
+            } else if (str_contains($lower, 'business') || str_contains($lower, 'bba') || str_contains($lower, 'mba')) {
+                $icon = 'fa-bar-chart';
+            } else if (str_contains($lower, 'law')) {
+                $icon = 'fa-balance-scale';
+            } else if (str_contains($lower, 'science')) {
+                $icon = 'fa-flask';
+            } else if (str_contains($lower, 'art') || str_contains($lower, 'humanities') || str_contains($lower, 'english')) {
+                $icon = 'fa-book';
+            } else if (str_contains($lower, 'health') || str_contains($lower, 'pharmacy') || str_contains($lower, 'nurs') || str_contains($lower, 'public health')) {
+                $icon = 'fa-heart-o';
+            } else if (str_contains($lower, 'social')) {
+                $icon = 'fa-users';
+            }
+
+            $chips[] = [
+                'id' => $cat->id,
+                'name' => $catname,
+                'url' => (new \moodle_url('/course/index.php', ['categoryid' => $cat->id]))->out(false),
+                'is_active' => ($selectedcatid === (int)$cat->id),
+                'icon' => $icon,
+                'course_count' => $cat->get_courses_count(),
+            ];
+        }
+
+        // Retrieve real courses
+        $targetcat = ($selectedcatid > 0) ? $coursecat : \core_course_category::top();
+        $rawcourses = $targetcat->get_courses(['recursive' => true]);
+
+        $coursecards = [];
+        $defaultnoimg = $this->output->image_url('no-image', 'theme')->out(false);
+
+        foreach ($rawcourses as $c) {
+            if ($c->id == SITEID) {
+                continue;
+            }
+
+            $coursecontext = \context_course::instance($c->id);
+
+            // Course image (overview file -> external summary exporter -> theme default)
+            $imageurl = '';
+            foreach ($c->get_course_overviewfiles() as $file) {
+                if ($file->is_valid_image()) {
+                    $imageurl = \moodle_url::make_file_url(
+                        "$CFG->wwwroot/pluginfile.php",
+                        '/' . $file->get_contextid() . '/' .
+                        $file->get_component() . '/' .
+                        $file->get_filearea() .
+                        $file->get_filepath() .
+                        $file->get_filename()
+                    )->out(false);
+                    break;
+                }
+            }
+            if (empty($imageurl) && class_exists('\core_course\external\course_summary_exporter')) {
+                $img = \core_course\external\course_summary_exporter::get_course_image($c);
+                if (!empty($img)) {
+                    $imageurl = $img;
+                }
+            }
+            if (empty($imageurl)) {
+                $imageurl = $defaultnoimg;
+            }
+
+            // Category badge & icon
+            $course_cat_name = '';
+            $course_cat_icon = 'fa-graduation-cap';
+            if (!empty($allcategories[$c->category])) {
+                $course_cat_name = $allcategories[$c->category]->get_formatted_name();
+                $lower = strtolower($course_cat_name);
+                if (str_contains($lower, 'computer') || str_contains($lower, 'cse') || str_contains($lower, 'software') || str_contains($lower, 'it')) {
+                    $course_cat_icon = 'fa-laptop';
+                } else if (str_contains($lower, 'engineer')) {
+                    $course_cat_icon = 'fa-cogs';
+                } else if (str_contains($lower, 'business') || str_contains($lower, 'bba')) {
+                    $course_cat_icon = 'fa-bar-chart';
+                } else if (str_contains($lower, 'law')) {
+                    $course_cat_icon = 'fa-balance-scale';
+                } else if (str_contains($lower, 'science')) {
+                    $course_cat_icon = 'fa-flask';
+                } else if (str_contains($lower, 'art') || str_contains($lower, 'humanities')) {
+                    $course_cat_icon = 'fa-book';
+                } else if (str_contains($lower, 'health') || str_contains($lower, 'pharmacy') || str_contains($lower, 'public health')) {
+                    $course_cat_icon = 'fa-heart-o';
+                } else if (str_contains($lower, 'social')) {
+                    $course_cat_icon = 'fa-users';
+                }
+            }
+
+            // Teacher data
+            $has_teacher = false;
+            $teacher_name = '';
+            $teacher_avatar_url = '';
+            $teachers = get_enrolled_users($coursecontext, 'moodle/course:update', 0, 'u.id, u.firstname, u.lastname, u.email, u.picture, u.imagealt', null, 0, 1);
+            if (!empty($teachers)) {
+                $t = reset($teachers);
+                $has_teacher = true;
+                $teacher_name = fullname($t);
+                $userpic = new \user_picture($t);
+                $userpic->size = 40;
+                $teacher_avatar_url = $userpic->get_url($this->page)->out(false);
+            }
+
+            // Department text
+            $department_text = $course_cat_name;
+
+            // Metadata: duration, enrolled count, credits
+            $duration_text = null;
+            if (!empty($c->startdate) && !empty($c->enddate) && $c->enddate > $c->startdate) {
+                $weeks = round(($c->enddate - $c->startdate) / (7 * 86400));
+                if ($weeks > 0) {
+                    $duration_text = "{$weeks} weeks";
+                }
+            }
+
+            $enrolled_count = count_enrolled_users($coursecontext);
+            $enrolled_text = ($enrolled_count > 0) ? "{$enrolled_count} enrolled" : null;
+
+            $credits_text = null;
+            if (class_exists('\core_course\customfield\course_handler')) {
+                $handler = \core_course\customfield\course_handler::create();
+                $customdata = $handler->export_instance_data_object($c->id);
+                if (!empty($customdata->credits)) {
+                    $credits_text = $customdata->credits . ' credits';
+                }
+            }
+
+            // Enrollment & progress
+            $is_enrolled = isloggedin() && !isguestuser() && is_enrolled($coursecontext, $USER->id);
+            $has_progress = false;
+            $progress_percentage = 0;
+            if ($is_enrolled) {
+                $completion = new \completion_info($c);
+                if ($completion->is_enabled()) {
+                    $progress = \core_completion\progress::get_course_progress_percentage($c, $USER->id);
+                    if ($progress !== null) {
+                        $has_progress = true;
+                        $progress_percentage = round($progress);
+                    }
+                }
+            }
+
+            $viewurl = (new \moodle_url('/course/view.php', ['id' => $c->id]))->out(false);
+            $enrolurl = (new \moodle_url('/enrol/index.php', ['id' => $c->id]))->out(false);
+
+            $coursecards[] = [
+                'id' => $c->id,
+                'category_id' => $c->category,
+                'parent_category_id' => !empty($allcategories[$c->category]) ? (int)$allcategories[$c->category]->parent : 0,
+                'code' => $c->shortname,
+                'title' => $c->get_formatted_name(),
+                'view_url' => $viewurl,
+                'action_url' => $is_enrolled ? $viewurl : $enrolurl,
+                'image_url' => $imageurl,
+                'category_name' => $course_cat_name,
+                'category_icon' => $course_cat_icon,
+                'has_teacher' => $has_teacher,
+                'teacher_name' => $teacher_name,
+                'teacher_avatar' => $teacher_avatar_url,
+                'department_text' => $department_text,
+                'has_any_meta' => (!empty($duration_text) || !empty($credits_text) || !empty($enrolled_text)),
+                'has_duration' => !empty($duration_text),
+                'duration_text' => $duration_text,
+                'has_credits' => !empty($credits_text),
+                'credits_text' => $credits_text,
+                'has_enrolled' => !empty($enrolled_text),
+                'enrolled_count' => $enrolled_count,
+                'enrolled_text' => $enrolled_text,
+                'has_progress' => $has_progress,
+                'progress_percentage' => $progress_percentage,
+                'is_enrolled' => $is_enrolled,
+            ];
+        }
+
+        $templatedata = [
+            'actionbar' => $actionbarhtml,
+            'has_actionbar' => !empty($actionbarhtml),
+            'chips' => $chips,
+            'has_chips' => !empty($chips),
+            'courses' => $coursecards,
+            'courses_count' => count($coursecards),
+            'has_courses' => !empty($coursecards),
+            'current_category_name' => ($selectedcatid > 0 && !empty($allcategories[$selectedcatid])) ? $allcategories[$selectedcatid]->get_formatted_name() : 'All Faculties',
+            'all_courses_url' => (new \moodle_url('/course/index.php'))->out(false),
+        ];
+
+        return $this->output->render_from_template('theme_academi/course_catalog', $templatedata);
+    }
 }
+

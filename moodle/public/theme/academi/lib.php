@@ -181,7 +181,9 @@ function theme_academi_get_logo_url($type = 'header') {
     }
     if ($type == 'header') {
         $logo = $theme->setting_file_url('logo', 'logo');
-        $logo = empty($logo) ? $OUTPUT->get_compact_logo_url() : $logo;
+        if (empty($logo)) {
+            $logo = (new moodle_url('/local/wub_auth/pix/wub-logo-main-global.png'))->out(false);
+        }
     } else if ($type == 'footer') {
         $logo = $theme->setting_file_url('footerlogo', 'footerlogo');
         $logo = empty($logo) ? '' : $logo;

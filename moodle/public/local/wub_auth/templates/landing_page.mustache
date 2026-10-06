@@ -1,52 +1,182 @@
-<div class="wub-landing-container" style="background-image: url('{{bg_img_url}}');">
-    <div class="wub-landing-content-wrap">
-        <div class="wub-landing-card" id="wub-landing-modal">
-            <div class="wub-landing-left">
-                <img src="{{tower_img_url}}" alt="World University of Bangladesh" class="wub-tower-img" loading="eager">
+<div class="wub-landing-container wub-public-landing-page">
+    <!-- Main Hero: Fills Viewport from Top Edge to Footer (No Separate Top Header) -->
+    <main class="wub-landing-hero">
+        <!-- Full-Hero Animated Slideshow Background (Strictly pix/landing* images) -->
+        <div class="wub-slideshow-wrap" aria-hidden="true">
+            {{#slides}}
+            <div class="wub-slide {{#is_active}}is-active{{/is_active}}" style="background-image: url('{{url}}');" role="img" aria-label="{{title}}"></div>
+            {{/slides}}
+        </div>
+
+        <!-- Directional Overlay: Contrast for Left Text, Bright Architecture on Right -->
+        <div class="wub-slideshow-overlay" aria-hidden="true"></div>
+
+        <!-- Hero Content Inner: Anchored to Shared Page Grid -->
+        <div class="wub-page-grid wub-hero-content-inner">
+            <!-- Left Hero Section (Expanded Scale, Tighter Lockup) -->
+            <div class="wub-hero-narrative">
+                <!-- WUB Brand Logo (Positioned directly above hero content) -->
+                <div class="wub-hero-brand-wrap">
+                    <a href="https://wub.edu.bd" target="_blank" rel="noopener" class="wub-hero-brand-link" title="World University of Bangladesh">
+                        <img src="{{logo_url}}" alt="World University of Bangladesh" class="wub-hero-brand-logo" loading="eager">
+                    </a>
+                </div>
+
+                <div class="wub-hero-eyebrow-wrap">
+                    <span class="wub-hero-eyebrow">A CONNECTED ACADEMIC JOURNEY</span>
+                </div>
+                <h1 class="wub-hero-headline">
+                    Learn with<br>
+                    <span class="wub-hero-accent">Confidence</span>
+                </h1>
+                <p class="wub-hero-lead">
+                    Your academic hub for course access, assignments, and essential university services — all in one place.
+                </p>
             </div>
 
-            <div class="wub-landing-right">
-                <h1 class="wub-landing-title">{{#str}}landing_welcome, local_wub_auth{{/str}}</h1>
-                <p class="wub-landing-subtitle">{{#str}}landing_instruction, local_wub_auth{{/str}}</p>
+            <!-- Right Section: Role-Access Panel (Translucent Primary Glass) -->
+            <div class="wub-floating-card-column">
+                <div class="wub-floating-card" id="wub-landing-modal">
+                    <div class="wub-card-header">
+                        <span class="wub-card-eyebrow">WELCOME TO WUB E-LEARNING</span>
+                        <h2 class="wub-card-title">Get Started</h2>
+                        <p class="wub-card-subtitle">Choose your role to access personalized academic tools and resources.</p>
+                    </div>
 
-                <div class="wub-role-grid">
-                    <div class="wub-role-row">
-                        <a href="{{student_url}}" class="wub-role-btn wub-btn-half" id="btn-role-student">
-                            {{#str}}landing_role_student, local_wub_auth{{/str}}
+                    <div class="wub-role-stack" role="group" aria-label="Portal Role Selection">
+                        <!-- Student Option -->
+                        <a href="{{student_url}}" class="wub-role-tile wub-role-student" id="btn-role-student">
+                            <div class="wub-role-icon-circle wub-icon-student">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                                </svg>
+                            </div>
+                            <div class="wub-role-info">
+                                <span class="wub-role-title">Student</span>
+                                <span class="wub-role-desc">Access your courses, submit assignments, view grades, and more.</span>
+                            </div>
+                            <svg class="wub-role-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
                         </a>
-                        <a href="{{teacher_url}}" class="wub-role-btn wub-btn-half" id="btn-role-teacher">
-                            {{#str}}landing_role_teacher, local_wub_auth{{/str}}
+
+                        <!-- Teacher Option -->
+                        <a href="{{teacher_url}}" class="wub-role-tile wub-role-teacher" id="btn-role-teacher">
+                            <div class="wub-role-icon-circle wub-icon-teacher">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="wub-role-info">
+                                <span class="wub-role-title">Teacher</span>
+                                <span class="wub-role-desc">Manage your courses, grade assignments, connect with students.</span>
+                            </div>
+                            <svg class="wub-role-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+
+                        <!-- Administration Option -->
+                        <a href="{{admin_url}}" class="wub-role-tile wub-role-admin" id="btn-role-admin">
+                            <div class="wub-role-icon-circle wub-icon-admin">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </div>
+                            <div class="wub-role-info">
+                                <span class="wub-role-title">Administration</span>
+                                <span class="wub-role-desc">Oversee academic operations, manage users, and access institutional tools.</span>
+                            </div>
+                            <svg class="wub-role-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+
+                        <!-- Course Catalog Option -->
+                        <a href="{{catalog_url}}" class="wub-role-tile wub-role-catalog" id="btn-course-catalog">
+                            <div class="wub-role-icon-circle wub-icon-catalog">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                                    <path d="M6 6h10M6 10h10"/>
+                                </svg>
+                            </div>
+                            <div class="wub-role-info">
+                                <span class="wub-role-title">{{#str}}landing_catalog_btn, local_wub_auth{{/str}}</span>
+                                <span class="wub-role-desc">Explore our programs and courses</span>
+                            </div>
+                            <svg class="wub-role-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
                         </a>
                     </div>
-                    <a href="{{admin_url}}" class="wub-role-btn wub-btn-full" id="btn-role-admin">
-                        {{#str}}landing_role_admin, local_wub_auth{{/str}}
-                    </a>
-                </div>
-
-                <div class="wub-landing-divider"></div>
-
-                <p class="wub-catalog-subtitle">{{#str}}landing_catalog_instruction, local_wub_auth{{/str}}</p>
-
-                <a href="{{catalog_url}}" class="wub-role-btn wub-btn-full wub-catalog-btn" id="btn-course-catalog">
-                    {{#str}}landing_catalog_btn, local_wub_auth{{/str}}
-                </a>
-
-                <div class="wub-sublinks">
-                    <a href="{{contact_url}}" class="wub-sublink" target="_blank" rel="noopener">
-                        {{#str}}landing_contact_us, local_wub_auth{{/str}}
-                    </a>
-                    <span class="wub-sublink-sep">|</span>
-                    <a href="{{guides_url}}" class="wub-sublink">
-                        {{#str}}landing_how_to_guides, local_wub_auth{{/str}}
-                    </a>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
+    <!-- Footer: Solid White Institutional Bar Anchored to Shared Page Grid -->
     <footer class="wub-landing-footer">
-        <div class="wub-footer-inner">
-            {{{footer_html}}}
-        </div>
+        <div class="wub-footer-inner">{{{footer_html}}}</div>
     </footer>
 </div>
+
+<script>
+(function() {
+    var slides = document.querySelectorAll('.wub-slide');
+    if (!slides || slides.length < 2) return;
+
+    var reduced = false;
+    try {
+        reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch(e) {}
+    if (reduced) return;
+
+    var currentIndex = 0;
+    var slideInterval = 6500;
+    var timerId = null;
+
+    function nextSlide() {
+        var prevIndex = currentIndex;
+        currentIndex = (currentIndex + 1) % slides.length;
+
+        var prevSlide = slides[prevIndex];
+        var nextSlideEl = slides[currentIndex];
+
+        prevSlide.classList.remove('is-active');
+        prevSlide.classList.add('is-prev');
+        nextSlideEl.classList.add('is-active');
+
+        setTimeout(function() {
+            prevSlide.classList.remove('is-prev');
+        }, 1500);
+    }
+
+    function startTimer() {
+        if (!timerId) {
+            timerId = setInterval(nextSlide, slideInterval);
+        }
+    }
+
+    function stopTimer() {
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+        }
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopTimer();
+        } else {
+            startTimer();
+        }
+    });
+
+    startTimer();
+})();
+</script>

@@ -29,8 +29,15 @@ global $CFG, $USER, $PAGE, $OUTPUT;
 $policyservice = new \local_wub_auth\service\policy_service();
 $sessionservice = new \local_wub_auth\service\session_service();
 
-$role = optional_param('role', 'student', PARAM_ALPHA);
-$role = $policyservice->normalize_role($role);
+$roleparam = optional_param('role', 'student', PARAM_ALPHA);
+$cleanrole = strtolower(trim($roleparam));
+if ($cleanrole === 'administration' || $cleanrole === 'administrator') {
+    $role = 'admin';
+} else if ($cleanrole === 'faculty' || $cleanrole === 'instructor') {
+    $role = 'teacher';
+} else {
+    $role = $policyservice->normalize_role($roleparam);
+}
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 $userid = (isloggedin() && !isguestuser()) ? (int)$USER->id : 0;
@@ -78,12 +85,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/wub_auth/policy.php', array_filter(['role' => $role, 'returnurl' => $returnurl])));
-$PAGE->set_pagelayout('standard');
+$PAGE->set_pagelayout('embedded');
 $PAGE->set_title(get_string('policy_header', 'local_wub_auth'));
 $PAGE->set_heading(get_string('policy_header', 'local_wub_auth'));
 
+$PAGE->add_body_class('wub-auth-policy-layout');
+$PAGE->add_body_class('wub-auth-role-' . $role);
+
 $badgekey = 'policy_role_badge_' . $role;
 $rolebadgelabel = get_string($badgekey, 'local_wub_auth');
+
+// Logo
+$logourl = (new moodle_url('/local/wub_auth/pix/wub-logo-main-global.png'))->out(false);
 
 $templatedata = [
     'role' => $role,
@@ -96,9 +109,15 @@ $templatedata = [
     ]),
     'form_action' => (new moodle_url('/local/wub_auth/policy.php'))->out(false),
     'cancel_url' => $userid > 0 ? (new moodle_url('/login/logout.php', ['sesskey' => sesskey()]))->out(false) : (new moodle_url('/local/wub_auth/landing.php'))->out(false),
+    'landing_url' => (new moodle_url('/local/wub_auth/landing.php'))->out(false),
+    'logo_url' => $logourl,
+    'is_student' => ($role === 'student'),
+    'is_teacher' => ($role === 'teacher'),
+    'is_admin' => ($role === 'admin'),
     'has_error' => !empty($error),
     'error_message' => $error,
     'categories' => $policyservice->get_categories_and_policies(),
+    'footer_html' => get_string('landing_footer_text', 'local_wub_auth'),
 ];
 
 echo $OUTPUT->header();

@@ -30,12 +30,12 @@
         <span class="badge be-code-pill small">{{count}}</span>
     </div>
     {{#batches}}
-    <label class="be-item be-batch-item d-flex align-items-center gap-2 ps-4 pe-2 py-1 mb-0 border-top">
+    <label class="be-item be-batch-item d-flex align-items-center gap-2 ps-4 pl-4 pe-2 pr-2 py-1 mb-0 border-top">
         <input type="checkbox" class="form-check-input be-batch-checkbox mt-0" value="{{title}}" data-program="{{program_id}}" {{#selected}}checked{{/selected}}>
         <span class="flex-grow-1 be-item-title"><strong class="text-dark">{{title}}</strong>{{#shift}} <span class="text-muted small">· {{shift}}</span>{{/shift}}{{#program_type}} <span class="text-muted small">· {{program_type}}</span>{{/program_type}}</span>
         <span class="badge badge-light border small text-muted font-monospace" title="Students reported by UMS">{{total_students}}</span>
     </label>
     {{/batches}}
-    {{^batches}}<div class="text-muted small ps-4 py-2">No batches found for this program.</div>{{/batches}}
+    {{^batches}}<div class="text-muted small ps-4 pl-4 py-2">No batches found for this program.</div>{{/batches}}
 </div>
 {{/groups}}

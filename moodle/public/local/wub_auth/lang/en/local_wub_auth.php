@@ -126,7 +126,8 @@ $string['error_account_not_provisioned'] = 'Your institutional credentials are v
 $string['error_account_suspended'] = 'Your Moodle user account is currently suspended. Please contact institutional administration.';
 $string['error_account_nologin'] = 'This account is not permitted to log in directly.';
 $string['error_ambiguous_identity'] = 'Multiple conflicting user accounts match this identifier. For security, automated login is disabled. Please contact the administrator.';
-$string['error_login_due_restriction'] = 'Institutional access is restricted due to outstanding semester dues. Please complete your fee clearance to proceed.';
+$string['error_login_due_restriction'] = 'Access unavailable. Your account currently has an outstanding financial obligation that does not meet the required clearance criteria. Please clear the outstanding amount or contact the appropriate university office for assistance before attempting to access Moodle again.';
+$string['error_login_financial_clearance'] = 'Access unavailable. Your account currently has an outstanding financial obligation that does not meet the required clearance criteria. Please clear the outstanding amount or contact the appropriate university office for assistance before attempting to access Moodle again.';
 $string['error_ums_unavailable'] = 'Unable to connect to the institutional UMS service at this time. Please try again in a few minutes or contact support.';
 $string['error_policy_required'] = 'You must review and accept the institutional e-learning policies before accessing Moodle.';
 $string['error_session_failed'] = 'Unable to establish a secure session. Please try again.';
@@ -304,3 +305,9 @@ $string['privacy:metadata:audit:userid'] = 'The ID of the user associated with t
 $string['privacy:metadata:audit:action'] = 'The authentication or access control action performed.';
 $string['privacy:metadata:audit:status'] = 'The outcome of the audit event.';
 $string['privacy:metadata:audit:timecreated'] = 'Timestamp of the event.';
+
+// Navigation strings.
+$string['nav_coursemanagement'] = 'Course Management';
+$string['nav_useraccounts'] = 'User Accounts';
+$string['nav_bulkenrolment'] = 'Bulk Enrolment';
+

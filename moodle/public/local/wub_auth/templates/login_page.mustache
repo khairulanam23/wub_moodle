@@ -1,87 +1,173 @@
-<div class="wub-admin-split-page" id="wub-admin-login-view">
-    <div class="wub-admin-left-col">
-        <div class="wub-admin-form-container">
-            <!-- Brand Logo -->
-            <div class="wub-admin-logo-wrap">
-                <img src="{{admin_logo_url}}" alt="elearning.org.bd - World University of Bangladesh" class="wub-admin-brand-logo" />
+<div class="wub-landing-container wub-login-container">
+    <!-- Header: Solid White Institutional Bar Anchored to Shared Page Grid -->
+    <header class="wub-landing-header">
+        <div class="wub-page-grid wub-header-inner">
+            <div class="wub-brand-identity">
+                <a href="{{landing_url}}" class="wub-brand-logo-link" title="World University of Bangladesh - elearning.org.bd">
+                    <img src="{{logo_url}}" alt="World University of Bangladesh" class="wub-official-logo" loading="eager">
+                </a>
             </div>
-
-            <!-- Page Title -->
-            <h1 class="wub-admin-title">Login to <span class="wub-admin-title-highlight">elearning.org.bd</span></h1>
-
-            {{#has_error}}
-            <div class="wub-alert wub-alert-danger mb-3" role="alert">
-                <i class="fa fa-triangle-exclamation fa-lg mt-1 text-danger"></i>
-                <div>
-                    <strong>Authentication Notice:</strong><br>
-                    {{error_message}}
-                </div>
-            </div>
-            {{/has_error}}
-
-            <!-- Authentication Form -->
-            <form action="{{form_action}}" method="post" id="wub-admin-login-form" novalidate>
-                <input type="hidden" name="sesskey" value="{{sesskey}}" />
-                <input type="hidden" name="logintoken" value="{{logintoken}}" />
-                <input type="hidden" name="role" value="{{role}}" />
-                {{#returnurl}}
-                <input type="hidden" name="returnurl" value="{{returnurl}}" />
-                {{/returnurl}}
-
-                <!-- Stacked Joined Input Container -->
-                <div class="wub-admin-input-card">
-                    <div class="wub-admin-field-row">
-                        <label for="admin_username" class="wub-admin-field-label">Username</label>
-                        <input type="text"
-                               name="username"
-                               id="admin_username"
-                               class="wub-admin-field-input"
-                               value="{{username}}"
-                               placeholder="Username"
-                               autocomplete="username"
-                               required
-                               autofocus />
-                    </div>
-
-                    <div class="wub-admin-field-divider"></div>
-
-                    <div class="wub-admin-field-row">
-                        <label for="admin_password" class="wub-admin-field-label">Password</label>
-                        <input type="password"
-                               name="password"
-                               id="admin_password"
-                               class="wub-admin-field-input"
-                               placeholder="Password"
-                               autocomplete="current-password"
-                               required />
-                    </div>
-                </div>
-
-                <!-- Remember me and Forgot password -->
-                <div class="wub-admin-options-row">
-                    <label class="wub-admin-checkbox-label" for="admin_rememberusername">
-                        <input type="checkbox"
-                               name="rememberusername"
-                               id="admin_rememberusername"
-                               value="1"
-                               {{#remember_username}}checked{{/remember_username}} />
-                        <span>Remember me</span>
-                    </label>
-
-                    <a href="{{landing_url}}" class="wub-admin-forgot-link">Forgot Password</a>
-                </div>
-
-                <!-- Action Button -->
-                <div class="wub-admin-btn-wrap">
-                    <button type="submit" class="wub-admin-submit-btn" id="wub-admin-btn-signin">
-                        Log in
-                    </button>
-                </div>
-            </form>
         </div>
-    </div>
+    </header>
 
-    <!-- Right Hero Section -->
-    <div class="wub-admin-right-col" style="background-image: url('{{admin_hero_url}}');" role="img" aria-label="World University of Bangladesh Campus and Students">
-    </div>
+    <!-- Main Content Area: Split 2-Column Desktop, Stacked Mobile -->
+    <main class="wub-login-main">
+        <div class="wub-page-grid wub-login-grid">
+            <!-- Left Column: Login Visual Area (pix/logging_wub.jpg) -->
+            <section class="wub-login-visual-pane" aria-label="Campus Showcase">
+                <div class="wub-login-visual-card">
+                    <img src="{{hero_image_url}}" alt="World University of Bangladesh Campus and Students" class="wub-login-hero-img" loading="eager">
+                    <div class="wub-login-visual-overlay">
+                        <div class="wub-visual-badge">
+                            <span class="wub-visual-badge-dot" aria-hidden="true"></span>
+                            <span>WORLD UNIVERSITY OF BANGLADESH</span>
+                        </div>
+                        <h2 class="wub-visual-title">Empowering Your Academic Journey</h2>
+                        <p class="wub-visual-desc">Access coursework, institutional records, and educational resources within the secure digital campus environment.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: White Authentication Panel -->
+            <section class="wub-login-card-pane" aria-label="Sign In Panel">
+                <div class="wub-login-card" id="wub-auth-card">
+                    <!-- Card Header with Role Badge and Title -->
+                    <div class="wub-login-card-header">
+                        <div class="wub-role-badge-row">
+                            <span class="wub-login-role-badge wub-role-badge-{{role}}">
+                                {{#is_student}}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                                </svg>
+                                <span>{{role_eyebrow}}</span>
+                                {{/is_student}}
+                                {{#is_teacher}}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                <span>{{role_eyebrow}}</span>
+                                {{/is_teacher}}
+                                {{#is_admin}}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <span>{{role_eyebrow}}</span>
+                                {{/is_admin}}
+                            </span>
+                        </div>
+                        <h1 class="wub-login-title">{{role_title}}</h1>
+                        <p class="wub-login-subtitle">{{role_subtitle}}</p>
+                    </div>
+
+                    <!-- Server Error / Authentication Notice -->
+                    {{#has_error}}
+                    <div class="wub-login-alert" role="alert" id="wub-auth-alert">
+                        <div class="wub-login-alert-icon">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                        </div>
+                        <div class="wub-login-alert-text">
+                            <strong class="wub-login-alert-heading">Authentication Notice</strong>
+                            <div class="wub-login-alert-msg">{{error_message}}</div>
+                        </div>
+                    </div>
+                    {{/has_error}}
+
+                    <!-- Authentication Form -->
+                    <form action="{{form_action}}" method="post" id="wub-login-form" class="wub-login-form" novalidate>
+                        <input type="hidden" name="sesskey" value="{{sesskey}}" />
+                        <input type="hidden" name="logintoken" value="{{logintoken}}" />
+                        <input type="hidden" name="role" value="{{role}}" />
+                        {{#returnurl}}
+                        <input type="hidden" name="returnurl" value="{{returnurl}}" />
+                        {{/returnurl}}
+
+                        <!-- Username Field -->
+                        <div class="wub-form-group">
+                            <label for="admin_username" class="wub-form-label">{{username_label}}</label>
+                            <div class="wub-input-wrapper">
+                                <svg class="wub-input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                <input type="text"
+                                       name="username"
+                                       id="admin_username"
+                                       class="wub-form-input"
+                                       value="{{username}}"
+                                       placeholder="{{username_placeholder}}"
+                                       autocomplete="username"
+                                       required
+                                       autofocus />
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="wub-form-group">
+                            <label for="admin_password" class="wub-form-label">Password</label>
+                            <div class="wub-input-wrapper">
+                                <svg class="wub-input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                                <input type="password"
+                                       name="password"
+                                       id="admin_password"
+                                       class="wub-form-input"
+                                       placeholder="Enter your password"
+                                       autocomplete="current-password"
+                                       required />
+                            </div>
+                        </div>
+
+                        <!-- Form Options: Remember me & Help -->
+                        <div class="wub-form-options">
+                            <label class="wub-checkbox-label" for="admin_rememberusername">
+                                <input type="checkbox"
+                                       name="rememberusername"
+                                       id="admin_rememberusername"
+                                       value="1"
+                                       {{#remember_username}}checked{{/remember_username}} />
+                                <span>Remember username</span>
+                            </label>
+                            <a href="https://wub.edu.bd/contact" target="_blank" rel="noopener" class="wub-help-link">Need help?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="wub-form-submit-wrap">
+                            <button type="submit" class="wub-btn-submit" id="wub-admin-btn-signin">
+                                <span>Log in</span>
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m9 18 6-6-6-6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Back to Role Selection -->
+                    <div class="wub-login-card-footer">
+                        <a href="{{landing_url}}" class="wub-back-link" id="btn-back-role">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                            <span>Back to role selection</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer: Solid White Institutional Bar Anchored to Shared Page Grid -->
+    <footer class="wub-landing-footer">
+        <div class="wub-footer-inner">{{{footer_html}}}</div>
+    </footer>
 </div>

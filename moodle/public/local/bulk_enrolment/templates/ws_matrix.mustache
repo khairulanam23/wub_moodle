@@ -17,7 +17,7 @@
 {{!
     @template local_bulk_enrolment/ws_matrix
 
-    Verification matrix.
+    Verification matrix rendered into #be-matrix.
 
     Context variables required for this template:
     * summary {total, ready, already_enrolled, issues}
@@ -25,46 +25,55 @@
 }}
 <div class="row g-2 mb-3 be-stats-grid">
     <div class="col-6 col-md-3">
-        <div class="be-stat-card p-2 border rounded bg-light text-center">
-            <div class="h4 mb-0 font-weight-bold text-dark">{{summary.total}}</div>
-            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-th-list me-1 text-primary"></i>Combinations</span>
+        <div class="be-stat-card p-3 border rounded text-center">
+            <div class="h3 mb-0 font-weight-bold text-dark">{{summary.total}}</div>
+            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-th-list me-1 mr-1 text-primary"></i>Total Combinations</span>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="be-stat-card be-stat-ready p-2 border rounded bg-light text-center">
-            <div class="h4 mb-0 font-weight-bold text-success">{{summary.ready}}</div>
-            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-check-circle me-1 text-success"></i>{{#str}}status_ready, local_bulk_enrolment{{/str}}</span>
+        <div class="be-stat-card be-stat-ready p-3 border rounded text-center">
+            <div class="h3 mb-0 font-weight-bold text-success">{{summary.ready}}</div>
+            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-check-circle me-1 mr-1 text-success"></i>{{#str}}status_ready, local_bulk_enrolment{{/str}}</span>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="be-stat-card be-stat-enrolled p-2 border rounded bg-light text-center">
-            <div class="h4 mb-0 font-weight-bold text-info">{{summary.already_enrolled}}</div>
-            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-user-check me-1 text-info"></i>{{#str}}status_already_enrolled, local_bulk_enrolment{{/str}}</span>
+        <div class="be-stat-card be-stat-enrolled p-3 border rounded text-center">
+            <div class="h3 mb-0 font-weight-bold text-info">{{summary.already_enrolled}}</div>
+            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-user-check me-1 mr-1 text-info"></i>{{#str}}status_already_enrolled, local_bulk_enrolment{{/str}}</span>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="be-stat-card be-stat-issues p-2 border rounded bg-light text-center">
-            <div class="h4 mb-0 font-weight-bold {{#summary.issues}}text-danger{{/summary.issues}}{{^summary.issues}}text-secondary{{/summary.issues}}">{{summary.issues}}</div>
-            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-ban me-1 {{#summary.issues}}text-danger{{/summary.issues}}"></i>Blocked</span>
+        <div class="be-stat-card be-stat-issues p-3 border rounded text-center">
+            <div class="h3 mb-0 font-weight-bold {{#summary.issues}}text-danger{{/summary.issues}}{{^summary.issues}}text-secondary{{/summary.issues}}">{{summary.issues}}</div>
+            <span class="d-block text-muted small mt-1 font-weight-medium"><i class="fa fa-ban me-1 mr-1 {{#summary.issues}}text-danger{{/summary.issues}}"></i>Blocked / Warnings</span>
         </div>
     </div>
 </div>
+
 <div class="table-responsive be-matrix-scroll border rounded">
 <table class="table table-sm table-bordered table-hover mb-0 align-middle">
-    <thead class="thead-light">
+    <thead>
         <tr>
-            <th scope="col" class="be-col-student">Student</th>
-            <th scope="col" class="be-col-course">Course</th>
-            <th scope="col" class="be-col-status">Status</th>
-            <th scope="col" class="be-col-message">Explanation</th>
+            <th scope="col" class="be-col-student" style="width: 30%;">Student</th>
+            <th scope="col" class="be-col-course" style="width: 30%;">Target Course</th>
+            <th scope="col" class="be-col-status" style="width: 15%;">Validation Status</th>
+            <th scope="col" class="be-col-message" style="width: 25%;">Resolution Detail</th>
         </tr>
     </thead>
     <tbody>
     {{#rows}}
         <tr class="be-matrix-row" data-status="{{status}}">
-            <td class="small align-middle"><div class="font-weight-bold text-dark">{{fullname}}</div><span class="text-muted be-code-pill font-monospace">{{username}}</span>{{#reg_id}} <span class="text-muted small">· {{reg_id}}</span>{{/reg_id}}</td>
-            <td class="small align-middle"><span class="font-weight-medium text-dark">{{coursename}}</span> <span class="text-muted small">({{courseshortname}})</span></td>
-            <td class="small align-middle"><span class="badge {{badge_class}}">{{status_label}}</span></td>
+            <td class="small align-middle">
+                <div class="font-weight-bold text-dark">{{fullname}}</div>
+                <span class="text-muted be-code-pill font-monospace mt-1">{{username}}</span>{{#reg_id}} <span class="text-muted small">· {{reg_id}}</span>{{/reg_id}}
+            </td>
+            <td class="small align-middle">
+                <span class="font-weight-medium text-dark">{{coursename}}</span>
+                <span class="text-muted small ms-1 ml-1">({{courseshortname}})</span>
+            </td>
+            <td class="small align-middle">
+                <span class="badge {{badge_class}} px-2 py-1">{{status_label}}</span>
+            </td>
             <td class="small align-middle text-muted">{{message}}</td>
         </tr>
     {{/rows}}

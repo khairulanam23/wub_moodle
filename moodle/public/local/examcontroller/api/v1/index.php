@@ -55,6 +55,7 @@ if (empty($endpoint)) {
         $endpoint = trim(substr($uri, strpos($uri, $prefix) + strlen($prefix)), '/');
     }
 }
+$endpoint = preg_replace('#^index\.php/?#', '', $endpoint);
 
 // Path used for HMAC canonical signature
 $canonicalPath = '/local/examcontroller/api/v1/index.php';
@@ -93,6 +94,7 @@ if (!$verify['valid']) {
 }
 
 // 2. Dispatch routes
+require_once(__DIR__ . '/../../classes/service/gradebook_service.php');
 $identityService = new \local_examcontroller\service\identity_service();
 
 try {
@@ -178,6 +180,35 @@ try {
 
         $res = $academicService->get_student_enrolments($semester, $courseId, $groupId, $page, $perPage);
         http_response_code(200);
+        unset($res['http_status']);
+        echo json_encode($res, JSON_UNESCAPED_SLASHES);
+        exit(0);
+    }
+
+    $gradebookService = new \local_examcontroller\service\gradebook_service();
+
+    if ($method === 'GET' && ($endpoint === 'gradebook/items' || $endpoint === 'gradebook/grade-items')) {
+        $courseId = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
+        $res = $gradebookService->get_course_grade_items($courseId);
+        http_response_code($res['http_status'] ?? 200);
+        unset($res['http_status']);
+        echo json_encode($res, JSON_UNESCAPED_SLASHES);
+        exit(0);
+    }
+
+    if ($method === 'POST' && ($endpoint === 'gradebook/publish' || $endpoint === 'gradebook/sync')) {
+        $data = json_decode($rawBody, true) ?: [];
+        $res = $gradebookService->publish_grades($data);
+        http_response_code($res['http_status'] ?? 200);
+        unset($res['http_status']);
+        echo json_encode($res, JSON_UNESCAPED_SLASHES);
+        exit(0);
+    }
+
+    if ($method === 'POST' && ($endpoint === 'gradebook/delete' || $endpoint === 'gradebook/delete-item')) {
+        $data = json_decode($rawBody, true) ?: [];
+        $res = $gradebookService->delete_grade_item($data);
+        http_response_code($res['http_status'] ?? 200);
         unset($res['http_status']);
         echo json_encode($res, JSON_UNESCAPED_SLASHES);
         exit(0);

@@ -1,74 +1,130 @@
-<div class="wub-policy-container" id="wub-policy-view">
-    <div class="wub-policy-card">
-        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-            <div>
-                <span class="badge badge-primary px-3 py-2" style="font-size: 0.85rem;">
-                    {{role_badge_label}}
-                </span>
-            </div>
-            <div class="text-muted" style="font-size: 0.85rem;">
-                {{policy_validity_text}}
-            </div>
-        </div>
-
-        <h2 class="h3 font-weight-bold text-dark mb-2">
-            {{#str}}policy_header, local_wub_auth{{/str}}
-        </h2>
-        <p class="text-muted mb-4">
-            {{#str}}policy_subtitle, local_wub_auth{{/str}}
-        </p>
-
-        {{#has_error}}
-        <div class="wub-alert wub-alert-danger" role="alert">
-            <i class="fa fa-triangle-exclamation"></i>
-            <div>{{error_message}}</div>
-        </div>
-        {{/has_error}}
-
-        <!-- 20 Policies in 4 Categories -->
-        <div class="wub-policy-categories">
-            {{#categories}}
-            <div class="wub-policy-category">
-                <div class="wub-policy-cat-header">
-                    <i class="fa {{icon}} text-primary"></i>
-                    <span>{{title}}</span>
-                </div>
-                <div class="wub-policy-cat-body">
-                    {{#policies}}
-                    <div class="wub-policy-item">
-                        <h5>{{title}}</h5>
-                        <p>{{content}}</p>
-                    </div>
-                    {{/policies}}
-                </div>
-            </div>
-            {{/categories}}
-        </div>
-
-        <form action="{{form_action}}" method="post" id="wub-policy-form">
-            <input type="hidden" name="sesskey" value="{{sesskey}}" />
-            <input type="hidden" name="role" value="{{role}}" />
-            {{#returnurl}}
-            <input type="hidden" name="returnurl" value="{{returnurl}}" />
-            {{/returnurl}}
-
-            <div class="wub-policy-agree-box">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="policy_agree" name="agree" value="1" required />
-                    <label class="custom-control-label font-weight-bold text-dark" for="policy_agree">
-                        {{#str}}policy_agree_checkbox, local_wub_auth{{/str}}
-                    </label>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <a href="{{cancel_url}}" class="btn btn-outline-secondary px-4 py-2">
-                    <i class="fa fa-times mr-1"></i> {{#str}}policy_btn_decline, local_wub_auth{{/str}}
+<div class="wub-landing-container wub-policy-container">
+    <!-- Header: Solid White Institutional Bar Anchored to Shared Page Grid -->
+    <header class="wub-landing-header">
+        <div class="wub-page-grid wub-header-inner">
+            <div class="wub-brand-identity">
+                <a href="{{landing_url}}" class="wub-brand-logo-link" title="World University of Bangladesh - elearning.org.bd">
+                    <img src="{{logo_url}}" alt="World University of Bangladesh" class="wub-official-logo" loading="eager">
                 </a>
-                <button type="submit" class="btn btn-primary px-5 py-2 font-weight-bold" id="wub-policy-accept-btn">
-                    <i class="fa fa-check mr-1"></i> {{#str}}policy_btn_accept, local_wub_auth{{/str}}
-                </button>
             </div>
-        </form>
-    </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Focused Policy Agreement Panel, Natural Scrolling -->
+    <main class="wub-policy-main">
+        <div class="wub-page-grid wub-policy-grid">
+            <!-- Policy Review Panel -->
+            <section class="wub-policy-card-pane" aria-label="Policy Agreement Panel">
+                <div class="wub-policy-review-card" id="wub-policy-card">
+                    <!-- Policy Header -->
+                    <div class="wub-policy-review-header">
+                        <div class="wub-policy-meta-row">
+                            <span class="wub-login-role-badge wub-role-badge-{{role}}">
+                                {{#is_student}}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                                </svg>
+                                {{/is_student}}
+                                {{#is_teacher}}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                {{/is_teacher}}
+                                {{#is_admin}}
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                {{/is_admin}}
+                                <span>{{role_badge_label}}</span>
+                            </span>
+                            <span class="wub-policy-validity-pill">{{policy_validity_text}}</span>
+                        </div>
+
+                        <h1 class="wub-policy-title">{{#str}}policy_header, local_wub_auth{{/str}}</h1>
+                        <p class="wub-policy-subtitle">{{#str}}policy_subtitle, local_wub_auth{{/str}}</p>
+                    </div>
+
+                    <!-- Error Alert -->
+                    {{#has_error}}
+                    <div class="wub-login-alert" role="alert" id="wub-policy-alert">
+                        <div class="wub-login-alert-icon">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                        </div>
+                        <div class="wub-login-alert-text">
+                            <strong class="wub-login-alert-heading">Notice</strong>
+                            <div class="wub-login-alert-msg">{{error_message}}</div>
+                        </div>
+                    </div>
+                    {{/has_error}}
+
+                    <!-- 20 Policies in 4 Categories (Exact Existing Content Preserved) -->
+                    <div class="wub-policy-categories">
+                        {{#categories}}
+                        <div class="wub-policy-category">
+                            <div class="wub-policy-cat-header">
+                                <i class="fa {{icon}} text-primary" aria-hidden="true"></i>
+                                <span class="wub-policy-cat-title">{{title}}</span>
+                            </div>
+                            <div class="wub-policy-cat-body">
+                                {{#policies}}
+                                <div class="wub-policy-item">
+                                    <h2 class="wub-policy-item-title">{{title}}</h2>
+                                    <p class="wub-policy-item-text">{{content}}</p>
+                                </div>
+                                {{/policies}}
+                            </div>
+                        </div>
+                        {{/categories}}
+                    </div>
+
+                    <!-- Policy Acceptance Form -->
+                    <form action="{{form_action}}" method="post" id="wub-policy-form" class="wub-policy-form">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}" />
+                        <input type="hidden" name="role" value="{{role}}" />
+                        {{#returnurl}}
+                        <input type="hidden" name="returnurl" value="{{returnurl}}" />
+                        {{/returnurl}}
+
+                        <!-- Agree Checkbox -->
+                        <div class="wub-policy-agree-card">
+                            <label class="wub-policy-checkbox-label" for="policy_agree">
+                                <input type="checkbox" id="policy_agree" name="agree" value="1" required />
+                                <span>{{#str}}policy_agree_checkbox, local_wub_auth{{/str}}</span>
+                            </label>
+                        </div>
+
+                        <!-- Actions Row -->
+                        <div class="wub-policy-actions-row">
+                            <a href="{{cancel_url}}" class="wub-policy-btn-decline" id="btn-policy-decline">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M18 6 6 18M6 6l12 12"/>
+                                </svg>
+                                <span>{{#str}}policy_btn_decline, local_wub_auth{{/str}}</span>
+                            </a>
+                            <button type="submit" class="wub-btn-submit wub-policy-btn-accept" id="wub-policy-accept-btn">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M20 6 9 17l-5-5"/>
+                                </svg>
+                                <span>{{#str}}policy_btn_accept, local_wub_auth{{/str}}</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer: Solid White Institutional Bar Anchored to Shared Page Grid -->
+    <footer class="wub-landing-footer">
+        <div class="wub-footer-inner">{{{footer_html}}}</div>
+    </footer>
 </div>
